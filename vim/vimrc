@@ -108,6 +108,14 @@ call minpac#add('tpope/vim-cucumber')
 " emmet
 call minpac#add('mattn/emmet-vim')
 
+" ack - fast search
+call minpac#add('mileszs/ack.vim')
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+cnoreabbrev Ack Ack
+nnoremap <Leader>a :Ack<Space>
+
 " Mappings
 
 " Move easily between windows
