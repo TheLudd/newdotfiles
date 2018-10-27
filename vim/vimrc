@@ -90,6 +90,9 @@ call minpac#add('tommcdo/vim-exchange')
 " exchange
 call minpac#add('AndrewRadev/splitjoin.vim')
 
+" rename
+call minpac#add('danro/rename.vim')
+
 " Mappings
 
 " Move easily between windows
