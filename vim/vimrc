@@ -79,6 +79,9 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("t")': ['<cr>', '<2-LeftMouse>'],
     \ }
 
+" JSX
+call minpac#add('mxw/vim-jsx')
+
 " Mappings
 
 " Move easily between windows
