@@ -99,6 +99,9 @@ let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetsDir = $HOME.'/.vim/UltiSnips/'
 let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
 
+" coffeescript
+call minpac#add('kchmck/vim-coffee-script')
+
 " Mappings
 
 " Move easily between windows
