@@ -102,6 +102,9 @@ let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
 " coffeescript
 call minpac#add('kchmck/vim-coffee-script')
 
+" cucumber
+call minpac#add('tpope/vim-cucumber')
+
 " Mappings
 
 " Move easily between windows
