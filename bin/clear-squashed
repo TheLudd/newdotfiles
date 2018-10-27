@@ -1,0 +1,13 @@
+#!/bin/bash
+branches=`git for-each-ref --format='%(refname)' refs/heads/ | sed "s/refs\/heads\///"`
+for branch in $branches
+do
+	if [[ "$branch" != *"master"* ]]; then
+		message=`git checkout $branch 2> /dev/null`
+		if [[ $message == *"upstream is gone"* ]]; then
+			git checkout master -q
+			git branch -D $branch
+		fi
+	fi
+done
+git checkout master -q

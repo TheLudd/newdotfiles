@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+type=$1
+if [[ -z "$type" ]]; then
+	echo Version must be specified as major, minor, patch
+	exit 1
+fi
+remotes=`git remote -v`
+if [ -n "$remotes" ]; then
+	git pull
+fi
+git checkout -b release
+newVersion=`npm version $type`
+git add package.json
+name=`pwd | xargs basename`
+git commit -m "Release $name $newVersion"
+npm publish
+git checkout master
+git merge release
+git branch -d release
+if [ -n "$remotes" ]; then
+	git push
+fi

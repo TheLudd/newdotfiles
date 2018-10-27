@@ -1,0 +1,14 @@
+#!/bin/bash
+sessionName=$1
+dir=$2
+tmux has-session -t $sessionName 2> /dev/null
+if [ $? != 0 ]
+then
+	tmux new-session -ds $sessionName -c $dir
+	tmux new-window -t $sessionName -c $dir
+	tmux send-keys 'accwatch --fail-fast' Enter
+	tmux split-window -h -t $sessionName -c $dir
+	tmux send-keys 'nodemon -q -x "yarn -s unit"' Enter
+	tmux next-window
+fi
+tmux a -t $sessionName

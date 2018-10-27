@@ -1,0 +1,4 @@
+#!/bin/bash
+target=features/step_definitions/definitions.js
+./node_modules/.bin/cucumber-js --format snippets --format-options '{"snippetInterface": "synchronous", "snippetSyntax": "node_modules/@theludd/gaius-cucumber/dist/syntax"}' --require-module babel-register | cat -s >> $target
+

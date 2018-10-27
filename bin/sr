@@ -1,0 +1,6 @@
+#!/bin/bash
+args=("$@")
+search=$1
+replace=$2
+
+grep -Prl $search ${args[@]:2} | xargs sed -i "s/$search/$replace/g"

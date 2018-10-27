@@ -1,0 +1,8 @@
+#!/bin/bash
+mkdir -p test lib
+echo --require babel-register > test/mocha.opts
+echo --require source-map-support >> test/mocha.opts
+echo --reporter dot >> test/mocha.opts
+echo --recursive >> test/mocha.opts
+npmAddScript -f --key test --value mocha
+yarn add mocha chai source-map-support --dev

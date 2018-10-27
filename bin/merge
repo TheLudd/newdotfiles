@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+diff=`git log ..master`
+changes=`git log master..`
+
+if [ -z "$changes" ]; then
+	echo No changes to merge
+	exit 1
+fi
+
+branch=`git symbolic-ref --short -q HEAD`
+git pull
+if [ -z "$diff" ]; then
+	git checkout master \
+	&& git cherry-pick $branch \
+	&& git checkout $branch  \
+	&& git rebase master \
+	&& git push --force \
+	&& git checkout master \
+	&& git push
+else
+	git rebase master \
+	&& git push --force \
+	&& git checkout master \
+	&& git merge $branch \
+	&& git push
+fi

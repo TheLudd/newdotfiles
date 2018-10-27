@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+branch=`git symbolic-ref --short -q HEAD`
+if [[ "$branch" == "master" ]]; then
+	echo Already on master 1>&2
+	exit 1
+fi
+git rebase master
+git checkout master
+git merge $branch
+git delete-merged-branches -f

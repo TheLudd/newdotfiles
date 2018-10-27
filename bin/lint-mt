@@ -1,0 +1,3 @@
+#!/bin/bash
+yarn add --dev eslint @mediatool/eslint-config-mediatool
+cp ../integrations/.eslintrc.js .

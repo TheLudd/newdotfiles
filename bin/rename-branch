@@ -1,0 +1,6 @@
+#!/bin/bash
+branch=`git rev-parse --symbolic-full-name --abbrev-ref HEAD`
+newName=$1
+git branch -m $newName
+git push origin :$branch
+git push --set-upstream origin $newName

@@ -1,0 +1,18 @@
+#!/bin/bash
+args=("$@")
+dir=$1
+mkdir $dir
+cd $dir
+yarn add clear-console ${args[@]:1}
+printf "require('clear-console')()\n" > app.js
+for dependency in ${args[@]:1}
+do
+	printf "const $dependency = require('$dependency')\n" >> app.js
+done
+sleep 1
+sessionName=${dir}hack
+tmux new-session -s $sessionName -dn vim
+tmux send-keys 'nodemon app.js' Enter
+tmux split-window -hb -t vim
+tmux send-keys -t vim 'vi app.js' Enter
+tmux a -t $sessionName

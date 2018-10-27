@@ -1,0 +1,15 @@
+#!/bin/bash
+yarn add cucumber @theludd/gaius-cucumber @theludd/gaius-db-spec --dev
+npmAddScript -f --key accept  --value "cucumber-js --require-module babel-register"
+npmAddScript -f --key accept-generate --value "cucumber-js --format snippets"
+npmAddScript -f --key test  --value "yarn unit & yarn accept && wait"
+npmAddScript -f --key unit  --value "mocha"
+mkdir -p features/{support,step_definitions}
+
+commonDir=$(dirname $0)/../common
+cp $commonDir/sample.feature features
+cp $commonDir/world.js features/support
+cp $commonDir/definitions.js features/step_definitions
+
+git add -A
+git commit -m "Add cucumber setup" --no-verify

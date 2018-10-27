@@ -1,0 +1,3 @@
+#!/bin/bash
+yarn add @theludd/eslint-config-gaius eslint --dev
+printf "{\n  \"extends\": \"@theludd/eslint-config-gaius\"\n}" > .eslintrc.json

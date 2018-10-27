@@ -1,0 +1,5 @@
+#!/bin/bash
+branch=`git symbolic-ref --short -q HEAD`
+git checkout master
+git merge origin/master --ff-only
+git checkout $branch

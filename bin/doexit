@@ -1,0 +1,7 @@
+#!/bin/bash
+jobInfo=`jobs`
+if [[ -z "$jobInfo" ]]; then
+	exit
+else
+	fg
+fi

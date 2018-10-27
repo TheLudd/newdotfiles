@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+# Create needed variables
+name=$1
+gitName=`basename $name`
+dirName=`pwd | xargs basename`
+
+# Initialize git and publish privately to github
+git init
+hub create -p $gitName
+echo node_modules > .gitignore
+echo dist >> .gitignore
+
+# Setup package.json
+cat $(dirname $0)/../common/initial-package > package.json
+yarn init --yes
+sed -i s#$dirName#$name# package.json
+
+# Install dependencies
+add-babel
+init-mocha
+add-eslint
+git add -A
+git commit -m "Add initially generated project" --no-verify
+git push --set-upstream origin master

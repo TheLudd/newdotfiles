@@ -1,0 +1,7 @@
+#!/bin/bash
+fileName=$1
+if [ ! -f $fileName ]; then
+	echo "#!/bin/bash" > $fileName
+	chmod +x $fileName
+fi
+vi $fileName
