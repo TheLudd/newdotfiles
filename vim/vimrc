@@ -85,6 +85,9 @@ call minpac#add('mxw/vim-jsx')
 " exchange
 call minpac#add('tommcdo/vim-exchange')
 
+" exchange
+call minpac#add('AndrewRadev/splitjoin.vim')
+
 " Mappings
 
 " Move easily between windows
