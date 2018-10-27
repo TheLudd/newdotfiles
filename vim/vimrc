@@ -1,0 +1,33 @@
+" For a paranoia.
+" Normally `:set nocp` is not needed, because it is done automatically
+" when .vimrc is found.
+if &compatible
+  " `:set nocp` has many side effects. Therefore this should be done
+  " only when 'compatible' is set.
+  set nocompatible
+endif
+
+" Enable syntax highlighting
+syntax enable
+
+" Leader commands, leader is '
+let mapleader = "'"
+" Edit vimrc
+nnoremap <leader>ev :call EditFile("$MYVIMRC")<cr>
+" Source vimrc
+nnoremap <leader>sv :source $MYVIMRC<cr>
+
+" Use relative line numbers
+set relativenumber
+
+" Plugins
+" Use minpac as package manager
+packadd minpac
+call minpac#init()
+
+" minpac must have {'type': 'opt'} so that it can be loaded with `packadd`.
+call minpac#add('k-takata/minpac', {'type': 'opt'})
+
+" Use colorscheme jellybeans
+call minpac#add('nanotech/jellybeans.vim')
+colorscheme jellybeans
