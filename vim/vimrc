@@ -13,6 +13,13 @@ set noswapfile
 " Sane completion in command mode
 set wildmenu
 set wildmode=list:longest
+" Detect file types for plugins/omni completion etc
+filetype plugin indent on
+" Highlight search matches while typing
+set incsearch
+" Use relative line numbers
+set relativenumber
+set number
 
 " Leader commands, leader is '
 let mapleader = "'"
@@ -20,9 +27,6 @@ let mapleader = "'"
 nnoremap <leader>ev :call EditFile("$MYVIMRC")<cr>
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<cr>
-
-" Use relative line numbers
-set relativenumber
 
 " Plugins
 " Use minpac as package manager
@@ -45,6 +49,9 @@ let g:hardtime_default_on = 1
 
 " Multiple cursors
 call minpac#add('terryma/vim-multiple-cursors')
+
+" Javascript plugin
+call minpac#add('pangloss/vim-javascript')
 
 " Mappings
 
