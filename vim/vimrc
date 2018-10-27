@@ -82,6 +82,9 @@ let g:ctrlp_prompt_mappings = {
 " JSX
 call minpac#add('mxw/vim-jsx')
 
+" exchange
+call minpac#add('tommcdo/vim-exchange')
+
 " Mappings
 
 " Move easily between windows
