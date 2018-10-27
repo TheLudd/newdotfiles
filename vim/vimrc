@@ -58,7 +58,9 @@ call minpac#add('tpope/vim-surround')
 
 " Hardtime
 call minpac#add('takac/vim-hardtime')
-let g:hardtime_default_on = 1
+let g:hardtime_default_on = 0
+let g:hardtime_allow_different_key = 1
+let g:hardtime_maxcount = 2
 
 " Multiple cursors
 call minpac#add('terryma/vim-multiple-cursors')
