@@ -93,6 +93,12 @@ call minpac#add('AndrewRadev/splitjoin.vim')
 " rename
 call minpac#add('danro/rename.vim')
 
+" UltiSnips
+call minpac#add('SirVer/ultisnips')
+let g:UltiSnipsEditSplit = "vertical"
+let g:UltiSnipsSnippetsDir = $HOME.'/.vim/UltiSnips/'
+let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
+
 " Mappings
 
 " Move easily between windows
