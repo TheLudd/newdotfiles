@@ -71,6 +71,14 @@ let g:ale_linters = {'javascript': ['eslint']}
 let g:ale_lint_delay = 500
 nnoremap <leader>l : ALEFix<cr>
 
+" Ctrl-P
+call minpac#add('kien/ctrlp.vim')
+let g:ctrlp_custom_ignore = '\v[\/](\.git|node_modules|dist)$'
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("e")': ['<c-t>'],
+    \ 'AcceptSelection("t")': ['<cr>', '<2-LeftMouse>'],
+    \ }
+
 " Mappings
 
 " Move easily between windows
