@@ -23,7 +23,18 @@ set number
 
 " Leader commands, leader is '
 let mapleader = "'"
+
 " Edit vimrc
+function! TabIsEmpty()
+    return winnr('$') == 1 && len(expand('%')) == 0 && line2byte(line('$') + 1) <= 2
+endfunction
+function! EditFile(path)
+    if TabIsEmpty()
+        :execute "e " . a:path
+    else
+        :execute "tabe " . a:path
+    endif
+endfunction
 nnoremap <leader>ev :call EditFile("$MYVIMRC")<cr>
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<cr>
@@ -52,6 +63,13 @@ call minpac#add('terryma/vim-multiple-cursors')
 
 " Javascript plugin
 call minpac#add('pangloss/vim-javascript')
+
+" Linter
+call minpac#add('w0rp/ale')
+let g:ale_fixers = {'javascript': ['eslint']}
+let g:ale_linters = {'javascript': ['eslint']}
+let g:ale_lint_delay = 500
+nnoremap <leader>l : ALEFix<cr>
 
 " Mappings
 
