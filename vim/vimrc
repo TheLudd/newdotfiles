@@ -7,6 +7,9 @@ if &compatible
   set nocompatible
 endif
 
+" Open tests along with regular files
+source ./vim/test-split.vim
+
 " Basic config
 syntax enable
 set noswapfile
