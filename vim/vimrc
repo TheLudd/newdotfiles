@@ -21,6 +21,9 @@ set incsearch
 set relativenumber
 set number
 
+" Visualize preview of search/replace
+set inccommand=split
+
 " Leader commands, leader is '
 let mapleader = "'"
 
@@ -73,7 +76,12 @@ call minpac#add('w0rp/ale')
 let g:ale_fixers = {'javascript': ['eslint']}
 let g:ale_linters = {'javascript': ['eslint']}
 let g:ale_lint_delay = 500
+" autofix
 nnoremap <leader>l : ALEFix<cr>
+" goto next error
+:noremap <leader>n :try<bar>lnext<bar>catch /^Vim\%((\a\+)\)\=:E\%(553\<bar>42\):/<bar>lfirst<bar>endtry<cr>
+" goto previous error
+:noremap <leader>N :try<bar>lprev<bar>catch /^Vim\%((\a\+)\)\=:E\%(553\<bar>42\):/<bar>llast<bar>endtry<cr>
 
 " Ctrl-P
 call minpac#add('kien/ctrlp.vim')
@@ -116,7 +124,8 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
 cnoreabbrev Ack Ack
-nnoremap <Leader>a :Ack<Space>
+nnoremap <leader>w :Ack <C-r><C-w> . -r <CR>
+nnoremap <leader>W :Ack<Space>
 
 " Mappings
 
@@ -145,6 +154,12 @@ cnoreabbrev Xa xa
 " Open/close files
 cnoreabbrev tc tabclose
 cnoreabbrev t tabedit
+
+" search file with ctrl s
+nnoremap <C-s> :%s/
+
+" copy visual selection to clipboard
+vnoremap <C-c> "+y
 
 function! TabCloseRight(bang)
     let cur=tabpagenr()
@@ -183,3 +198,11 @@ function! <SID>StripTrailingWhitespaces()
 endfunction
 autocmd BufWritePre *.snippets let b:noStripWhitespace=1
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+
+" Indentation preferences
+function! Indent2Spaces()
+    setlocal expandtab
+    setlocal shiftwidth=2
+    setlocal softtabstop=2
+endfunction
+au BufRead,BufNewFile *.coffee,*.feature,*.js,*.jsx,*.json,*.html :call Indent2Spaces()
