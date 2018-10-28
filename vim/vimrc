@@ -8,11 +8,11 @@ if &compatible
 endif
 
 " Open tests along with regular files
-source ./vim/test-split.vim
+source ~/.vim/test-split.vim
 
 " Javascript leader commands
-source ./vim/javasctipt-leader-commands.vim
-nnoremap <leader>ej :call EditFile("./vim/javasctipt-leader-commands.vim")<cr>
+source ~/.vim/javasctipt-leader-commands.vim
+nnoremap <leader>ej :call EditFile("~/.vim/javasctipt-leader-commands.vim")<cr>
 
 " Basic config
 syntax enable
