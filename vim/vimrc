@@ -134,6 +134,9 @@ cnoreabbrev Ack Ack
 nnoremap <leader>w :Ack <C-r><C-w> . -r <CR>
 nnoremap <leader>W :Ack<Space>
 
+" Auto pairs
+call minpac#add('jiangmiao/auto-pairs')
+
 " Mappings
 
 " Move easily between windows
