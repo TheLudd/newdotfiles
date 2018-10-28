@@ -137,6 +137,29 @@ nnoremap <leader>W :Ack<Space>
 " Auto pairs
 call minpac#add('jiangmiao/auto-pairs')
 
+" Fugitive - git plugin
+call minpac#add('tpope/vim-fugitive')
+nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gr :Gdelete<cr>
+nnoremap <leader>gch :Gread<cr>
+nnoremap <leader>gca :Gcommit --all<cr>
+nnoremap <leader>gco :Gcommit %<cr>
+
+" Tabularize
+call minpac#add('godlygeek/tabular')
+" align tabs each time | is entered
+inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+function! s:align()
+  let p = '^\s*|\s.*\s|\s*$'
+  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+    let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+    let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+    Tabularize/|/l1
+    normal! 0
+    call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+  endif
+endfunction
+
 " Mappings
 
 " Move easily between windows
