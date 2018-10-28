@@ -27,6 +27,9 @@ set incsearch
 " Use relative line numbers
 set relativenumber
 set number
+" search with smartcase
+set ignorecase
+set smartcase
 
 " Visualize preview of search/replace
 set inccommand=split
