@@ -147,6 +147,7 @@ nnoremap <leader>gr :Gdelete<cr>
 nnoremap <leader>gch :Gread<cr>
 nnoremap <leader>gca :Gcommit --all<cr>
 nnoremap <leader>gco :Gcommit %<cr>
+nnoremap <leader>gm :Gmove
 
 " Tabularize
 call minpac#add('godlygeek/tabular')
