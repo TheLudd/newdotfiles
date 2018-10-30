@@ -163,6 +163,9 @@ function! s:align()
   endif
 endfunction
 
+" generic snippets
+call minpac#add('honza/vim-snippets')
+
 " Mappings
 
 " Move easily between windows
