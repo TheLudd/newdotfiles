@@ -52,8 +52,8 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 " Use minpac as package manager
 packadd minpac
 call minpac#init()
-:nnoremap <leader>mu :source $MYVIMRC<cr>:call minpac#update()<cr>
-:nnoremap <leader>mc :source $MYVIMRC<cr>:call minpac#clean()<cr>
+nnoremap <leader>mu :source $MYVIMRC<cr>:call minpac#update()<cr>
+nnoremap <leader>mc :source $MYVIMRC<cr>:call minpac#clean()<cr>
 
 " minpac must have {'type': 'opt'} so that it can be loaded with `packadd`.
 call minpac#add('k-takata/minpac', {'type': 'opt'})
@@ -85,8 +85,8 @@ let g:ale_lint_delay = 500
 " autofix
 nnoremap <leader>l :ALEFix<cr>
 " error navigation
-:noremap <leader>n :ALENextWrap<cr>
-:noremap <leader>N :ALEPreviousWrap<cr>
+noremap <leader>n :ALENextWrap<cr>
+noremap <leader>N :ALEPreviousWrap<cr>
 
 " Ctrl-P
 call minpac#add('kien/ctrlp.vim')
@@ -260,16 +260,16 @@ au BufRead,BufNewFile *.coffee,*.feature,*.js,*.jsx,*.json,*.html :call Indent2S
 
 " Javascript leader commands
 " Import chai assert
-:noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>o<CR>assert<ESC>Ic<TAB>
+noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>o<CR>assert<ESC>Ic<TAB>
 " Change test to use proxyquire
-:noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describeoconst 0 = proxy()i''Pla, {}O
+noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describeoconst 0 = proxy()i''Pla, {}O
 " Remove { return } in arrow functon
-:noremap <Leader>q [{r(/returndaw]}r)
+noremap <Leader>q [{r(/returndaw]}r)
 " Curry function
-:noremap <Leader>h ^ceconstea =f(icurry(f)a =>f{]}a)?curry^
+noremap <Leader>h ^ceconstea =f(icurry(f)a =>f{]}a)?curry^
 " Uncurry function
-:noremap <Leader>g ^/currydf($]}lx[{BdaWF=daw^cefunction
+noremap <Leader>g ^/currydf($]}lx[{BdaWF=daw^cefunction
 " turn function into arrow function
-:noremap <Leader>a ^ceconstea =f)a =>
+noremap <Leader>a ^ceconstea =f)a =>
 " turn arrow function into function
-:noremap <Leader>f ^cefunctionf=daw;.
+noremap <Leader>f ^cefunctionf=daw;.
