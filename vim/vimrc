@@ -82,6 +82,10 @@ call minpac#add('w0rp/ale')
 let g:ale_fixers = {'javascript': ['eslint']}
 let g:ale_linters = {'javascript': ['eslint']}
 let g:ale_lint_delay = 500
+let g:ale_pattern_options = {
+\   '.*node_modules.*$': {'ale_enabled': 0},
+\   '.*dist.*$': {'ale_enabled': 0},
+\}
 " autofix
 nnoremap <leader>l :ALEFix<cr>
 " error navigation
@@ -140,6 +144,7 @@ nnoremap <leader>gch :Gread<cr>
 nnoremap <leader>gca :Gcommit --all<cr>
 nnoremap <leader>gco :Gcommit %<cr>
 nnoremap <leader>gm :Gmove
+nnoremap <leader>ga :Git add --all<cr>
 
 " Tabularize
 call minpac#add('godlygeek/tabular')
@@ -198,6 +203,9 @@ noremap <C-l> <C-w>l
 " Move lines up and down
 nnoremap - :normal ddp<CR>
 nnoremap _ @='kddpk'<CR>
+
+" Yank rest of line
+nnoremap Y y$
 
 " Move letters right/left
 nnoremap <Right> xp
