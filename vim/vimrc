@@ -85,6 +85,7 @@ let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
 \   '.*node_modules.*$': {'ale_enabled': 0},
 \   '.*dist.*$': {'ale_enabled': 0},
+\   '.*-config.js$': {'ale_enabled': 0},
 \}
 " autofix
 nnoremap <leader>l :ALEFix<cr>
@@ -106,7 +107,7 @@ call minpac#add('mxw/vim-jsx')
 " exchange
 call minpac#add('tommcdo/vim-exchange')
 
-" exchange
+" splitjoin
 call minpac#add('AndrewRadev/splitjoin.vim')
 
 " UltiSnips
@@ -145,6 +146,7 @@ nnoremap <leader>gca :Gcommit --all<cr>
 nnoremap <leader>gco :Gcommit %<cr>
 nnoremap <leader>gm :Gmove
 nnoremap <leader>ga :Git add --all<cr>
+nnoremap <leader>gA :Git add %<cr>
 
 " Tabularize
 call minpac#add('godlygeek/tabular')
@@ -276,7 +278,7 @@ function! Indent2Spaces()
     setlocal shiftwidth=2
     setlocal softtabstop=2
 endfunction
-au BufRead,BufNewFile *.coffee,*.feature,*.js,*.jsx,*.json,*.html :call Indent2Spaces()
+au BufRead,BufNewFile *.coffee,*.feature,*.js,*.jsx,*.json,*.html,*.less :call Indent2Spaces()
 
 " Javascript leader commands
 " Import chai assert
