@@ -7,7 +7,7 @@ $scope.$1 = $1
 endsnippet
 
 snippet R "Require ramda" b
-const R = require('ramda')
+const { $1 } = require('ramda')
 endsnippet
 
 snippet RF "Require ramda-fantasy" b
@@ -525,4 +525,8 @@ endsnippet
 
 snippet P "description" b
 const Promise = require('bluebird')
+endsnippet
+
+snippet tlog "timeout log"
+setTimeout(console.log, 100, $1)
 endsnippet
