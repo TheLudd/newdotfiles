@@ -207,7 +207,7 @@ snippet di
 endsnippet
 
 snippet u "import utils" b
-u = require('@mediatool/mt-utils/utils')(R)
+u = require('@mediatool/mt-utils/import')
 endsnippet
 
 snippet # "string interpolation" i
@@ -218,6 +218,6 @@ snippet e "import errors" b
 errors = require('@mediatool/mt-errors/lib/errors')()
 endsnippet
 
-snippet tlog "timeout log" b
+snippet tlog "timeout log" 
 setTimeout console.log, 500, $1
 endsnippet

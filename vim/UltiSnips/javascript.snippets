@@ -456,7 +456,7 @@ export default {
   event: '$1',
   name: '$2',
   processChain: [
-    verifyOperation([])
+    verifyOperation([]),
   ],
   streamType: '$3',
 }
@@ -476,13 +476,13 @@ endsnippet
 	
 snippet pf "project function" b
 describe('#$1', () => {
-  const { $1 } = spaceProjection
-  it('should $2', () => {
+  const { $1 } = $2
+  it('should $3', () => {
     const event = {
-      data: { $3 },
+      data: { $4 },
     }
     const result = $1(event)
-    const expected = { $4 }
+    const expected = { $5 }
     deepEqual(result, expected)
   })
 })
