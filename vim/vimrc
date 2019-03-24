@@ -141,6 +141,7 @@ call minpac#add('jiangmiao/auto-pairs')
 call minpac#add('tpope/vim-fugitive')
 nnoremap <leader>gb :Gblame<cr>
 nnoremap <leader>gr :Gdelete<cr>
+nnoremap <leader>gR :Git checkout master -- % <cr>:checktime<cr>
 nnoremap <leader>gch :Gread<cr>
 nnoremap <leader>gca :Gcommit --all<cr>
 nnoremap <leader>gco :Gcommit %<cr>
@@ -282,7 +283,7 @@ au BufRead,BufNewFile *.coffee,*.feature,*.js,*.jsx,*.json,*.html,*.less :call I
 
 " Javascript leader commands
 " Import chai assert
-noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>o<CR>assert<ESC>Ic<TAB>
+noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>}O<CR>assert<ESC>Ic<TAB>
 " Change test to use proxyquire
 noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describeoconst 0 = proxy()i''Pla, {}O
 " Remove { return } in arrow functon
