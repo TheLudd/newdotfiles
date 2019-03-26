@@ -201,6 +201,9 @@ call minpac#add('tpope/vim-dadbod')
 " repeat - adds dot command support for speeddating
 call minpac#add('tpope/vim-repeat')
 
+" tmux
+call minpac#add('tmux-plugins/vim-tmux')
+
 " Mappings
 
 " Move easily between windows
