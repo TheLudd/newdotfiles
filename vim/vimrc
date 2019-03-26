@@ -16,6 +16,9 @@ set noswapfile
 " Sane completion in command mode
 set wildmenu
 set wildmode=list:longest
+" Find files deep using :find, ignore generated folders
+set path+=**
+set wildignore+=*/node_modules/*,*/dist/*
 " Detect file types for plugins/omni completion etc
 filetype plugin indent on
 " Highlight search matches while typing
@@ -94,7 +97,7 @@ noremap <leader>n :ALENextWrap<cr>
 noremap <leader>N :ALEPreviousWrap<cr>
 
 " Ctrl-P
-call minpac#add('kien/ctrlp.vim')
+call minpac#add('kien/ctrlp.vim', {'type': 'opt'})
 let g:ctrlp_custom_ignore = '\v[\/](\.git|node_modules|dist)$'
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("e")': ['<c-t>'],
