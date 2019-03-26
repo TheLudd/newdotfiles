@@ -134,6 +134,7 @@ if executable('ag')
 endif
 cnoreabbrev Ack Ack
 nnoremap <leader>w :Ack <C-r><C-w> . -r <CR>
+nnoremap <leader>s :Ack <C-r><C-w> .. -r <CR>
 nnoremap <leader>W :Ack<Space>
 
 " Auto pairs
