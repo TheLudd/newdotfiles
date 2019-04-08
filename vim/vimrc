@@ -204,6 +204,9 @@ call minpac#add('tpope/vim-repeat')
 " tmux
 call minpac#add('tmux-plugins/vim-tmux')
 
+" yaml
+call minpac#add('stephpy/vim-yaml')
+
 " Mappings
 
 " Move easily between windows
