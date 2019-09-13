@@ -36,7 +36,6 @@ set inccommand=split
 " Leader commands, leader is '
 let mapleader = "'"
 
-" Edit vimrc
 function! TabIsEmpty()
     return winnr('$') == 1 && len(expand('%')) == 0 && line2byte(line('$') + 1) <= 2
 endfunction
@@ -47,6 +46,7 @@ function! EditFile(path)
         :execute "tabe " . a:path
     endif
 endfunction
+" Edit vimrc
 nnoremap <leader>ev :call EditFile("$MYVIMRC")<cr>
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<cr>
@@ -94,6 +94,8 @@ nnoremap <leader>l :ALEFix<cr>
 " error navigation
 noremap <leader>n :ALENextWrap<cr>
 noremap <leader>N :ALEPreviousWrap<cr>
+let g:ale_set_signs = 1
+let g:ale_set_highlights = 1
 
 " Ctrl-P
 call minpac#add('kien/ctrlp.vim')
@@ -206,6 +208,9 @@ call minpac#add('tmux-plugins/vim-tmux')
 
 " yaml
 call minpac#add('stephpy/vim-yaml')
+
+" digitaltoad/vim-pug
+call minpac#add('digitaltoad/vim-pug')
 
 " Mappings
 

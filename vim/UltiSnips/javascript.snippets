@@ -530,3 +530,15 @@ endsnippet
 snippet tlog "timeout log"
 setTimeout(console.log, 100, $1)
 endsnippet
+
+snippet sh "state hook" b
+const [ $1, $2 ] = useState($3)
+endsnippet
+
+snippet devFixture "dev fixture" b
+const di = module.exports.getDI('dev')
+const initOperationRoles = require('@mediatool/mt-authorization/lib/init-operation-roles')
+initOperationRoles(di).then(() => {
+  di.loadAll()
+})
+endsnippet
