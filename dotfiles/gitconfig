@@ -18,4 +18,4 @@
 	default = simple
 	followTags = true
 [init]
-	templatedir = ~/linuxsetup/gittemplate
+	templatedir = ~/code/newdotfiles/gittemplate
