@@ -5,4 +5,5 @@ for f in *
 do
 	ln -sf $base/dotfiles/$f ~/.$f
 done
-ln -sf $base/bin ~/bin
+cd ~
+ln -sf $base/bin bin

@@ -8,7 +8,7 @@ if &compatible
 endif
 
 " Open tests along with regular files
-source ~/.vim/test-split.vim
+source ~/code/newdotfiles/vim/test-split.vim
 
 " Basic config
 syntax enable
