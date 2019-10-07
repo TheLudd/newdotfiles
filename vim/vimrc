@@ -63,7 +63,7 @@ call minpac#add('k-takata/minpac', {'type': 'opt'})
 
 " Use colorscheme jellybeans
 call minpac#add('nanotech/jellybeans.vim')
-colorscheme jellybeans
+:silent! colorscheme jellybeans
 
 " Surround plugin
 call minpac#add('tpope/vim-surround')
