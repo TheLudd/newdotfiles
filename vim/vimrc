@@ -76,13 +76,13 @@ let g:hardtime_maxcount = 2
 " Multiple cursors
 call minpac#add('terryma/vim-multiple-cursors')
 
-" Javascript plugin
-call minpac#add('pangloss/vim-javascript')
+" Multi language plugin
+call minpac#add('sheerun/vim-polyglot')
 
 " Linter
 call minpac#add('w0rp/ale')
-let g:ale_fixers = {'javascript': ['eslint']}
-let g:ale_linters = {'javascript': ['eslint']}
+let g:ale_fixers = {'javascript': ['eslint'], 'typescript': ['eslint'] }
+let g:ale_linters = {'javascript': ['eslint'], 'typescript': ['eslint'] }
 let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
 \   '.*node_modules.*$': {'ale_enabled': 0},
@@ -105,9 +105,6 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("t")': ['<cr>', '<2-LeftMouse>'],
     \ }
 
-" JSX
-call minpac#add('mxw/vim-jsx')
-
 " exchange
 call minpac#add('tommcdo/vim-exchange')
 
@@ -119,9 +116,6 @@ call minpac#add('SirVer/ultisnips')
 let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetsDir = $HOME.'/.vim/UltiSnips/'
 let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
-
-" coffeescript
-call minpac#add('kchmck/vim-coffee-script')
 
 " cucumber
 call minpac#add('tpope/vim-cucumber')
@@ -145,8 +139,9 @@ call minpac#add('jiangmiao/auto-pairs')
 " Fugitive - git plugin
 call minpac#add('tpope/vim-fugitive')
 nnoremap <leader>gb :Gblame<cr>
-nnoremap <leader>gr :Gdelete<cr>
-nnoremap <leader>gR :Git checkout master -- % <cr>:checktime<cr>
+nnoremap <leader>gsm :Gvsplit master:%<cr>
+nnoremap <leader>gd :Gdelete<cr>
+nnoremap <leader>gR :Gread master:%<cr>
 nnoremap <leader>gch :Gread<cr>
 nnoremap <leader>gca :Gcommit --all<cr>
 nnoremap <leader>gco :Gcommit %<cr>
@@ -206,11 +201,8 @@ call minpac#add('tpope/vim-repeat')
 " tmux
 call minpac#add('tmux-plugins/vim-tmux')
 
-" yaml
-call minpac#add('stephpy/vim-yaml')
-
-" digitaltoad/vim-pug
-call minpac#add('digitaltoad/vim-pug')
+" Supposedly better find and stuff
+call minpac#add('tpope/vim-apathy')
 
 " Mappings
 
@@ -293,7 +285,7 @@ function! Indent2Spaces()
     setlocal shiftwidth=2
     setlocal softtabstop=2
 endfunction
-au BufRead,BufNewFile *.coffee,*.feature,*.js,*.jsx,*.json,*.html,*.less :call Indent2Spaces()
+au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.less :call Indent2Spaces()
 
 " Javascript leader commands
 " Import chai assert
