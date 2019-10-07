@@ -1,0 +1,21 @@
+[user]
+	email = ludwig@mediatool.com
+	name = Ludwig Magnusson
+[core]
+	editor = nvim
+[alias]
+	st = status
+	co = commit -a
+	a = add -A
+	clf = clean -fd
+	b = branch
+	ch = checkout
+        fix = commit -a --amend --no-edit
+   	pf = push --force
+	m = rebase master
+        edit = reset HEAD~
+[push]
+	default = simple
+	followTags = true
+[init]
+	templatedir = ~/linuxsetup/gittemplate
