@@ -1,0 +1,9 @@
+#!/bin/bash
+base=`pwd`
+for path in dotfiles/*
+do
+	file=`basename $path`
+	echo ln -sf $base/$path ~/.$file
+done
+ln -sf $base/bin ~/bin
+ln -sf $base/vim/vimrc ~/.config/nvim/init.vim

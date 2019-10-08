@@ -5,5 +5,7 @@ for f in *
 do
 	ln -sf $base/dotfiles/$f ~/.$f
 done
-cd ~
-ln -sf $base/bin bin
+ln -sf $base/bin ~/bin
+ln -sf ~/code/newdotfiles/vim/vimrc .nvim
+cd $base
+cd installs

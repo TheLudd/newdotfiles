@@ -1,0 +1,3 @@
+#!/bin/bash
+bash run-all installs
+bash run-all setups
