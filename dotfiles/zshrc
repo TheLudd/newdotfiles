@@ -95,3 +95,5 @@ setopt no_share_history
 # tabtab source for yarn package
 # uninstall by removing these lines or running `tabtab uninstall yarn`
 [ -f /home/ludwig/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash ] && . /home/ludwig/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash
+
+PROMPT="%{$fg[cyan]%}%m ${PROMPT}"
