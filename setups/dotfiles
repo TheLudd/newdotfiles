@@ -5,5 +5,5 @@ do
 	file=`basename $path`
 	ln -sf $base/$path ~/.$file
 done
-ln -sf $base/bin ~/bin
+ln -sf $base/bin ~/
 ln -sf $base/vim/vimrc ~/.config/nvim/init.vim
