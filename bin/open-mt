@@ -1,0 +1,5 @@
+#!/bin/bash
+cd ~/mediatool
+if  [ -z "$TMUX" ]; then
+	tmux
+fi

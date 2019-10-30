@@ -11,3 +11,5 @@ do
 	fi
 done
 git checkout master -q
+nbrBranches=`git b | wc -l`
+echo $(($nbrBranches - 0))
