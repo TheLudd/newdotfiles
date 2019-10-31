@@ -1,0 +1,54 @@
+#!/bin/bash
+set -e
+
+# Find base branch by -b flag
+base=`echo $@ | sed -r 's/^.*-b ([^ ]+).*$/\1/'`
+
+# Find reviewer by -r flag
+reviewers=`echo $@ | sed -r 's/^.*-r ([^ ]+).*$/\1/'`
+
+if [[ -z "$reviewers" ]]; then
+	echo No reviewers specified
+	exit 1
+fi
+
+for (( i=0; i<${#reviewers}; i++ )); do
+  char="${reviewers:$i:1}"
+  if [[ $char == "m" ]]; then
+	  reviewer=magnsohlin
+  elif [[ $char == "j" ]]; then
+	  reviewer=joakimlandberg
+  elif [[ $char == "o" ]]; then
+	  reviewer=orestisrodriguez
+  fi
+  r="$r,$reviewer"
+done
+
+r=${r:1}
+
+nbrReviewers=`expr length $reviewers`
+if [[ $nbrReviewers == 1 ]]; then
+	approver=$r
+else
+	approver=theludd
+fi
+
+# Default base branch to master
+if [[ $base == $@ ]]; then
+	base=master
+fi
+
+nbrCommits=`git rev-list $base.. --count`
+
+if [[ "$nbrCommits" == "0" ]]; then
+	echo No commits since $base
+	exit 1
+fi
+
+# Set no edit option if only one commit present
+# Overridable with the --edit flag
+if [[ "$nbrCommits" == "1" &&  $@ != *"--edit"* ]]; then
+	opts="--no-edit --push"
+fi
+
+hub pull-request $opts -r $r -a $approver
