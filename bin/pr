@@ -15,7 +15,7 @@ fi
 for (( i=0; i<${#reviewers}; i++ )); do
   char="${reviewers:$i:1}"
   if [[ $char == "m" ]]; then
-	  reviewer=magnsohlin
+	  reviewer=magnusohlin
   elif [[ $char == "j" ]]; then
 	  reviewer=joakimlandberg
   elif [[ $char == "o" ]]; then
@@ -48,7 +48,7 @@ fi
 # Set no edit option if only one commit present
 # Overridable with the --edit flag
 if [[ "$nbrCommits" == "1" &&  $@ != *"--edit"* ]]; then
-	opts="--no-edit --push"
+	opts="--no-edit"
 fi
 
-hub pull-request $opts -r $r -a $approver
+hub pull-request $opts -r $r -a $approver --push
