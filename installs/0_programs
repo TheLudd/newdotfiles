@@ -7,6 +7,6 @@ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee $yarnsourcefile
 
 sudo apt-get update
-sudo apt-get install -y --allow-downgrades --allow-change-held-packages neovim htop tree zsh git-extras tmux silversearcher-ag parallel yarn=1.17.3-1
+sudo apt-get install -y --allow-downgrades --allow-change-held-packages neovim htop tree zsh git-extras tmux silversearcher-ag parallel hub yarn=1.17.3-1
 
 sudo apt-mark hold yarn
