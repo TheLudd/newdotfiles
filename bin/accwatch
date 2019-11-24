@@ -1,6 +1,6 @@
 #!/bin/bash
 file=$1
-if [[ -a "yarn.lock" && "$cmd" != "publish" && "$cmd" != "version" ]]; then
+if [[ -a "yarn.lock" || -a "../../yarn.lock" ]]; then
 	nodemon -q -e json,coffee,js,feature -x "yarn accept $file"
 else
 	nodemon -q --ignore-root test -e json,js,coffee,feature -x "npm run accept -- $file"
