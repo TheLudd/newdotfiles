@@ -112,7 +112,7 @@ call minpac#add('tommcdo/vim-exchange')
 call minpac#add('AndrewRadev/splitjoin.vim')
 
 " UltiSnips
-call minpac#add('SirVer/ultisnips')
+call minpac#add('SirVer/ultisnips', { 'rev': 'f95ce29' })
 let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetsDir = $HOME.'/.vim/UltiSnips/'
 let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
