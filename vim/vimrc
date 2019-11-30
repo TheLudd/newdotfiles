@@ -33,6 +33,9 @@ set smartcase
 " Visualize preview of search/replace
 set inccommand=split
 
+" No Ex Mode
+nnoremap Q <Nop>
+
 " Leader commands, leader is '
 let mapleader = "'"
 
@@ -289,16 +292,20 @@ au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.l
 
 " Javascript leader commands
 " Import chai assert
-noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>}O<CR>assert<ESC>Ic<TAB>
+noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>}O<CR>assert<ESC>Ic<TAB>:nohlsearch<Bar>:echo<CR>
 " Change test to use proxyquire
-noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describeoconst 0 = proxy()i''Pla, {}O
+noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describe:nohlsearch<Bar>:echo<CR>oconst 0 = proxy()i''Pla, {}O
 " Remove { return } in arrow functon
-noremap <Leader>q [{r(/returndaw]}r)
+noremap <Leader>q [{r(/returndaw]}r):nohlsearch<Bar>:echo<CR>
 " Curry function
-noremap <Leader>h ^ceconstea =f(icurry(f)a =>f{]}a)?curry^
+noremap <Leader>h ^ceconstea =f(icurry(f)a =>f{]}a)?curry^:nohlsearch<Bar>:echo<CR>
 " Uncurry function
-noremap <Leader>g ^/currydf($]}lx[{BdaWF=daw^cefunction
+noremap <Leader>g ^/currydf($]}lx[{BdaWF=daw^cefunction:nohlsearch<Bar>:echo<CR>
 " turn function into arrow function
 noremap <Leader>a ^ceconstea =f)a =>
 " turn arrow function into function
 noremap <Leader>f ^cefunctionf=daw;.
+
+map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
+map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
+map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
