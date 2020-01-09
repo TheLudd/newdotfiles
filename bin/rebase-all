@@ -1,0 +1,15 @@
+#!/bin/bash
+branches=`git for-each-ref --format='%(refname)' refs/heads/ | sed "s/refs\/heads\///"`
+for branch in $branches
+do
+	if [[ "$branch" != *"master"* ]]; then
+		git checkout --quiet $branch &> /dev/null
+		git rebase --quiet master &> /dev/null
+		status=$?
+		if [[ $status -ne 0 ]]; then
+			git rebase --abort
+			>&2 echo Could not rebase $branch
+		fi
+	fi
+done
+git checkout master -q
