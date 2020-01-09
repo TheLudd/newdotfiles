@@ -292,7 +292,7 @@ au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.l
 
 " Javascript leader commands
 " Import chai assert
-noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>}O<CR>assert<ESC>Ic<TAB>:nohlsearch<Bar>:echo<CR>
+noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>:nohlsearch<Bar>:echo<CR>}O<CR>assert<ESC>Ic<TAB>
 " Change test to use proxyquire
 noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describe:nohlsearch<Bar>:echo<CR>oconst 0 = proxy()i''Pla, {}O
 " Remove { return } in arrow functon
