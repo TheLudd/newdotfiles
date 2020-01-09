@@ -51,4 +51,4 @@ if [[ "$nbrCommits" == "1" &&  $@ != *"--edit"* ]]; then
 	opts="--no-edit"
 fi
 
-hub pull-request $opts -r $r -a $approver --push
+hub pull-request -b $base $opts -r $r -a $approver --push
