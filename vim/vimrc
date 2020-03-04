@@ -30,6 +30,9 @@ set number
 set ignorecase
 set smartcase
 
+" Allow switching to buffers before save
+set hidden
+
 " Visualize preview of search/replace
 set inccommand=split
 
@@ -305,6 +308,8 @@ noremap <Leader>g ^/currydf($]}lx[{BdaWF=daw^cefunction:nohlsearch<Bar>:echo<CR
 noremap <Leader>a ^ceconstea =f)a =>
 " turn arrow function into function
 noremap <Leader>f ^cefunctionf=daw;.
+" make value of amend definition
+noremap <Leader>v 0f:wC{o},ko"require": "o"type": "value"
 
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
 map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
