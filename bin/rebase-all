@@ -9,6 +9,8 @@ do
 		if [[ $status -ne 0 ]]; then
 			git rebase --abort
 			>&2 echo Could not rebase $branch
+		else
+			echo Rebased $branch
 		fi
 	fi
 done
