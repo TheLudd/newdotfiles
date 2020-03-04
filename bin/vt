@@ -6,5 +6,5 @@ file=`basename $path`
 srcFile=./lib/${file}
 testFile=./test/${file}
 
-touch $testFile $srcFile
+touch $srcFile
 vi -O $testFile $srcFile
