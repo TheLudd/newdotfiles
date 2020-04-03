@@ -1,0 +1,12 @@
+function updateUpstream() {
+	git fetch --all --prune
+	branch=`git symbolic-ref --short -q HEAD`
+	if [ "$branch" != "master" ]; then
+		git ch master
+	fi
+	git merge origin/master
+	upstream=`git remote -v | awk '/upstream/{ print $0 }'`
+	if [ -n "$upstream" ]; then
+		git merge upstream/master && git push origin master
+	fi
+}

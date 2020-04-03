@@ -1,0 +1,10 @@
+nodeDevModules="$nodeDevModules cucumber @theludd/gaius-cucumber @theludd/gaius-db-spec"
+npmAddScript -f --key accept  --value "cucumber-js --require-module babel-register"
+npmAddScript -f --key accept-generate --value "cucumber-js --format snippets"
+npmAddScript -f --key test  --value "yarn unit & yarn accept && wait"
+mkdir -p features/{support,step_definitions}
+
+common=$(dirname $0)/../common
+cp $common/sample.feature features
+cp $common/world.js features/support
+cp $common/definitions.js features/step_definitions

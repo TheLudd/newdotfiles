@@ -528,7 +528,7 @@ const Promise = require('bluebird')
 endsnippet
 
 snippet tlog "timeout log"
-setTimeout(console.log, 100, $1)
+setTimeout((d) => console.dir(d, { depth: 10 }), 100, $1)
 endsnippet
 
 snippet sh "state hook" b

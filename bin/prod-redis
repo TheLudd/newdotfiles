@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-cd /var/lib/redis/
 sudo /etc/init.d/redis-server stop
-sudo cp dump.rdb_bak dump.rdb
+sudo cp /var/lib/redis/dump.rdb_bak /var/lib/redis/dump.rdb
 sudo /etc/init.d/redis-server start

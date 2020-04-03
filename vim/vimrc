@@ -74,6 +74,9 @@ call minpac#add('nanotech/jellybeans.vim')
 " Surround plugin
 call minpac#add('tpope/vim-surround')
 
+" Case insensitive search/replace and spell correction
+call minpac#add('tpope/vim-abolish')
+
 " Hardtime
 call minpac#add('takac/vim-hardtime', {'type': 'opt'})
 let g:hardtime_allow_different_key = 1
@@ -295,7 +298,7 @@ au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.l
 
 " Javascript leader commands
 " Import chai assert
-noremap <Leader>c ggOimport { assert } from 'chai'<ESC>0?\<import\><CR>:nohlsearch<Bar>:echo<CR>}O<CR>assert<ESC>Ic<TAB>
+noremap <Leader>c ^yiwggOimport { assert } from 'chai'}oconst { 0 } = assertF}b*:nohlsearch<Bar>:echo<CR>
 " Change test to use proxyquire
 noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describe:nohlsearch<Bar>:echo<CR>oconst 0 = proxy()i''Pla, {}O
 " Remove { return } in arrow functon
@@ -310,6 +313,10 @@ noremap <Leader>a ^ceconstea =f)a =>
 noremap <Leader>f ^cefunctionf=daw;.
 " make value of amend definition
 noremap <Leader>v 0f:wC{o},ko"require": "o"type": "value"
+" import -> require
+noremap <Leader>r 0ceconst/fromce=wCrequire(pa)
+" import -> require
+noremap <Leader>i 0ceimportf=ct(fromlr f)x
 
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
 map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>

@@ -1,0 +1,15 @@
+standardPresets=(env)
+allPresets=("${standardPresets[@]}" "${extraPresets[@]}")
+for i in "${allPresets[@]}"
+do
+	presets="$presets, \"$i\""
+	presetDependencies="$presetDependencies babel-preset-$i"
+done
+presets=${presets:1}
+
+nodeDevModules="$nodeDevModules babel-cli babel-plugin-add-module-exports $presetDependencies"
+npmAddScript -f --key transpile --value "mkdir -p dist && babel lib -d dist --source-maps"
+npmAddScript -f --key clean --value "rm -rf dist"
+npmAddScript -f --key prepublishOnly --value "yarn clean && yarn transpile"
+printf "{\n  \"presets\": [$presets ],\n  \"plugins\": [ \"add-module-exports\" ]\n}" > .babelrc
+

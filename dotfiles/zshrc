@@ -97,3 +97,5 @@ setopt no_share_history
 [ -f /home/ludwig/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash ] && . /home/ludwig/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash
 
 PROMPT="%{$fg[cyan]%}%m ${PROMPT}"
+
+export EDITOR='nvim'

@@ -1,0 +1,4 @@
+nodeDevModules="$nodeDevModules @theludd/eslint-config-gaius eslint"
+printf "{\n  \"extends\": \"@theludd/eslint-config-gaius\"\n}" > .eslintrc.json
+npmAddScript -f --key lint --value "eslint lib test --max-warnings 0"
+npmAddScript -f --key test --value "yarn lint & yarn unit && wait"
