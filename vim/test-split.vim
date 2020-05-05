@@ -26,7 +26,7 @@ function! OpenWithTest(filePath, type)
     endif
     if a:type == ''
         let fullPathParts = ['test'] + parts[1:l-2] + [fileName]
-	let end = '.js'
+	let end = join([ '.', fileParts[1] ], '')
     elseif a:type == 'abstract'
         let fullPathParts = ['test'] + [ 'abstract-' . fileName ]
 	let end = '-test.coffee'
