@@ -89,9 +89,8 @@ call minpac#add('terryma/vim-multiple-cursors')
 call minpac#add('sheerun/vim-polyglot')
 
 " Linter
-call minpac#add('w0rp/ale')
+call minpac#add('dense-analysis/ale')
 let g:ale_fixers = {'javascript': ['eslint'], 'typescript': ['eslint'] }
-let g:ale_linters = {'javascript': ['eslint'], 'typescript': ['eslint'] }
 let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
 \   '.*node_modules.*$': {'ale_enabled': 0},
@@ -103,8 +102,6 @@ nnoremap <leader>l :ALEFix<cr>
 " error navigation
 noremap <leader>n :ALENextWrap<cr>
 noremap <leader>N :ALEPreviousWrap<cr>
-let g:ale_set_signs = 1
-let g:ale_set_highlights = 1
 
 " Ctrl-P
 call minpac#add('kien/ctrlp.vim')
@@ -294,11 +291,14 @@ function! Indent2Spaces()
     setlocal shiftwidth=2
     setlocal softtabstop=2
 endfunction
-au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.less :call Indent2Spaces()
+au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.less,*.feature-template :call Indent2Spaces()
+au BufRead,BufNewFile *.feature-template :set filetype=cucumber
 
 " Javascript leader commands
 " Import chai assert
 noremap <Leader>c ^yiwggOimport { assert } from 'chai'}oconst { 0 } = assertF}b*:nohlsearch<Bar>:echo<CR>
+" Add to chai assert
+noremap <Leader>C ^ye?assertF?{wPa, G?"
 " Change test to use proxyquire
 noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describe:nohlsearch<Bar>:echo<CR>oconst 0 = proxy()i''Pla, {}O
 " Remove { return } in arrow functon
