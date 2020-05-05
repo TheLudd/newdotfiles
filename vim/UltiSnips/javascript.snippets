@@ -353,6 +353,10 @@ snippet gdbs "import gaius db-spec" b
 import { $1 } from '@theludd/gaius-db-spec'
 endsnippet
 
+snippet bpc "import blueprintjs/core" b
+import { $1 } from '@blueprintjs/core'
+endsnippet
+
 snippet trtf "test rtf" b
 import { assertSyncRtf } from '@theludd/gaius-test'
 import `!p
@@ -545,4 +549,8 @@ endsnippet
 
 snippet	u "utils import" b
 import { $1 } from '@mediatool/mt-utils/import'
+endsnippet
+
+snippet its "test outline" b
+it.skip('$1', () => {})
 endsnippet
