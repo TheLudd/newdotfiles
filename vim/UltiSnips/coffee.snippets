@@ -21,55 +21,34 @@ snip.rv = full
 endsnippet
 
 snippet test "Description" b
-`!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` = getDep './${1:${VISUAL}}'
+`!v g:Abolish.camelcase(expand('%:t:r'))` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
 
-describe '`!p snip.rv = full`', ->
+describe '`!v g:Abolish.camelcase(expand('%:t:r'))` ', ->
 
-  When -> @subject = `!p snip.rv = full`()
-  Then ->
+  When -> @result = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+  Then -> 
 endsnippet
 
-snippet asynctest "Async test" b
-`!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` = getDep './${1:${VISUAL}}'
+snippet asynctest "Description" b
+`!v g:Abolish.camelcase(expand('%:t:r'))` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
 
-describe '`!p snip.rv = full`', ->
+describe '`!v g:Abolish.camelcase(expand('%:t:r'))` ', ->
 
-  When -> 
-    @subject = `!p snip.rv = full`()
-    @subject($2).then (@result) =>
-  Then ->
+  When ->
+    @subject = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    @subject().then (@result) =>
+  Then -> 
 endsnippet
 
 snippet factest "Description" b
-`!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` = getDep './${1:${VISUAL}}'
+`!v g:Abolish.camelcase(expand('%:t:r'))` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
 
-describe '`!p snip.rv = full`', ->
+describe '`!v g:Abolish.camelcase(expand('%:t:r'))` ', ->
 
-  When -> 
-    factory = `!p snip.rv = full`()
-    @subject = factory()
-  Then ->
+  When ->
+    @subject = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    @result = @subject()
+  Then -> 
 endsnippet
 
 snippet G "Given"

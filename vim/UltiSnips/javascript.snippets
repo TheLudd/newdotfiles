@@ -2,10 +2,6 @@ snippet r "Require" b
 const $1 = require('$1')
 endsnippet
 
-snippet sc "scope variable" b
-$scope.$1 = $1
-endsnippet
-
 snippet R "Require ramda" b
 const { $1 } = require('ramda')
 endsnippet
@@ -32,26 +28,13 @@ endsnippet
 
 snippet facfac "Factory factory" b
 module.exports = function (
-
+  $1
 ) {
-  function $1 () {
-
-  }
-
-  return $1
-}
-endsnippet
-
-snippet rcom "React Component" b
-module.exports = function (
-  React
-) {
-  const { $1Component } = React
-  class $2 extends $1Component {
+  function `!v g:Abolish.camelcase(expand('%:t:r'))` ($2) {
     $3
   }
 
-  return $2
+  return `!v g:Abolish.camelcase(expand('%:t:r'))`
 }
 endsnippet
 
@@ -69,23 +52,6 @@ module.exports = function (
 }
 endsnippet
 
-snippet objfac "Object factory" b
-module.exports = function () {
-
-  function $1() {
-    const self = {}
-
-    self.$2 = function () {
-	
-    }
-
-    return self
-  }
-
-  return $1
-}
-endsnippet
-
 snippet des "describe" b
 describe('$1', () => {
   $2
@@ -96,16 +62,6 @@ snippet it "it block" b
 it('$1', () => {
   $2
 })
-endsnippet
-
-snippet self "Export self object" b
-const self = {}
-
-self.$1 = function () {
-
-}
-
-return self
 endsnippet
 
 snippet sf "Self function" b
@@ -153,27 +109,20 @@ snip.rv = full
 ` from '.${2}/lib/${1:${VISUAL}}'
 endsnippet
 
-snippet	imp "import"
+snippet	imp "import" b
 import { $1 } from '$2'
 endsnippet
 	
-snippet	dimp "default import"
+snippet	dimp "default import" b
 import $1 from '$2'
 endsnippet
 
-snippet rimp "test import" b
-import `!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` from '.${2}/${1:${VISUAL}}'
-endsnippet
+snippet rimp "relative import" b
+import $1 from './`!p
+import re
 
-snippet	gimp "gaius import"
-import gaius$1 from '@theludd/gaius-$2'
+snip.rv = re.sub(r'(?<!^)(?=[A-Z])', '-', t[1]).lower()
+`'
 endsnippet
 
 snippet	f "function" w
@@ -193,10 +142,12 @@ function $1 ($2) {
 endsnippet
 	
 snippet ef "export function" b
-function $1 ($2) {
-  $3
+export default function `!v g:Abolish.camelcase(expand('%:t:r'))` ($1) {
+  $2
 }
+endsnippet
 
+snippet ed "export default" b
 export default $1
 endsnippet
 	
@@ -308,23 +259,6 @@ module.exports = function (
 }
 endsnippet
 
-snippet test "Test" b
-import `!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` from '.$2/${1:${VISUAL}}'
-
-describe('`!p snip.rv = full`', () => {
-  it('should $3', () => {
-    throw new Error('Not implemented')
-  })
-})
-endsnippet
-
 snippet c "constants" b
 const { $1 } = $2
 endsnippet
@@ -353,28 +287,16 @@ snippet gdbs "import gaius db-spec" b
 import { $1 } from '@theludd/gaius-db-spec'
 endsnippet
 
-snippet bpc "import blueprintjs/core" b
-import { $1 } from '@blueprintjs/core'
+snippet grs "import gaius rest server" b
+import { $1 } from '@theludd/gaius-rest-server'
 endsnippet
 
-snippet trtf "test rtf" b
-import { assertSyncRtf } from '@theludd/gaius-test'
-import `!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` from '.$2/${1:${VISUAL}}'
+snippet gss "import gaius socket server" b
+import { $1 } from '@theludd/gaius-socket-server'
+endsnippet
 
-describe('`!p snip.rv = full`', () => {
-  const env = {}
-  it('should $3', () => {
-    const rtf = `!p snip.rv = full`()
-    assertSyncRtf(env, '', rtf)
-  })
-})
+snippet bpc "import blueprintjs/core" b
+import { $1 } from '@blueprintjs/core'
 endsnippet
 
 snippet top "test operation" b
@@ -554,3 +476,27 @@ endsnippet
 snippet its "test outline" b
 it.skip('$1', () => {})
 endsnippet
+
+snippet test "Test" b
+import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
+
+describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
+  it('${1:works}', () => {
+    `!v g:Abolish.camelcase(expand('%:t:r'))`()
+  })
+})
+endsnippet
+
+snippet trtf "test rtf" b
+import { assertSyncRtf } from '@theludd/gaius-test'
+import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v expand('%:r:gs?./test?../lib?')`'
+
+describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
+  const env = {}
+  it('${1:works}', () => {
+    const rtf = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    assertSyncRtf(env, '', rtf)
+  })
+})
+endsnippet
+

@@ -87,10 +87,11 @@ call minpac#add('terryma/vim-multiple-cursors')
 
 " Multi language plugin
 call minpac#add('sheerun/vim-polyglot')
+let g:polyglot_disabled = ['javascriptreact']
 
 " Linter
 call minpac#add('dense-analysis/ale')
-let g:ale_fixers = {'javascript': ['eslint'], 'typescript': ['eslint'] }
+let g:ale_fixers = {'javascript': ['eslint'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ] }
 let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
 \   '.*node_modules.*$': {'ale_enabled': 0},
@@ -136,7 +137,6 @@ if executable('ag')
 endif
 cnoreabbrev Ack Ack
 nnoremap <leader>w :Ack <C-r><C-w> . -r <CR>
-nnoremap <leader>s :Ack <C-r><C-w> .. -r <CR>
 nnoremap <leader>W :Ack<Space>
 
 " Auto pairs
@@ -210,6 +210,9 @@ call minpac#add('tmux-plugins/vim-tmux')
 " Supposedly better find and stuff
 call minpac#add('tpope/vim-apathy')
 
+" tpope/vim-dispatch
+call minpac#add('tpope/vim-dispatch')
+
 " Mappings
 
 " Move easily between windows
@@ -236,6 +239,7 @@ cnoreabbrev Q q
 cnoreabbrev Qa qa
 cnoreabbrev X x
 cnoreabbrev Xa xa
+cnoreabbrev ya Start! yarn add
 
 " Open/close files
 cnoreabbrev tc tabclose
@@ -314,10 +318,40 @@ noremap <Leader>f ^cefunctionf=daw;.
 " make value of amend definition
 noremap <Leader>v 0f:wC{o},ko"require": "o"type": "value"
 " import -> require
-noremap <Leader>r 0ceconst/fromce=wCrequire(pa)
-" import -> require
-noremap <Leader>i 0ceimportf=ct(fromlr f)x
+noremap <Leader>r :s/import\(.*\)from \(.*\)/const\1= require(\2)<CR>:nohlsearch<CR>
+" require -> import
+noremap <Leader>i :s/const\(.*\)= require(\('.*'\))/import\1from \2<CR>:nohlsearch<CR>
+" install dependency
+noremap <Leader>ya yi':Start! yarn add <C-R>" <CR>
+" split and sort a destructed object
+noremap <Leader>S ci}<CR><CR><ESC>kP:s/ *$/,/<CR>:s/, /,\r/g<CR>:nohlsearch<CR>=i}vi}:sort<CR>
+" sort a destructed object
+noremap <Leader>so vi}:sort<CR>
 
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
 map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
 map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
+
+function! GetTestImportPath ()
+    let path = substitute(expand('%:r'), '^./', '', '')
+    let file = expand('%:t:r')
+    let parts = split(path, '/')
+    let nbrParts = len(parts)
+
+    let outParts = []
+    let removals = 0
+    for p in parts
+	if p == 'test'
+           :call add(outParts, '../lib')
+	   let removals += 1
+        elseif p != file
+           :call insert(outParts, '..', 0)
+	endif
+
+	if p == 'unit' || p == 'it'
+	   let removals += 1
+	endif
+    endfor
+    let allParts = extend(outParts, parts[removals:nbrParts])
+    return join(allParts, '/')
+endfunction
