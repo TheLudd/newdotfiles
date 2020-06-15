@@ -1,0 +1,11 @@
+#!/bin/bash
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+cd -P $dir
+cd ..
+
+diff=`git status --porcelain`
+
+if [[ ! -z "$diff" ]]; then
+	sudo -u ludwig DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus /usr/bin/notify-send -i up -t 5000 "Uncomitted changes in dotfiles"
+fi
