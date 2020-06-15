@@ -1,7 +1,11 @@
 #!/bin/bash
 file=$1
 if [[ -a "yarn.lock" || -a "../../yarn.lock" ]]; then
-	nodemon -q -i dist -i test -e json,coffee,js,feature -x "yarn -s accept $file"
+	if [[ -a "nodemon.json" ]]; then
+		nodemon -q -e json,coffee,js,feature -x "yarn -s accept $file"
+	else
+		nodemon -q -i dist -i test -e json,coffee,js,feature -x "yarn -s accept $file"
+	fi
 else
 	nodemon -q --ignore-root test -e json,js,coffee,feature -x "npm run accept -- $file"
 fi
