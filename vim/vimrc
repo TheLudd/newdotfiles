@@ -91,7 +91,7 @@ let g:polyglot_disabled = ['javascriptreact']
 
 " Linter
 call minpac#add('dense-analysis/ale')
-let g:ale_fixers = {'javascript': ['eslint'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ] }
+let g:ale_fixers = {'javascript': ['eslint', 'xo'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ] }
 let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
 \   '.*node_modules.*$': {'ale_enabled': 0},
