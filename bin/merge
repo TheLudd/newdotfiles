@@ -10,14 +10,13 @@ fi
 
 branch=`git symbolic-ref --short -q HEAD`
 git pull
-if [ -z "$diff" ]; then
-	git checkout master \
-	&& git merge $branch \
-	&& git push
-else
+
+if [ -n "$diff" ]; then
 	git rebase master \
-	&& git push --force \
-	&& git checkout master \
-	&& git merge $branch \
-	&& git push
+	&& git push --force
 fi
+
+git checkout master \
+&& git pull \
+&& git merge $branch \
+&& git push \
