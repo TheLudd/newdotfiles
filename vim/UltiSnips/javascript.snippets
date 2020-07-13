@@ -147,6 +147,12 @@ export default function `!v g:Abolish.camelcase(expand('%:t:r'))` ($1) {
 }
 endsnippet
 
+snippet ec "export component" b
+export default function `!v g:Abolish.mixedcase(expand('%:t:r'))` ($1) {
+  $2
+}
+endsnippet
+
 snippet ed "export default" b
 export default $1
 endsnippet
@@ -487,6 +493,21 @@ describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
 })
 endsnippet
 
+snippet tc "Test component" b
+import { shallow } from 'enzyme'
+import `!v g:Abolish.mixedcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
+
+describe('`!v g:Abolish.mixedcase(expand('%:t:r'))`', () => {
+  let wrapper
+  beforeEach(() => {
+    wrapper = shallow(<`!v g:Abolish.mixedcase(expand('%:t:r'))` />)
+  })
+  it('${1:renders}', () => {
+    $2
+  })
+})
+endsnippet
+
 snippet trtf "test rtf" b
 import { assertSyncRtf } from '@theludd/gaius-test'
 import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v expand('%:r:gs?./test?../lib?')`'
@@ -499,4 +520,3 @@ describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
   })
 })
 endsnippet
-
