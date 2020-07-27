@@ -1,11 +1,23 @@
 #!/bin/bash
-path=$1
 
-subPath=`echo $path | sed 's,^[^/]*/,,'`
+vimargs=""
+firstFile=yes
 
-srcFile=./lib/${subPath}
-testFile=./test/${subPath}
+for path in $@
+do
+	subPath=`echo $path | sed 's,^[^/]*/,,'`
 
-mkdir -p `dirname $testFile`
-touch $srcFile
-vi -O $testFile $srcFile
+	srcFile=./lib/${subPath}
+	testFile=./test/${subPath}
+
+	mkdir -p `dirname $testFile`
+	touch $srcFile
+	if [[ $firstFile == "yes" ]]; then
+		vimargs="$srcFile +\"vsplit $testFile\""
+		firstFile=no
+	else
+		vimargs="$vimargs +\"tabnew $srcFile\" +\"vsplit $testFile\""
+	fi
+done
+
+echo $vimargs | xargs vim
