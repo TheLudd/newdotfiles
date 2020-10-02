@@ -1,6 +1,6 @@
 #!/bin/bash
 file=$1
-if [[ -a "yarn.lock" || -a "../../yarn.lock" ]]; then
+if [[ -a "yarn.lock" || -a "../yarn.lock" || -a "../../yarn.lock" ]]; then
 	if [[ -a "nodemon.json" ]]; then
 		nodemon -q -e json,coffee,js,feature -x "yarn -s accept $file"
 	else
