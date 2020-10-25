@@ -214,6 +214,10 @@ call minpac#add('tpope/vim-apathy')
 " tpope/vim-dispatch
 call minpac#add('tpope/vim-dispatch')
 
+" markdown preview
+call minpac#add('iamcco/markdown-preview.nvim', {'do': 'packloadall! | call mkdp#util#install()'})
+let g:mkdp_auto_close = 1
+
 " Mappings
 
 " Move easily between windows
