@@ -12,7 +12,7 @@ source ~/code/newdotfiles/vim/test-split.vim
 
 " Basic config
 syntax enable
-set noswapfile
+" set noswapfile
 " Sane completion in command mode
 set wildmenu
 set wildmode=list:longest
