@@ -1,4 +1,4 @@
 #!/bin/bash
 git checkout master -q
-git branch -vv | ag ": gone]" | awk '{print $1}' | xargs -r git branch -D
+git branch -vv | grep ": gone]" | awk '{print $1}' | xargs -r git branch -D
 git b | wc -l
