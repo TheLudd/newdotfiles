@@ -3,7 +3,12 @@ args=("$@")
 dir=$1
 mkdir $dir
 cd $dir
-yarn add ${args[@]:1}
+dependencies=${args[@]:1}
+if [[ -n "$dependencies" ]]; then
+	yarn add $dependencies
+fi
+
+touch app.js
 for dependency in ${args[@]:1}
 do
 	printf "const $dependency = require('$dependency')\n" >> app.js
