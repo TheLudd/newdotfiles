@@ -10,10 +10,10 @@
 	clf = clean -fd
 	b = branch
 	ch = checkout
-        fix = commit -a --amend --no-edit
-   	pf = push --force
+	fix = commit -a --amend --no-edit
+	pf = push --force
 	m = rebase master
-        edit = reset HEAD~
+	edit = reset HEAD~
 [push]
 	default = simple
 	followTags = true
