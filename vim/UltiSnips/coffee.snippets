@@ -21,32 +21,32 @@ snip.rv = full
 endsnippet
 
 snippet test "Description" b
-`!v g:Abolish.camelcase(expand('%:t:r'))` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
+`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
 
-describe '`!v g:Abolish.camelcase(expand('%:t:r'))` ', ->
+describe '`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`', ->
 
-  When -> @result = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+  When -> @result = `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`()
   Then -> 
 endsnippet
 
 snippet asynctest "Description" b
-`!v g:Abolish.camelcase(expand('%:t:r'))` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
+ `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
 
-describe '`!v g:Abolish.camelcase(expand('%:t:r'))` ', ->
+describe '`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`', ->
 
   When ->
-    @subject = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    @subject =  `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`()
     @subject().then (@result) =>
   Then -> 
 endsnippet
 
 snippet factest "Description" b
-`!v g:Abolish.camelcase(expand('%:t:r'))` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
+ `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
 
-describe '`!v g:Abolish.camelcase(expand('%:t:r'))` ', ->
+describe '`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`', ->
 
   When ->
-    @subject = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    @subject =  `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`()
     @result = @subject()
   Then -> 
 endsnippet
