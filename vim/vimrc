@@ -314,7 +314,8 @@ noremap <Leader>p 0wyeceproxyquiref'ci'proxy/describe:nohlsearch<Bar>:echo<C
 " Remove { return } in arrow functon
 noremap <Leader>q [{r(/returndaw]}r):nohlsearch<Bar>:echo<CR>
 " Curry function
-noremap <Leader>h ^ceconstea =f(icurry(f)a =>f{]}a)?curry^:nohlsearch<Bar>:echo<CR>
+noremap <Leader>h $?function<CR>ceconstea =f(icurry(f)a =>f{]}a)?curry^:nohlsearch<Bar>:echo<CR>
+" noremap <Leader>h ^ceconstea =f(icurry(f)a =>f{]}a)?curry^:nohlsearch<Bar>:echo<CR>
 " Uncurry function
 noremap <Leader>g ^/currydf($]}lx[{BdaWF=daw^cefunction:nohlsearch<Bar>:echo<CR>
 " turn function into arrow function
