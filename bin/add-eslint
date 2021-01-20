@@ -1,3 +1,4 @@
 #!/bin/bash
-yarn add @theludd/eslint-config-gaius eslint --dev
+yarn add @theludd/eslint-config-gaius eslint eslint-plugin-import --dev
+npmAddScript -f --key lint --value "eslint *.js lib test"
 printf "{\n  \"extends\": \"@theludd/eslint-config-gaius\"\n}" > .eslintrc.json
