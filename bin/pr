@@ -22,6 +22,8 @@ for (( i=0; i<${#reviewers}; i++ )); do
 	  reviewer=orestisrodriguez
   elif [[ $char == "t" ]]; then
 	  reviewer=TautvydasGec
+  elif [[ $char == "k" ]]; then
+	  reviewer=kevin-nemec
   fi
   r="$r,$reviewer"
 done
