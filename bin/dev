@@ -1,0 +1,7 @@
+#!/bin/bash
+cd ~/mediatool/webapp/
+branch=$1
+git fetch
+git checkout $branch
+git reset --hard origin/$branch
+yarn dev
