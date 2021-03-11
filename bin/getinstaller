@@ -1,0 +1,9 @@
+#!/bin/bash
+arch=`lsb_release -a | grep Distributor | grep Arch`
+
+if [ -n "$arch" ]
+then
+	echo pacman
+else
+	echo apt
+fi

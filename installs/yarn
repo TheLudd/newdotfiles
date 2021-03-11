@@ -1,10 +1,15 @@
 #!/bin/bash
-yarnsourcefile=/etc/apt/sources.list.d/yarn.list
+arch=`lsb_release -a | grep Arch`
 
-sudo rm -f $yarnsourcefile
+if [ -z "$arch" ]
+then
+	yarnsourcefile=/etc/apt/sources.list.d/yarn.list
 
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee $yarnsourcefile
+	sudo rm -f $yarnsourcefile
 
-sudo apt update
-sudo apt install yarn
+	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+	echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee $yarnsourcefile
+
+	sudo apt update
+	sudo apt install yarn
+fi
