@@ -8,7 +8,7 @@ if &compatible
 endif
 
 " Open tests along with regular files
-source ~/code/newdotfiles/vim/test-split.vim
+" source ~/code/newdotfiles/vim/test-split.vim
 
 " Basic config
 syntax enable
@@ -58,39 +58,37 @@ nnoremap <leader>ev :call EditFile("$MYVIMRC")<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " Plugins
-" Use minpac as package manager
-packadd minpac
-call minpac#init()
-nnoremap <leader>mu :source $MYVIMRC<cr>:call minpac#update()<cr>
-nnoremap <leader>mc :source $MYVIMRC<cr>:call minpac#clean()<cr>
+" Install Vim Plug if not installed
 
-" minpac must have {'type': 'opt'} so that it can be loaded with `packadd`.
-call minpac#add('k-takata/minpac', {'type': 'opt'})
+if empty(glob('~/.config/nvim/autoload/plug.vim'))
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall
+endif
+
+call plug#begin('~/.config/nvim/plugged')
+
+nnoremap <leader>mu :source $MYVIMRC<cr>:PlugUpdate<cr>
+nnoremap <leader>mc :source $MYVIMRC<cr>:PlugClean<cr>
 
 " Use colorscheme jellybeans
-call minpac#add('nanotech/jellybeans.vim')
-:silent! colorscheme jellybeans
+Plug 'nanotech/jellybeans.vim'
 
 " Surround plugin
-call minpac#add('tpope/vim-surround')
+Plug 'tpope/vim-surround'
 
 " Case insensitive search/replace and spell correction
-call minpac#add('tpope/vim-abolish')
-
-" Hardtime
-call minpac#add('takac/vim-hardtime', {'type': 'opt'})
-let g:hardtime_allow_different_key = 1
-let g:hardtime_maxcount = 2
+Plug 'tpope/vim-abolish'
 
 " Multiple cursors
-call minpac#add('terryma/vim-multiple-cursors')
+Plug 'terryma/vim-multiple-cursors'
 
 " Multi language plugin
-call minpac#add('sheerun/vim-polyglot')
+Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascriptreact']
 
 " Linter
-call minpac#add('dense-analysis/ale')
+Plug 'dense-analysis/ale'
 let g:ale_fixers = {'javascript': ['eslint', 'xo'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ], 'typescriptreact': [ 'eslint' ] }
 let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
@@ -105,7 +103,7 @@ noremap <leader>n :ALENextWrap<cr>
 noremap <leader>N :ALEPreviousWrap<cr>
 
 " Ctrl-P
-call minpac#add('kien/ctrlp.vim')
+Plug 'kien/ctrlp.vim'
 let g:ctrlp_custom_ignore = '\v[\/](\.git|node_modules|dist)$'
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("e")': ['<c-t>'],
@@ -113,25 +111,25 @@ let g:ctrlp_prompt_mappings = {
     \ }
 
 " exchange
-call minpac#add('tommcdo/vim-exchange')
+Plug 'tommcdo/vim-exchange'
 
 " splitjoin
-call minpac#add('AndrewRadev/splitjoin.vim')
+Plug 'AndrewRadev/splitjoin.vim'
 
 " UltiSnips
-call minpac#add('SirVer/ultisnips', { 'rev': 'f95ce29' })
+Plug 'SirVer/ultisnips', { 'rev': 'f95ce29' }
 let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetsDir = $HOME.'/.vim/UltiSnips/'
 let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
 
 " cucumber
-call minpac#add('tpope/vim-cucumber')
+Plug 'tpope/vim-cucumber'
 
 " emmet
-call minpac#add('mattn/emmet-vim')
+Plug 'mattn/emmet-vim'
 
 " ack - fast search
-call minpac#add('mileszs/ack.vim')
+Plug 'mileszs/ack.vim'
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
@@ -140,10 +138,10 @@ nnoremap <leader>w :Ack <C-r><C-w> . -r <CR>
 nnoremap <leader>W :Ack<Space>
 
 " Auto pairs
-call minpac#add('jiangmiao/auto-pairs')
+Plug 'jiangmiao/auto-pairs'
 
 " Fugitive - git plugin
-call minpac#add('tpope/vim-fugitive')
+Plug 'tpope/vim-fugitive'
 nnoremap <leader>gb :Gblame<cr>
 nnoremap <leader>gsm :Gvsplit master:%<cr>
 nnoremap <leader>gd :Gdelete<cr>
@@ -156,7 +154,7 @@ nnoremap <leader>ga :Git add --all<cr>
 nnoremap <leader>gA :Git add %<cr>
 
 " Tabularize
-call minpac#add('godlygeek/tabular')
+Plug 'godlygeek/tabular'
 " align tabs each time | is entered
 inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
 function! s:align()
@@ -171,10 +169,10 @@ function! s:align()
 endfunction
 
 " generic snippets
-call minpac#add('honza/vim-snippets')
+Plug 'honza/vim-snippets'
 
 " airline
-call minpac#add('vim-airline/vim-airline')
+Plug 'vim-airline/vim-airline'
 let g:airline_section_y = ''
 let g:airline_mode_map = {
     \ '__' : '-',
@@ -190,33 +188,37 @@ let g:airline_mode_map = {
 let g:airline_section_z = ''
 
 " Increment/decrement dates
-call minpac#add('tpope/vim-speeddating')
+Plug 'tpope/vim-speeddating'
 
 " Unix commands in vim
-call minpac#add('tpope/vim-eunuch')
+Plug 'tpope/vim-eunuch'
 
 " Comment on/off
-call minpac#add('tpope/vim-commentary')
+Plug 'tpope/vim-commentary'
 autocmd FileType crontab setlocal commentstring=#\ %s
 
 " Database mappings
-call minpac#add('tpope/vim-dadbod')
+Plug 'tpope/vim-dadbod'
 
 " repeat - adds dot command support for speeddating
-call minpac#add('tpope/vim-repeat')
+Plug 'tpope/vim-repeat'
 
 " tmux
-call minpac#add('tmux-plugins/vim-tmux')
+Plug 'tmux-plugins/vim-tmux'
 
 " Supposedly better find and stuff
-call minpac#add('tpope/vim-apathy')
+Plug 'tpope/vim-apathy'
 
 " tpope/vim-dispatch
-call minpac#add('tpope/vim-dispatch')
+Plug 'tpope/vim-dispatch'
 
 " markdown preview
-call minpac#add('iamcco/markdown-preview.nvim', {'do': 'packloadall! | call mkdp#util#install()'})
-let g:mkdp_auto_close = 1
+" Plug 'iamcco/markdown-preview.nvim', {'do': 'packloadall! | call mkdp#util#install()'}
+" let g:mkdp_auto_close = 1
+
+" Initialize plugin system
+call plug#end()
+:silent! colorscheme jellybeans
 
 " Mappings
 
