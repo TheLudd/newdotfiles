@@ -19,3 +19,4 @@
 	followTags = true
 [init]
 	templatedir = ~/code/newdotfiles/gittemplate
+	defaultBranch = master
