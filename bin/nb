@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/linuxsetup/common/update-upstream
+source $(dirname "$0")/../common/update-upstream
 branchName=$1
 if [ -z "$branchName" ]; then
 	echo No branch name provided

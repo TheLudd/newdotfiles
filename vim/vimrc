@@ -119,8 +119,8 @@ Plug 'AndrewRadev/splitjoin.vim'
 " UltiSnips
 Plug 'SirVer/ultisnips', { 'rev': 'f95ce29' }
 let g:UltiSnipsEditSplit = "vertical"
-let g:UltiSnipsSnippetsDir = $HOME.'/.vim/UltiSnips/'
-let g:UltiSnipsSnippetDirectories = [ $HOME.'/.vim/UltiSnips/' ]
+let g:UltiSnipsSnippetsDir = $HOME.'/newdotfiles/vim/UltiSnips/'
+let g:UltiSnipsSnippetDirectories = [ $HOME.'/newdotfiles/vim/UltiSnips/' ]
 
 " cucumber
 Plug 'tpope/vim-cucumber'
