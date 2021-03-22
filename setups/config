@@ -1,0 +1,11 @@
+#!/bin/bash
+cd $(dirname "$0")
+cd ..
+
+cwd=`pwd`
+
+for f in `ls config`
+do
+	      echo "~/.config/$f -> $cwd/config/$f"
+				ln -sft ~/.config/ $cwd/config/$f
+done

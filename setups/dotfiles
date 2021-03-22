@@ -6,4 +6,5 @@ do
 	ln -sf $base/$path ~/.$file
 done
 ln -sf $base/bin ~/
+mkdir -p ~/.config/{nvim,tmux}
 ln -sf $base/vim/vimrc ~/.config/nvim/init.vim
