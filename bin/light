@@ -1,0 +1,28 @@
+#!/bin/bash
+max=`cat /sys/class/backlight/intel_backlight/max_brightness`
+target=/sys/class/backlight/intel_backlight/brightness
+current=`cat $target`
+
+tenth=`expr $max / 10`
+
+op=$1
+
+if [[ "$op" == "max" ]]; then
+	newValue=$max
+elif [[ "$op" == "half" ]]; then
+	newValue=`expr $max / 2`
+elif [[ "$op" == "low" ]]; then
+	newValue=$tenth
+elif [[ "$op" == "dec" ]]; then
+	newValue=`expr $current - $tenth`
+	newValue=$(( $newValue < 10 ? 10 : $newValue ))
+elif [[ "$op" == "inc" ]]; then
+	newValue=`expr $current + $tenth`
+	newValue=$(( $newValue > $max ? $max : $newValue ))
+else
+	echo no params
+	exit 1
+fi
+
+echo $newValue > $target
+
