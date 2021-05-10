@@ -101,6 +101,24 @@ nnoremap <leader>l :ALEFix<cr>
 " error navigation
 noremap <leader>n :ALENextWrap<cr>
 noremap <leader>N :ALEPreviousWrap<cr>
+function! ALEIgnore()
+  let codes = []
+  for d in getloclist(0)
+    if (d.lnum==line('.'))
+      let code = split(d.text,':')[0]
+      if index(codes, code) == -1
+        call add(codes, code)
+      endif
+    endif
+  endfor
+  if len(codes)
+    let l = line(".")
+    let c = col(".")
+    exe 'normal O// eslint-disable-next-line ' . join(codes, ', ')
+    call cursor(l + 1, c)
+  endif
+endfunction
+noremap <leader>I :call ALEIgnore()<cr>
 
 " Ctrl-P
 Plug 'kien/ctrlp.vim'
