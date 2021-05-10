@@ -1,3 +1,3 @@
 #!/bin/bash
 target=features/step_definitions/definitions.js
-yarn -s acceptance-generate | cat -s >> $target
+yarn -s accept -p gen | sed 's/;$//' | cat -s >> $target
