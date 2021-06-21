@@ -1,0 +1,11 @@
+#!/bin/bash
+folders=`ls sources`
+
+for f in $folders
+do
+	echo installing $f
+	cd sources/$f
+	make > /dev/null
+	sudo make install > /dev/null
+	cd ../..
+done
