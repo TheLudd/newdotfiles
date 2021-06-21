@@ -5,6 +5,8 @@
 # Path to your oh-my-zsh installation.
 export ZSH=/home/ludwig/.oh-my-zsh
 
+autoload -U colors && colors
+
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -104,3 +106,7 @@ setopt no_share_history
 PROMPT="%{$fg[cyan]%}%m ${PROMPT}"
 
 export EDITOR='nvim'
+
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+bindkey '^e' edit-command-line
+

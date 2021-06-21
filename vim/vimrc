@@ -40,7 +40,7 @@ set inccommand=split
 nnoremap Q <Nop>
 
 " Leader commands, leader is '
-let mapleader = "'"
+let mapleader = "ä"
 
 function! TabIsEmpty()
     return winnr('$') == 1 && len(expand('%')) == 0 && line2byte(line('$') + 1) <= 2
@@ -165,8 +165,8 @@ nnoremap <leader>gsm :Gvsplit master:%<cr>
 nnoremap <leader>gd :Gdelete<cr>
 nnoremap <leader>gR :Gread master:%<cr>
 nnoremap <leader>gch :Gread<cr>
-nnoremap <leader>gca :Gcommit --all<cr>
-nnoremap <leader>gco :Gcommit %<cr>
+nnoremap <leader>gca :Git commit --all<cr>
+nnoremap <leader>gco :Git commit %<cr>
 nnoremap <leader>gm :Gmove
 nnoremap <leader>ga :Git add --all<cr>
 nnoremap <leader>gA :Git add %<cr>
@@ -361,25 +361,25 @@ map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
 map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
 
 function! GetTestImportPath ()
-    let path = substitute(expand('%:r'), '^./', '', '')
-    let file = expand('%:t:r')
-    let parts = split(path, '/')
-    let nbrParts = len(parts)
+  let path = substitute(expand('%:r'), '^./', '', '')
+  let file = expand('%:t:r')
+  let parts = split(path, '/')
+  let nbrParts = len(parts)
 
-    let outParts = []
-    let removals = 0
-    for p in parts
-	if p == 'test'
-           :call add(outParts, '../lib')
-	   let removals += 1
-        elseif p != file
-           :call insert(outParts, '..', 0)
-	endif
+  let outParts = []
+  let removals = 0
+  for p in parts
+    if p == 'test'
+      :call add(outParts, '../lib')
+      let removals += 1
+    elseif p != file
+      :call insert(outParts, '..', 0)
+    endif
 
-	if p == 'unit' || p == 'it'
-	   let removals += 1
-	endif
-    endfor
-    let allParts = extend(outParts, parts[removals:nbrParts])
-    return join(allParts, '/')
+    if p == 'unit' || p == 'it'
+      let removals += 1
+    endif
+  endfor
+  let allParts = extend(outParts, parts[removals:nbrParts])
+  return join(allParts, '/') . '.js'
 endfunction

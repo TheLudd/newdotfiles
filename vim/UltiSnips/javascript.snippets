@@ -278,11 +278,9 @@ endsnippet
 snippet ertf "export rtf" b
 import { rtfOf } from '@theludd/gaius-type-classes'
 
-function $1 () {
+export default function `!v g:Abolish.camelcase(expand('%:t:r'))` () {
   return rtfOf('')
 }
-
-export default $1
 endsnippet
 
 snippet gtc "import gaius type classes" b
@@ -341,7 +339,7 @@ ${$1}$2
 endsnippet
 	
 snippet ff "fantasy functions import" b
-import { $1 } from '@theludd/fantasy-functions'
+import { $1 } from '@yafu/fantasy-functions'
 endsnippet
 
 snippet ges "gaius event sourcing" b
@@ -350,6 +348,10 @@ endsnippet
 
 snippet gt "gaius test" b
 import { $1 } from '@theludd/gaius-test'
+endsnippet
+
+snippet gvs "gaius virtual streams" b
+import { $1 } from '@theludd/gaius-virtual-streams'
 endsnippet
 
 snippet y "yafu import" b
@@ -516,7 +518,7 @@ endsnippet
 
 snippet trtf "test rtf" b
 import { assertSyncRtf } from '@theludd/gaius-test'
-import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v expand('%:r:gs?./test?../lib?')`'
+import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
 
 describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
   const env = {}
@@ -536,4 +538,25 @@ snippet st
 setTimeout(() => {
   $1
 }, ${2:100})
+endsnippet
+
+snippet cask "chain ask"
+chain((env) => {
+   $1 
+}, RTF.ask)
+endsnippet
+  
+snippet mtscript "" 
+const Promise = require('bluebird')
+
+require('./load-credentials.js')
+
+const di = require('./di.js')
+
+di.loadAll()
+
+Promise.resolve()
+  .then(() => Promise.delay(3000))
+  .catch(console.log)
+  .then(() => di.shutdown())
 endsnippet

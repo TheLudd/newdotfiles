@@ -1,0 +1,18 @@
+#!/bin/bash
+
+function yarnAndStep() {
+	yarn
+	yarn-dedupe
+	yarn
+	st=`git status --porcelain`
+	if [[ -n "$st" ]]; then
+		git fix
+	fi
+	git rebase --continue
+	branch=`git rev-parse --abbrev-ref HEAD`
+	if [[  "$branch" == "HEAD" ]]; then
+		yarnAndStep
+	fi
+}
+
+yarnAndStep
