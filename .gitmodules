@@ -1,0 +1,9 @@
+[submodule "sources/dvtm"]
+	path = sources/dvtm
+	url = git://github.com/TheLudd/dvtm.git
+[submodule "sources/st"]
+	path = sources/st
+	url = git://github.com/TheLudd/st.git
+[submodule "sources/dwm"]
+	path = sources/dwm
+	url = git://github.com/TheLudd/dwm.git
