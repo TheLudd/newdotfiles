@@ -21,4 +21,4 @@
 	templatedir = ~/code/newdotfiles/gittemplate
 	defaultBranch = master
 [pull]
-	ff = only
+	rebase = true
