@@ -3,7 +3,7 @@
 # [[ -z "$TMUX" ]] && exec tmux
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/ludwig/.oh-my-zsh
+export ZSH=/home/$USER/.oh-my-zsh
 
 autoload -U colors && colors
 
@@ -101,7 +101,7 @@ setopt no_share_history
 
 # tabtab source for yarn package
 # uninstall by removing these lines or running `tabtab uninstall yarn`
-[ -f /home/ludwig/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash ] && . /home/ludwig/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash
+[ -f /home/$USER/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash ] && . /home/$USER/.yarn-config/global/node_modules/tabtab/.completions/yarn.bash
 
 PROMPT="%{$fg[cyan]%}%m ${PROMPT}"
 
