@@ -1,0 +1,11 @@
+#!/bin/bash
+base=`pwd`
+for path in config/*
+do
+	target=`basename $path`
+	destination="$HOME/.config/$target"
+	echo rm -rf $destination
+	rm -rf $destination
+	echo ln -sf $base/$path $destination
+	ln -sf $base/$path $destination
+done
