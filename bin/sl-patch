@@ -1,0 +1,15 @@
+#!/bin/bash
+set +e
+branch=$1
+url=$2
+
+name=`echo $url | sed 's/^.*\///'`
+
+git checkout -b $branch start
+git clf
+curl $url | git apply
+make
+git a
+git commit -m "apply $name"
+git rebase master
+
