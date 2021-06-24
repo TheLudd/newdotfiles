@@ -7,9 +7,9 @@ name=`echo $url | sed 's/^.*\///'`
 
 git checkout -b $branch start
 git clf
-curl $url | git apply
+curl $url | git apply -3
+rm config.h
 make
 git a
 git commit -m "apply $name"
 git rebase master
-
