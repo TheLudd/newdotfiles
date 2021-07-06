@@ -1,7 +1,16 @@
 #!/bin/bash
 file=$@
-if [[ -a "nodemon.json" ]]; then
-	nodemon -q -e json,coffee,js,feature,feature-template,mjs,cjs -x "yarn -s accept $file"
+
+yarnVersion=`yarn --version`
+
+if [[ "$yarnVersion" == 2* ]]; then
+	cmd="yarn accept"
 else
-	nodemon -q -i dist -i test -e json,coffee,js,feature,feature-template,mjs,cjs -x "yarn -s accept $file"
+	cmd="yarn -s accept"
+fi
+
+if [[ -a "nodemon.json" ]]; then
+	nodemon -q -e json,coffee,js,feature,feature-template,mjs,cjs -x "$cmd $file"
+else
+	nodemon -q -i dist -i test -e json,coffee,js,feature,feature-template,mjs,cjs -x "$cmd $file"
 fi
