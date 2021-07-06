@@ -322,6 +322,8 @@ function! Indent2Spaces()
 endfunction
 au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.less,*.feature-template :call Indent2Spaces()
 au BufRead,BufNewFile *.feature-template :set filetype=cucumber
+au BufWritePost ~/code/dwm/config.h :Start! make && sudo make install && kill -15 $(pidof dwm)
+au BufWritePost ~/code/dwmblocks/blocks.h :Start! make && sudo make install && kill $(pidof dwmblocks)
 
 " Javascript leader commands
 " Import chai assert
