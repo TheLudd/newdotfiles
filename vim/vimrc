@@ -89,7 +89,7 @@ let g:polyglot_disabled = ['javascriptreact']
 
 " Linter
 Plug 'dense-analysis/ale'
-let g:ale_fixers = {'javascript': ['eslint', 'xo'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ], 'typescriptreact': [ 'eslint' ] }
+let g:ale_fixers = {'javascript': ['eslint', 'prettier'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ], 'typescriptreact': [ 'eslint' ] }
 let g:ale_lint_delay = 500
 let g:ale_pattern_options = {
 \   '.*node_modules.*$': {'ale_enabled': 0},
