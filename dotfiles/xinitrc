@@ -35,5 +35,18 @@ fi
 xrandr --output eDP-1 --mode 1920x1200 &
 picom -f &
 feh --bg-fill /usr/share/backgrounds/archlinux/simple.png &
+while true
+do
+    dwmblocks > /dev/null 2>&1
+done&
+
 dunst &
-exec dwm
+
+dwmkill="-1"
+while [ $dwmkill -ne "0" ]
+do
+    dwm > /dev/null 2>&1
+    dwmkill=$?
+done
+
+exit
