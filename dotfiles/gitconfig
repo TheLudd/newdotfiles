@@ -18,7 +18,7 @@
 	default = simple
 	followTags = true
 [init]
-	templatedir = ~/code/newdotfiles/gittemplate
+	templatedir = ~/newdotfiles/gittemplate
 	defaultBranch = master
 [pull]
 	rebase = true
