@@ -7,6 +7,12 @@ tenth=`expr $max / 10`
 
 op=$1
 
+if [[ -z "$op" ]]; then
+	pct=`echo "scale=2;$current / $max" | bc -l | sed 's/\.//' | sed 's/^0*//'`
+	printf "%3s%s%%" ${pct}
+	exit 0
+fi
+
 if [[ "$op" == "max" ]]; then
 	newValue=$max
 elif [[ "$op" == "half" ]]; then
@@ -26,3 +32,4 @@ fi
 
 echo $newValue > $target
 
+kill -36 $(pidof dwmblocks)
