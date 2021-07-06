@@ -1,0 +1,34 @@
+#!/bin/bash
+yarn set version berry
+echo "nodeLinker: node-modules" >> .yarnrc.yml
+echo ".yarn/*" >> .gitignore
+echo "!.yarn/patches" >> .gitignore
+echo "!.yarn/releases" >> .gitignore
+echo "!.yarn/plugins" >> .gitignore
+echo "!.yarn/sdks" >> .gitignore
+echo "!.yarn/versions" >> .gitignore
+echo ".pnp.*" >> .gitignore
+
+git add -A
+git commit -m "chore: migrate to yarn 2"
+
+yarn
+yarn dedupe
+yarn
+git commit --amend --no-edit yarn.lock
+
+yarn plugin import workspace-tools
+git add -A
+git commit -m "chore: add workspace tools to yarn"
+
+yarn plugin import interactive-tools
+git add -A
+git commit -m "chore: add interactive tools to yarn"
+
+sed -i 's/lerna run \(.*\) --parallel/yarn workspaces foreach -p run \1/' package.json
+sed -i 's/lerna run/yarn workspaces foreach run/' package.json
+git rm lerna.json
+yarn remove lerna
+yarn dedupe
+yarn
+git commit lerna.json package.json yarn.lock -m "chore: remove lerna"
