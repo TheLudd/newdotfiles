@@ -35,12 +35,15 @@ fi
 xrandr --output eDP-1 --mode 1920x1200 &
 picom -f &
 feh --bg-fill /usr/share/backgrounds/archlinux/simple.png &
-while true
-do
-    dwmblocks > /dev/null 2>&1
-done&
 
 dunst &
+
+blockkill="-1"
+while [ $blockkill -ne "129" ]
+do
+    dwmblocks > /dev/null 2>&1
+    blockkill=$?
+done&
 
 dwmkill="-1"
 while [ $dwmkill -ne "0" ]
@@ -49,4 +52,4 @@ do
     dwmkill=$?
 done
 
-exit
+kill -SIGHUP $(pidof dwmblocks)
