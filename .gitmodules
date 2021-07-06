@@ -7,3 +7,6 @@
 [submodule "sources/dwm"]
 	path = sources/dwm
 	url = git://github.com/TheLudd/dwm.git
+[submodule "sources/dwmblocks"]
+	path = sources/dwmblocks
+	url = git://github.com/TheLudd/dwmblocks.git
