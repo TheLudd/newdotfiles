@@ -1,0 +1,25 @@
+#!/bin/bash
+url=$1
+
+bareURL=`echo $url | sed 's/\.git$//'`
+folder=`echo $bareURL | sed 's/^.*\/\(\w*\)/\1/'`
+
+hub clone -o upstream $url
+
+cd $folder
+
+rm -f .gitignore
+
+make
+
+git status --porcelain | awk '{print $2}' | ag -v 'config.h|.gitignore' | tee .gitignore
+
+git add .gitignore
+
+git commit -m "add gitignore"
+
+git add config.h
+
+git commit -m "run initial make"
+
+git tag start
