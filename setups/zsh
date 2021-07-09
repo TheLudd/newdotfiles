@@ -1,4 +1,4 @@
 #!/bin/bash
-
-# make zsh read config files from config folder
-echo ZDOTDIR=$HOME/.config/zsh | sudo tee /etc/zsh/zshenv
+source lib/zshenv
+sudo cp lib/zshenv /etc/zsh/zshenv
+mkdir -p $(dirname $HISTFILE)

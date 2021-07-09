@@ -87,6 +87,9 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.bash_aliases
 
+compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION
+zstyle ':completion:*' cache-path $XDG_CACHE_HOME/zsh/zcompcache
+
 autoload -Uz bashcompinit
 bashcompinit
 if [ -d /etc/bash_completion.d ]
