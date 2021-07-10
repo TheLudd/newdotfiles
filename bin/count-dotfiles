@@ -1,0 +1,11 @@
+#!/bin/bash
+cd ~/
+count=`ls -A | wc -l`
+
+if [[ "$1" == "bar" ]]; then
+	if [[ "$count" -gt "20" ]]; then
+		echo .$count
+	fi
+else
+	echo $count
+fi
