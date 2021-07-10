@@ -36,3 +36,4 @@ alias pro="pr -r o"
 alias prt="pr -r t"
 alias prk="pr -r k"
 alias pry="pr -r y"
+alias yarn='yarn --use-yarnrc "$XDG_CONFIG_HOME/yarn/config"'
