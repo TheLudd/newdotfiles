@@ -3,7 +3,7 @@
 # [[ -z "$TMUX" ]] && exec tmux
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/$USER/.oh-my-zsh
+export ZSH=$XDG_CONFIG_HOME/oh-my-zsh
 
 autoload -U colors && colors
 
