@@ -2,3 +2,4 @@
 source lib/zshenv
 sudo cp lib/zshenv /etc/zsh/zshenv
 mkdir -p $(dirname $HISTFILE)
+mkdir -p $XDG_CACHE_HOME/less
