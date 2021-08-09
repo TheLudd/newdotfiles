@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/zsh
 
-userresources=$HOME/.Xresources
-usermodmap=$HOME/.Xmodmap
+userresources=$XDG_CONFIG_HOME/X11/xresources
+usermodmap=$XDG_CONFIG_HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap
 
@@ -37,6 +37,7 @@ picom -f &
 feh --no-fehbg --bg-fill /usr/share/backgrounds/archlinux/simple.png &
 
 dunst &
+nm-applet &
 
 blockkill="-1"
 while [ $blockkill -ne "129" ]
