@@ -9,7 +9,7 @@ op=$1
 
 if [[ -z "$op" ]]; then
 	pct=`echo "scale=2;$current / $max" | bc -l | sed 's/\.//' | sed 's/^0*//'`
-	echo $pct
+	echo -e "$pct% \\uf0eb"
 	exit 0
 fi
 
