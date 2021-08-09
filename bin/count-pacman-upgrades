@@ -1,7 +1,13 @@
 #!/bin/bash
+
+while [ `nmcli networking connectivity` != "full" ]
+do
+	sleep 30
+done
+
 sudo pacman -Sy > /dev/null
 count=`pacman -Qu | wc -l`
 
 if [[ "$count" != "0" ]]; then
-	echo $count
+	echo -e $count \\uf49e
 fi
