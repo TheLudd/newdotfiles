@@ -60,13 +60,13 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 " Plugins
 " Install Vim Plug if not installed
 
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+if empty(glob('$XDG_DATA_HOME/nvim/site/autoload/plug.vim'))
+  silent !curl -fLo $XDG_DATA_HOME/nvim/site/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall
 endif
 
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin(stdpath('data') . '/site/vim-plug_plugins')
 
 nnoremap <leader>mu :source $MYVIMRC<cr>:PlugUpdate<cr>
 nnoremap <leader>mc :source $MYVIMRC<cr>:PlugClean<cr>
@@ -86,39 +86,41 @@ Plug 'terryma/vim-multiple-cursors'
 " Multi language plugin
 Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascriptreact']
+let g:vim_markdown_new_list_item_indent = 0
 
-" Linter
-Plug 'dense-analysis/ale'
-let g:ale_fixers = {'javascript': ['eslint', 'prettier'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ], 'typescriptreact': [ 'eslint' ] }
-let g:ale_lint_delay = 500
-let g:ale_pattern_options = {
-\   '.*node_modules.*$': {'ale_enabled': 0},
-\   '.*dist.*$': {'ale_enabled': 0},
-\   '.*-config.js$': {'ale_enabled': 0},
-\}
-" autofix
-nnoremap <leader>l :ALEFix<cr>
-" error navigation
-noremap <leader>n :ALENextWrap<cr>
-noremap <leader>N :ALEPreviousWrap<cr>
-function! ALEIgnore()
-  let codes = []
-  for d in getloclist(0)
-    if (d.lnum==line('.'))
-      let code = split(d.text,':')[0]
-      if index(codes, code) == -1
-        call add(codes, code)
-      endif
-    endif
-  endfor
-  if len(codes)
-    let l = line(".")
-    let c = col(".")
-    exe 'normal O// eslint-disable-next-line ' . join(codes, ', ')
-    call cursor(l + 1, c)
-  endif
-endfunction
-noremap <leader>I :call ALEIgnore()<cr>
+" " Linter
+" Plug 'dense-analysis/ale'
+" let g:ale_linters = { 'json': [ 'jq' ] }
+" let g:ale_fixers = {'javascript': ['eslint', 'prettier'], 'typescript': ['eslint'], 'javascriptreact': [ 'eslint' ], 'typescriptreact': [ 'eslint' ], 'json': ['jq'] }
+" let g:ale_lint_delay = 500
+" let g:ale_pattern_options = {
+" \   '.*node_modules.*$': {'ale_enabled': 0},
+" \   '.*dist.*$': {'ale_enabled': 0},
+" \   '.*-config.js$': {'ale_enabled': 0},
+" \}
+" " autofix
+" nnoremap <leader>l :ALEFix<cr>
+" " error navigation
+" noremap <leader>n :ALENextWrap<cr>
+" noremap <leader>N :ALEPreviousWrap<cr>
+" function! ALEIgnore()
+"   let codes = []
+"   for d in getloclist(0)
+"     if (d.lnum==line('.'))
+"       let code = split(d.text,':')[0]
+"       if index(codes, code) == -1
+"         call add(codes, code)
+"       endif
+"     endif
+"   endfor
+"   if len(codes)
+"     let l = line(".")
+"     let c = col(".")
+"     exe 'normal O// eslint-disable-next-line ' . join(codes, ', ')
+"     call cursor(l + 1, c)
+"   endif
+" endfunction
+" noremap <leader>I :call ALEIgnore()<cr>
 
 " Ctrl-P
 Plug 'kien/ctrlp.vim'
@@ -231,11 +233,22 @@ Plug 'tpope/vim-apathy'
 Plug 'tpope/vim-dispatch'
 
 " markdown preview
-" Plug 'iamcco/markdown-preview.nvim', {'do': 'packloadall! | call mkdp#util#install()'}
-" let g:mkdp_auto_close = 1
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'   }
+let g:mkdp_auto_close = 0
+
+" lsp
+Plug 'neovim/nvim-lspconfig'
+Plug 'glepnir/lspsaga.nvim'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/nvim-cmp'
 
 " Initialize plugin system
 call plug#end()
+
+" lua require'lspconfig'.tsserver.setup{}
+
 :silent! colorscheme jellybeans
 
 " Mappings
@@ -320,7 +333,7 @@ function! Indent2Spaces()
     setlocal shiftwidth=2
     setlocal softtabstop=2
 endfunction
-au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.less,*.feature-template :call Indent2Spaces()
+au BufRead,BufNewFile *.coffee,*.ts,*.tsx,*.feature,*.js,*.jsx,*.json,*.html,*.less,*.feature-template,.feature.md :call Indent2Spaces()
 au BufRead,BufNewFile *.feature-template :set filetype=cucumber
 au BufWritePost ~/code/dwm/config.h :Start! make && sudo make install && kill -15 $(pidof dwm)
 au BufWritePost ~/code/dwmblocks/blocks.h :Start! make && sudo make install && kill $(pidof dwmblocks)
@@ -357,6 +370,8 @@ noremap <Leader>yd yi':Start! yarn add --dev <C-R>" <CR>
 noremap <Leader>S ci}<CR><CR><ESC>kP:s/ *$/,/<CR>:s/, /,\r/g<CR>:nohlsearch<CR>=i}vi}:sort<CR>
 " sort a destructed object
 noremap <Leader>so vi}:sort<CR>
+" create file under cursor
+:noremap <leader>gf :e <cfile><cr>
 
 map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
 map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
