@@ -10,7 +10,7 @@ else
 fi
 
 if [[ -a "nodemon.json" ]]; then
-	nodemon -q -e json,coffee,js,feature,feature-template,mjs,cjs -x "$cmd $file"
+	nodemon -q -e json,coffee,js,feature,feature-template,mjs,cjs,md -x "clear; $cmd $file"
 else
-	nodemon -q -i dist -i test -e json,coffee,js,feature,feature-template,mjs,cjs -x "$cmd $file"
+	nodemon -q -i dist -i test -e json,coffee,js,feature,feature-template,mjs,cjs,md -x "clear; $cmd $file"
 fi
