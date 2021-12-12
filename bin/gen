@@ -1,4 +1,4 @@
 #!/bin/bash
 target=features/step_definitions/definitions.js
 mkdir -p $(dirname $target)
-yarn cucumber-js -p gen | sed 's/;$//' | cat -s >> $target
+yarn -s cucumber-js -p gen | sed 's/;$//' | cat -s >> $target
