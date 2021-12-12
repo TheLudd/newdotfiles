@@ -1,0 +1,3 @@
+#!/bin/bash
+cd ~/code/dwm
+sed -i 's/inactiveopacity = .*;/inactiveopacity = 1.0f;/' config.h && make && sudo make install && kill $(pidof dwm)
