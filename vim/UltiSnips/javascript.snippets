@@ -384,14 +384,12 @@ snippet sp "spread props" b
 endsnippet
 
 snippet gcom "gaius command" b
-import { verifyOperation } from '@theludd/gaius-event-sourcing'
+import { rtfOf } from '@theludd/gaius-type-classes'
 
 export default {
-  event: '$1',
-  name: '$2',
-  processChain: [
-    verifyOperation([]),
-  ],
+  event: '`!v g:Abolish.camelcase(substitute(expand('%:t:r'), 'command-\(\w*\)-\(.*\)', '\2-\1', ''))`',
+  name: '`!v g:Abolish.mixedcase(substitute(expand('%:t:r'), 'command-', '', ''))`',
+  processOperation: rtfOf,
   streamType: '$3',
 }
 endsnippet
@@ -462,7 +460,7 @@ const Promise = require('bluebird')
 endsnippet
 
 snippet tlog "timeout log"
-setTimeout((d) => console.dir(d, { depth: 10 }), 100, $1)
+setTimeout((d) => console.dir(d, { depth: 10 }), 400, $1)
 endsnippet
 
 snippet sh "state hook" b
@@ -559,4 +557,12 @@ Promise.resolve()
   .then(() => Promise.delay(3000))
   .catch(console.log)
   .then(() => di.shutdown())
+endsnippet
+
+snippet yt "@yafu/transduce" b
+import { $1 } from '@yafu/transduce'
+endsnippet
+
+snippet gc "@cucumber/cucumber" b
+import { $1 } from '@theludd/gaius-cucumber'
 endsnippet
