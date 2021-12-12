@@ -8,7 +8,7 @@ if &compatible
 endif
 
 " Open tests along with regular files
-source ~/newdotfiles/vim/test-split.vim
+source $XDG_CONFIG_HOME/nvim/test-split.vim
 
 " Basic config
 syntax enable
@@ -139,8 +139,8 @@ Plug 'AndrewRadev/splitjoin.vim'
 " UltiSnips
 Plug 'SirVer/ultisnips', { 'rev': 'f95ce29' }
 let g:UltiSnipsEditSplit = "vertical"
-let g:UltiSnipsSnippetsDir = $HOME.'/newdotfiles/vim/UltiSnips/'
-let g:UltiSnipsSnippetDirectories = [ $HOME.'/newdotfiles/vim/UltiSnips/' ]
+let g:UltiSnipsSnippetsDir = stdpath('data') . '/UltiSnips/'
+let g:UltiSnipsSnippetDirectories = [ stdpath('data') . '/UltiSnips/' ]
 
 " cucumber
 Plug 'tpope/vim-cucumber'
