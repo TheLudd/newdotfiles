@@ -1,6 +1,6 @@
 if empty(glob('$XDG_DATA_HOME/nvim/site/pack/paqs/start/paq-nvim'))
-  silent !git clone --depth=1 https://github.com/savq/paq-nvim.git ${XDG_DATA_HOME}/nvim/site/pack/paqs/start/paq-nvim
-  autocmd VimEnter * PaqInstall
+  " silent !git clone --depth=1 https://github.com/savq/paq-nvim.git ${XDG_DATA_HOME}/nvim/site/pack/paqs/start/paq-nvim
+  " autocmd VimEnter * PaqInstall
 endif
 
 lua << EOF
