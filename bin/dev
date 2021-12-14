@@ -1,7 +1,12 @@
 #!/bin/bash
+
+firstArg=$1
+allArgs=("$@")
+restArgs=("${allArgs[@]:1}")
+
 cd ~/mediatool/webapp/
 branch=$1
 git fetch
 git checkout $branch
 git reset --hard origin/$branch
-yarn dev
+yarn dev "${restArgs[@]}"
