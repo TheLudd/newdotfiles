@@ -30,6 +30,7 @@ paq({
   'terryma/vim-multiple-cursors',
   'tommcdo/vim-exchange',
   'AndrewRadev/splitjoin.vim',
+  'tpope/vim-commentary',
 
   'sheerun/vim-polyglot',
 
