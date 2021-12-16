@@ -34,7 +34,7 @@ nnoremap q: <Nop>
 let mapleader = "ä"
 
 " Edit/source vimrc
-nnoremap <leader>ev :call EditFile("$MYVIMRC")<cr>
+nnoremap <leader>ev :e $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " Move easily between windows
