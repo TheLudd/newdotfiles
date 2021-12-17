@@ -47,6 +47,8 @@ lspconfig.efm.setup {
   },
 }
 
+lspconfig.eslint.setup {}
+
 local sumneko_root_path = CONFIG_HOME .. "/nvim/lua-language-server"
 local sumneko_binary = "lua-language-server"
 lspconfig.sumneko_lua.setup {
