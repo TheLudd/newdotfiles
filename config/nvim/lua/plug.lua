@@ -23,6 +23,9 @@ paq({
   -- unix commands. rename, sudowrite etc.
   'tpope/vim-eunuch',
 
+  -- db plugin
+  'tpope/vim-dadbod',
+
   -- basics
   'tpope/vim-surround',
   'tpope/vim-repeat',
