@@ -530,6 +530,17 @@ endsnippet
 snippet script "description"
 require('./load-credentials')
 const di = require('./di')
+
+const mongoClient = di.get('mongoClient')
+
+const { getCollection, closeConnection } = mongoClient
+
+async function main () {
+  
+}
+
+main()
+  .finally(closeConnection)
 endsnippet
 
 snippet st 
@@ -565,4 +576,18 @@ endsnippet
 
 snippet gc "@cucumber/cucumber" b
 import { $1 } from '@theludd/gaius-cucumber'
+endsnippet
+
+snippet col "collection" b
+const $1 = await getCollection('$1')
+endsnippet
+
+snippet consoleWriter "consoleWriter" b
+const consoleWriter = new Writable({
+  objectMode: true,
+  write (d, _, cb) {
+    console.log(d)
+    cb()
+  },
+})
 endsnippet
