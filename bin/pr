@@ -57,10 +57,4 @@ if [[ "$nbrCommits" == "0" ]]; then
 	exit 1
 fi
 
-# Set no edit option if only one commit present
-# Overridable with the --edit flag
-if [[ "$nbrCommits" == "1" &&  $@ != *"--edit"* ]]; then
-	opts="--no-edit"
-fi
-
 hub pull-request -b $base $opts -r $r -a $approver --push
