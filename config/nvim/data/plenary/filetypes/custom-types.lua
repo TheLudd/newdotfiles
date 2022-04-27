@@ -1,7 +1,7 @@
 return {
-  extension={
+  extension = {
     -- extension = filetype
     -- example:
-    ['feature-template']='cucumber',
+    ['feature-template'] = 'cucumber',
   },
 }
