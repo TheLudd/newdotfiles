@@ -591,3 +591,11 @@ const consoleWriter = new Writable({
   },
 })
 endsnippet
+
+snippet transform "transform" b
+const $1 = new Transform({
+  objectMode: true,
+  async transform (d, _, cb) {
+  },
+})
+endsnippet
