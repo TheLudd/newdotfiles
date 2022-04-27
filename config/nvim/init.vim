@@ -83,6 +83,4 @@ map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
 autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
 au BufRead,BufNewFile *.feature-template :set filetype=cucumber
 
-nnoremap gd <cmd>lua vim.lsp.buf.definition()<cr>
-
 nnoremap <leader>w <cmd>Telescope lsp_references<cr>
