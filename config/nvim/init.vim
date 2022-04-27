@@ -80,3 +80,4 @@ map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
 map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
 
 autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
+au BufRead,BufNewFile *.feature-template :set filetype=cucumber
