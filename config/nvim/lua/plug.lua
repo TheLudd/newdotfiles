@@ -1,42 +1,46 @@
-local paq = require('paq')
+local packer = require('packer')
+local util = require('packer.util')
 
-paq({
+local use = packer.use
+
+packer.init({
+  compile_path = util.join_paths(vim.fn.stdpath('data'), 'site', 'plugin', 'packer_compiled.lua'),
+})
+
+packer.startup(function()
   -- package manager
-  'savq/paq-nvim',
+  use 'wbthomason/packer.nvim'
 
   -- lsp utils
-  'neovim/nvim-lspconfig',
-  'glepnir/lspsaga.nvim',
-  'nvim-treesitter/nvim-treesitter',
-  'hrsh7th/cmp-nvim-lsp',
-  'hrsh7th/cmp-buffer',
-  'hrsh7th/nvim-cmp',
+  use 'neovim/nvim-lspconfig'
+  use 'glepnir/lspsaga.nvim'
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+  use 'hrsh7th/cmp-nvim-lsp'
+  use 'hrsh7th/cmp-buffer'
 
   -- colorscheme
-  'nanotech/jellybeans.vim',
+  use 'nanotech/jellybeans.vim'
 
   -- completion
-  'hrsh7th/nvim-cmp',
-  'SirVer/ultisnips',
-  'quangnguyen30192/cmp-nvim-ultisnips',
+  use 'hrsh7th/nvim-cmp'
+  use 'SirVer/ultisnips'
+  use 'quangnguyen30192/cmp-nvim-ultisnips'
 
   -- unix commands. rename, sudowrite etc.
-  'tpope/vim-eunuch',
+  use 'tpope/vim-eunuch'
 
   -- db plugin
-  'tpope/vim-dadbod',
+  use 'tpope/vim-dadbod'
 
   -- basics
-  'tpope/vim-surround',
-  'tpope/vim-repeat',
-  'tpope/vim-abolish', -- case insensitive search
-  'terryma/vim-multiple-cursors',
-  'tommcdo/vim-exchange',
-  'AndrewRadev/splitjoin.vim',
-  'tpope/vim-commentary',
-
-  'sheerun/vim-polyglot',
-
-  'nvim-lua/plenary.nvim',
-  'nvim-telescope/telescope.nvim',
-})
+  use 'tpope/vim-surround'
+  use 'tpope/vim-repeat'
+  use 'tpope/vim-abolish' -- case insensitive search
+  use 'terryma/vim-multiple-cursors'
+  use 'tommcdo/vim-exchange'
+  use 'AndrewRadev/splitjoin.vim'
+  use 'tpope/vim-commentary'
+  use 'sheerun/vim-polyglot'
+  use 'nvim-lua/plenary.nvim'
+  use 'nvim-telescope/telescope.nvim'
+end)
