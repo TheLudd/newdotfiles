@@ -6,7 +6,6 @@ CONFIG_HOME = vim.fn.expand('$XDG_CONFIG_HOME')
 local opts = { noremap = true, silent = true }
 
 local function buf_set_keymap(bufnr, ...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-
 local function buf_set_option(bufnr, ...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
 local on_attach = function(client, bufnr)
@@ -30,39 +29,15 @@ lspconfig.tsserver.setup {
   capabilities = capabilities,
 }
 
--- lspconfig.efm.setup {
---   init_options = { documentFormatting = true },
---   filetypes = { 'lua' },
---   settings = { rootMarkers = { '.git/' }, languages = { lua = { { formatCommand = 'lua-format -i', formatStdin = true } } } },
--- }
+lspconfig.efm.setup {
+  init_options = { documentFormatting = true },
+  filetypes = { 'lua' },
+  settings = { rootMarkers = { '.git/' }, languages = { lua = { { formatCommand = 'lua-format -i', formatStdin = true } } } },
+}
 
 lspconfig.eslint.setup {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
     buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>EslintFixAll<CR>', opts)
-  end
-}
-
-local sumneko_root_path = CONFIG_HOME .. "/nvim/lua-language-server"
-local sumneko_binary = "lua-language-server"
-lspconfig.sumneko_lua.setup {
-  cmd = { sumneko_binary, "-E", sumneko_root_path .. "/main.lua" },
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = vim.split(package.path, ';'),
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { 'vim' },
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        library = { [vim.fn.expand('$VIMRUNTIME/lua')] = true, [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true },
-      },
-    },
-  },
+  end,
 }
