@@ -41,4 +41,5 @@ packer.startup(function()
   use 'sheerun/vim-polyglot'
   use 'nvim-lua/plenary.nvim'
   use 'nvim-telescope/telescope.nvim'
+  use 'godlygeek/tabular'
 end)
