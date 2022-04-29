@@ -3,9 +3,7 @@ local util = require('packer.util')
 
 local use = packer.use
 
-packer.init({
-  compile_path = util.join_paths(vim.fn.stdpath('data'), 'site', 'plugin', 'packer_compiled.lua'),
-})
+packer.init({ compile_path = util.join_paths(vim.fn.stdpath('data'), 'site', 'plugin', 'packer_compiled.lua') })
 
 packer.startup(function()
   -- package manager
