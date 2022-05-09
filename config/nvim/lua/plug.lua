@@ -42,4 +42,7 @@ packer.startup(function()
   use 'nvim-lua/plenary.nvim'
   use 'nvim-telescope/telescope.nvim'
   use 'godlygeek/tabular'
+
+  -- git
+  use 'f-person/git-blame.nvim'
 end)
