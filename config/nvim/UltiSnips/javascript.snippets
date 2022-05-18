@@ -530,7 +530,7 @@ endsnippet
 snippet script "description"
 require('./load-credentials')
 const di = require('./di')
-
+const { createTransformStream } = require('@mediatool/mt-utils/lib/stream-helpers')
 const mongoClient = di.get('mongoClient')
 
 const { getCollection, closeConnection } = mongoClient
