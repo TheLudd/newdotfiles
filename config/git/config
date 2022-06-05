@@ -24,3 +24,5 @@
 	rebase = true
 [hub]
 	protocol = ssh
+[advice]
+	skippedCherryPicks = false
