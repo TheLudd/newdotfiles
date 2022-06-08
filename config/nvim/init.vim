@@ -84,3 +84,5 @@ autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
 au BufRead,BufNewFile *.feature-template :set filetype=cucumber
 
 nnoremap <leader>w <cmd>Telescope lsp_references<cr>
+nnoremap <leader>g <cmd>Telescope live_grep<cr>
+nnoremap <leader>f <cmd>Telescope find_files<cr>

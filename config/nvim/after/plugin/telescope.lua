@@ -28,6 +28,3 @@ require('telescope').setup {
     -- please take a look at the readme of the extension you want to configure
   },
 }
-
-vim.api.nvim_set_keymap('n', '<leader>f', '<cmd>lua require\'telescope-config\'.project_files()<cr>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>s', '<cmd>lua require\'telescope-config\'.project_files()<cr>', { noremap = true, silent = true })
