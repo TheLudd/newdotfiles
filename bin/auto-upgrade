@@ -1,0 +1,47 @@
+#!/bin/bash
+dedupe () {
+			resolved=$(yarn-dedupe | grep Resolved)
+			yarn -s > /dev/null 2>&1
+			return ${#resolved}
+}
+
+tryUpgrade () {
+			node ~/code/update-all/app.js $1
+			changes=$(git status --porcelain)
+			if [ -z "$changes" ]
+			then
+							echo "No upgrades found"
+							exit 0
+			fi
+			yarn
+			yarn upgrade
+			resolveLeft="1"
+			while [ "$resolveLeft" -ne "0" ]
+			do
+						dedupe
+				    resolveLeft="$?"
+			done
+			yarn test
+}
+
+tryUpgrade -l
+
+if [ $? -eq 0 ] 
+then
+	    git add -A
+			git commit -m "chore: auto upgrade all dependencies"
+			exit 0
+fi
+
+git reset --hard
+
+tryUpgrade
+
+if [ $? -eq 0 ] 
+then
+	    git add -A
+			git commit -m "chore: auto upgrade all non breaking dependencies"
+			exit 0
+fi
+
+exit 1
