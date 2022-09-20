@@ -82,6 +82,8 @@ map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
 
 autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
 au BufRead,BufNewFile *.feature-template :set filetype=cucumber
+au BufWritePost ~/code/dwm/config.h :! make && sudo make install && kill -15 $(pidof dwm)
+au BufWritePost ~/code/dwmblocks/blocks.h :! make && sudo make install && kill $(pidof dwmblocks)
 
 nnoremap <leader>w <cmd>Telescope lsp_references<cr>
 nnoremap <leader>g <cmd>Telescope live_grep<cr>
