@@ -21,5 +21,4 @@ function! AlignBars()
   call cursor(originalLine, originalCol)
 endfunction
 
-autocmd BufWritePre *.template,*.feature-template :call AlignBars()
-inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+autocmd BufWritePre *.template,*.feature-template,*.feature :call AlignBars()
