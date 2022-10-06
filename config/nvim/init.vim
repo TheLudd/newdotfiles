@@ -88,3 +88,7 @@ au BufWritePost ~/code/dwmblocks/blocks.h :! make && sudo make install && kill $
 nnoremap <leader>w <cmd>Telescope lsp_references<cr>
 nnoremap <leader>g <cmd>Telescope live_grep<cr>
 nnoremap <leader>f <cmd>Telescope find_files<cr>
+
+let g:gitblame_message_template = '<date> • <author> • <summary>'
+let g:gitblame_date_format = '%d/%m-%y'
+nnoremap <leader>cs :GitBlameCopySHA<cr>
