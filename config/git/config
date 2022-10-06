@@ -15,6 +15,7 @@
 	m = rebase master
 	edit = reset HEAD~
 [push]
+	autoSetupRemote = true
 	default = simple
 	followTags = true
 [init]
