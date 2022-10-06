@@ -4,7 +4,7 @@
 [core]
 	editor = nvim
 [alias]
-	st = status
+	st = status -s
 	co = commit -a
 	a = add -A
 	clf = clean -fd
