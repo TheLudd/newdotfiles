@@ -533,14 +533,15 @@ const di = require('./di')
 const { createTransformStream } = require('@mediatool/mt-utils/lib/stream-helpers')
 const mongoClient = di.get('mongoClient')
 
-const { getCollection, closeConnection } = mongoClient
+const { getCollection } = mongoClient
 
 async function main () {
-  
+  $1
 }
 
 main()
-  .finally(closeConnection)
+  .catch(console.log)
+  .finally(() => di.shutdown())
 endsnippet
 
 snippet st 
