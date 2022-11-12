@@ -9,5 +9,16 @@ fi
 if	[ -n "$selection" ]
 then
 	ssid=`nmcli c show $selection | ag '.ssid:' -Q | sed 's/^.*:\s\+//'`
-  sudo nmcli dev wifi connect "$ssid" > /dev/null 2>&1 & 
+	scan=`nmcli device wifi list --rescan no | ag "${ssid}"`
+	if [ -z "$scan" ]
+	then
+		scan=`nmcli device wifi list --rescan yes | ag "${ssid}"`
+	fi
+
+	if [ -n "$scan" ]
+	then
+		sudo nmcli dev wifi connect "$ssid" 
+	else
+		exit 1
+	fi
 fi
