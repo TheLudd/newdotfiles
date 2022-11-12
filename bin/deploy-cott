@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+cd ~/mediatool/ui/
+yarn
+yarn transpile
+cd framework
+rm -rf sandbox/dist
+yarn vite build
+sudo systemctl start docker.service
+docker build . -t mediatool/cott
+docker push mediatool/cott
+ssh staging-bff /var/mediatool-scripts/deploy-cott
