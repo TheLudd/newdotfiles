@@ -8,6 +8,8 @@ local opts = { noremap = true, silent = true }
 local function buf_set_keymap(bufnr, ...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 local function buf_set_option(bufnr, ...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
+function formatFilter(client) return client.name ~= 'tsserver' end
+
 local on_attach = function(client, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -18,6 +20,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
+  buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.format({ filter = formatFilter })<cr>', opts)
 end
 
 -- Set up completion using nvim_cmp with LSP source
@@ -29,10 +32,21 @@ lspconfig.tsserver.setup {
   capabilities = capabilities,
 }
 
+local prettier = { formatCommand = 'prettierd "${INPUT}"', formatStdin = true, env = { 'PRETTIERD_LOCAL_PRETTIER_ONLY=true' } }
+
 lspconfig.efm.setup {
   init_options = { documentFormatting = true },
-  filetypes = { 'lua' },
-  settings = { rootMarkers = { '.git/' }, languages = { lua = { { formatCommand = 'lua-format -i', formatStdin = true } } } },
+  filetypes = { 'lua', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+  settings = {
+    rootMarkers = { '.git/' },
+    languages = {
+      lua = { { formatCommand = 'lua-format -i', formatStdin = true } },
+      javascript = { prettier },
+      javascriptreact = { prettier },
+      typescript = { prettier },
+      typescriptreact = { prettier },
+    },
+  },
 }
 
 lspconfig.eslint.setup {
