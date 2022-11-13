@@ -41,3 +41,21 @@ lspconfig.eslint.setup {
     buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>EslintFixAll<CR>', opts)
   end,
 }
+
+lspconfig.jsonls.setup({
+  on_attach = on_attach,
+  settings = {
+    json = {
+      -- Schemas https://www.schemastore.org
+      schemas = {
+        { fileMatch = { 'package.json' }, url = 'https://json.schemastore.org/package.json' },
+        { fileMatch = { 'tsconfig*.json' }, url = 'https://json.schemastore.org/tsconfig.json' },
+        { fileMatch = { '.prettierrc', '.prettierrc.json', 'prettier.config.json' }, url = 'https://json.schemastore.org/prettierrc.json' },
+        { fileMatch = { '.eslintrc', '.eslintrc.json' }, url = 'https://json.schemastore.org/eslintrc.json' },
+        { fileMatch = { 'lerna.json' }, url = 'https://json.schemastore.org/lerna.json' },
+
+      },
+    },
+  },
+  capabilities = capabilities,
+})
