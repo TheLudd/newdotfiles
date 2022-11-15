@@ -20,7 +20,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
-  buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.format({ filter = formatFilter })<cr>', opts)
+  buf_set_keymap(bufnr, 'n', '<space>F', '<cmd>lua vim.lsp.buf.format({ filter = formatFilter })<cr>', opts)
 end
 
 -- Set up completion using nvim_cmp with LSP source
@@ -35,6 +35,7 @@ lspconfig.tsserver.setup {
 local prettier = { formatCommand = 'prettierd "${INPUT}"', formatStdin = true, env = { 'PRETTIERD_LOCAL_PRETTIER_ONLY=true' } }
 
 lspconfig.efm.setup {
+  on_attach = on_attach,
   init_options = { documentFormatting = true },
   filetypes = { 'lua', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
   settings = {
