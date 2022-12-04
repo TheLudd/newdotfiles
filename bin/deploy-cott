@@ -4,7 +4,6 @@ cd ~/mediatool/ui/
 yarn
 yarn transpile
 cd framework
-rm -rf sandbox/dist
 yarn vite build
 sudo systemctl start docker.service
 docker build . -t mediatool/cott
