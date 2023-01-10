@@ -142,13 +142,13 @@ function $1 ($2) {
 endsnippet
 	
 snippet ef "export function" b
-export default function `!v g:Abolish.camelcase(expand('%:t:r'))` ($1) {
+export const `!v g:Abolish.camelcase(expand('%:t:r'))` = ($1) => {
   $2
 }
 endsnippet
 
 snippet ec "export component" b
-export default function `!v g:Abolish.mixedcase(expand('%:t:r'))` ($1) {
+export const `!v g:Abolish.mixedcase(expand('%:t:r'))` = ($1) => {
   $2
 }
 endsnippet
