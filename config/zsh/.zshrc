@@ -56,7 +56,7 @@ plugins=(git vi-mode)
 
 # User configuration
 
-export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$HOME/.yarn/bin:$XDG_DATA_HOME/npm/bin"
+export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$HOME/.yarn/bin:$XDG_DATA_HOME/npm/bin:$XDG_DATA_HOME/pnpm"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
