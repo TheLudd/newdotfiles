@@ -4,25 +4,12 @@ if empty(glob('$XDG_DATA_HOME/nvim/site/pack/packer/start/packer.nvim'))
 endif
 
 lua << EOF
+  require('user.options')
   require('plug')
 EOF
 
 " colorscheme
 :silent! colorscheme jellybeans
-
-set incsearch
-" Use relative line numbers
-set relativenumber
-set number
-" search with smartcase
-set ignorecase
-set smartcase
-
-" Allow switching to buffers before save
-set hidden
-
-" Visualize preview of search/replace
-set inccommand=split
 
 " No Ex Mode
 nnoremap Q <Nop>
