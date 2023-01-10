@@ -1,0 +1,16 @@
+#!/bin/bash
+
+function step() {
+	pnpm i
+	st=`git status --porcelain`
+	if [[ -n "$st" ]]; then
+		git fix
+	fi
+	git rebase --continue
+	branch=`git rev-parse --abbrev-ref HEAD`
+	if [[  "$branch" == "HEAD" ]]; then
+		step
+	fi
+}
+
+step
