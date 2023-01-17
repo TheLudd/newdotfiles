@@ -79,3 +79,41 @@ nnoremap <leader>f <cmd>Telescope find_files<cr>
 let g:gitblame_message_template = '<date> • <author> • <summary>'
 let g:gitblame_date_format = '%d/%m-%y'
 nnoremap <leader>cs :GitBlameCopySHA<cr>
+
+function! TabIsEmpty()
+    return winnr('$') == 1 && len(expand('%')) == 0 && line2byte(line('$') + 1) <= 2
+endfunction
+
+function! AddTestSuffix(filepath)
+    return substitute(a:filepath, '\(\.\w\+\)$', '-test\1', '')
+endfunction
+
+function! RemoveTestSuffix()
+	return substitute(expand("%:t:r"), '-test$', '', '')
+endfunction
+
+function! RemoveTestKeepSuffix()
+	return substitute(expand("%:t:r"), '-test$', '.js', '')
+endfunction
+
+function! GetTestPath(filepath)
+	return substitute(expand("%:t:r"), '-test$', '.js', '')
+endfunction
+
+
+" Open two files, split vertically
+function! OpenBoth(left, right)
+    if TabIsEmpty()
+        :execute ":e " . a:right
+    else
+        :execute ":tabedit " . a:right
+    endif
+    if empty(glob(a:right))
+    	:execute ":w"
+    endif
+    :execute ":vsplit " . a:left
+    if empty(glob(a:left))
+    	:execute "silent :w"
+    endif
+endfunction
+

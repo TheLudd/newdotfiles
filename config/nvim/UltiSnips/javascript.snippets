@@ -490,11 +490,11 @@ it.skip('$1', () => {})
 endsnippet
 
 snippet test "Test" b
-import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
+import { `!v g:Abolish.camelcase(RemoveTestSuffix())` } from './`!v RemoveTestKeepSuffix()`'
 
-describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
+describe('`!v g:Abolish.camelcase(RemoveTestSuffix())`', () => {
   it('${1:works}', () => {
-    `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    `!v g:Abolish.camelcase(RemoveTestSuffix())`()
   })
 })
 endsnippet
