@@ -99,14 +99,7 @@ beforeEach(() => {
 endsnippet
 
 snippet tim "test import" b
-import `!p
-from subprocess import Popen, PIPE
-source = t[1]
-goodPart = source.rpartition('/')[2]
-p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
-full = p.communicate()[0].strip()
-snip.rv = full
-` from '.${2}/lib/${1:${VISUAL}}'
+import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAddJSSuffix()`'
 endsnippet
 
 snippet	imp "import" b
@@ -342,6 +335,12 @@ snippet ff "fantasy functions import" b
 import { $1 } from '@yafu/fantasy-functions'
 endsnippet
 
+snippet fap "fantasy array polyfill" b
+import polyfill from '@yafu/fantasy-array-polyfill'
+
+polyfill()
+endsnippet
+
 snippet ges "gaius event sourcing" b
 import { $1 } from '@theludd/gaius-event-sourcing'
 endsnippet
@@ -490,11 +489,11 @@ it.skip('$1', () => {})
 endsnippet
 
 snippet test "Test" b
-import { `!v g:Abolish.camelcase(RemoveTestSuffix())` } from './`!v RemoveTestKeepSuffix()`'
+import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAddJSSuffix()`'
 
-describe('`!v g:Abolish.camelcase(RemoveTestSuffix())`', () => {
+describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
   it('${1:works}', () => {
-    `!v g:Abolish.camelcase(RemoveTestSuffix())`()
+    `!v g:Abolish.camelcase(RemoveTestAndSuffix())`()
   })
 })
 endsnippet

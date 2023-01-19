@@ -88,18 +88,40 @@ function! AddTestSuffix(filepath)
     return substitute(a:filepath, '\(\.\w\+\)$', '-test\1', '')
 endfunction
 
-function! RemoveTestSuffix()
+function! RemoveTestAndSuffix()
 	return substitute(expand("%:t:r"), '-test$', '', '')
 endfunction
 
-function! RemoveTestKeepSuffix()
+function! RemoveTest(filepath)
+	return substitute(a:filepath, '-test', '', '')
+endfunction
+
+function! RemoveTestAddJSSuffix()
 	return substitute(expand("%:t:r"), '-test$', '.js', '')
 endfunction
 
-function! GetTestPath(filepath)
-	return substitute(expand("%:t:r"), '-test$', '.js', '')
+function! FindCodePath(filepath)
+    let codePath = RemoveTest(a:filepath)
+    let endsWithX = a:filepath =~ 'x$'
+    if endsWithX
+        let withoutX = substitute(codePath, 'x$', '', '')
+        if !empty(glob(withoutX))
+            return withoutX
+        endif
+    endif
+
+    return codePath
 endfunction
 
+function! FindTestPath (filepath) 
+    let testPath = AddTestSuffix(a:filepath)
+    let testXPath = testPath . "x"
+    if !empty(glob(testXPath))
+        return testXPath
+    else 
+        return testPath
+    endif
+endfunction
 
 " Open two files, split vertically
 function! OpenBoth(left, right)
@@ -109,11 +131,25 @@ function! OpenBoth(left, right)
         :execute ":tabedit " . a:right
     endif
     if empty(glob(a:right))
-    	:execute ":w"
+        :execute ":w"
     endif
     :execute ":vsplit " . a:left
     if empty(glob(a:left))
-    	:execute "silent :w"
+        :execute "silent :w"
     endif
 endfunction
+
+function! OpenWithTest(filepath)
+    call OpenBoth(FindTestPath(a:filepath), a:filepath)
+endfunction
+
+command! -complete=file -nargs=1 T call OpenWithTest(<f-args>)
+
+" jump to test (spec) file
+nnoremap <silent> gse :execute "edit " . FindTestPath(expand("%"))<CR>
+nnoremap <silent> gss :execute "vsplit " . FindTestPath(expand("%"))<CR>
+
+" jump to code file file
+nnoremap <silent> gce :execute "edit " . FindCodePath(expand("%"))<CR>
+nnoremap <silent> gcs :execute "botright vsplit " . FindCodePath(expand("%"))<CR>
 
