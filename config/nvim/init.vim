@@ -153,3 +153,5 @@ nnoremap <silent> gss :execute "vsplit " . FindTestPath(expand("%"))<CR>
 nnoremap <silent> gce :execute "edit " . FindCodePath(expand("%"))<CR>
 nnoremap <silent> gcs :execute "botright vsplit " . FindCodePath(expand("%"))<CR>
 
+" make value of amend definition
+noremap <Leader>v 0f:wC{o},ko"require": "o"type": "value"
