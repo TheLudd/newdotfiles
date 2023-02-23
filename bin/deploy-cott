@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-cd ~/mediatool/ui/
+cd ~/code/northlight/
 yarn
 yarn transpile
 cd framework
