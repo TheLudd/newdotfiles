@@ -5,6 +5,7 @@ endif
 
 lua << EOF
   require('user.options')
+  require('user.keymaps')
   require('plug')
 EOF
 
@@ -144,10 +145,6 @@ function! OpenWithTest(filepath)
 endfunction
 
 command! -complete=file -nargs=1 T call OpenWithTest(<f-args>)
-
-" jump to test (spec) file
-nnoremap <silent> gse :execute "edit " . FindTestPath(expand("%"))<CR>
-nnoremap <silent> gss :execute "vsplit " . FindTestPath(expand("%"))<CR>
 
 " jump to code file file
 nnoremap <silent> gce :execute "edit " . FindCodePath(expand("%"))<CR>
