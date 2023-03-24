@@ -48,4 +48,6 @@ packer.startup(function()
 
   -- markdown
   use({ 'iamcco/markdown-preview.nvim', run = function() vim.fn['mkdp#util#install']() end })
+
+  use 'github/copilot.vim'
 end)
