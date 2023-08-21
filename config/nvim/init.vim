@@ -64,9 +64,11 @@ vnoremap <C-c> "+y
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
 " edit files in current file directory
-map ,e :e <C-R>=expand("%:p:h") . "/" <CR>
-map ,t :tabe <C-R>=expand("%:p:h") . "/" <CR>
-map ,s :split <C-R>=expand("%:p:h") . "/" <CR>
+map ,e :e <C-R>=expand("%:h") . "/" <CR>
+map ,t :tabe <C-R>=expand("%:h") . "/" <CR>
+map ,s :split <C-R>=expand("%:h") . "/" <CR>
+map ,s :vsplit <C-R>=expand("%:h") . "/" <CR>
+
 
 autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
 au BufRead,BufNewFile *.feature-template :set filetype=cucumber
