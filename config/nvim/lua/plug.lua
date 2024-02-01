@@ -12,5 +12,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
+  'folke/neodev.nvim',
 }
 require('lazy').setup(plugins)
