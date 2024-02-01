@@ -1,7 +1,0 @@
-#!/bin/bash
-cmd=$1
-if [[ -a "yarn.lock" && "$cmd" != "publish" && "$cmd" != "version" && "$cmd" != "pack" ]]; then
-	echo Dont you wanna run yarn?
-else
-	/usr/local/bin/npm $@
-fi

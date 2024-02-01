@@ -1,0 +1,24 @@
+#!/bin/bash
+pm=$(dpm 2>&1)
+
+# Check the exit status of the dpm command
+if [ $? -ne 0 ]; then
+  # The dpm command produced an error
+	echo $pm
+  exit 1
+fi
+
+if [ "$pm" == "npm" ]; then
+		npm install $@
+elif [ "$pm" == "yarn" ]; then
+		if [ $# -gt 0 ]; then
+			yarn add $@
+		else
+			yarn install
+		fi
+elif [ "$pm" == "pnpm" ]; then
+		pnpm install $@
+else
+		echo "Unknown package manager: $pm"
+		exit 1
+fi

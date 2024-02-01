@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Array to store the file-result mappings
+files=("pnpm-lock.yaml/pnpm" "yarn.lock/yarn" "package-lock.json/npm")
+
+# Function to check if a file exists in the current directory
+check_files_in_directory() {
+  for file_mapping in "${files[@]}"; do
+    IFS="/" read -r file_name result <<< "$file_mapping"
+    if [ -e "$file_name" ]; then
+      echo $result
+      exit 0
+    fi
+  done
+}
+
+# Start in the current directory
+current_directory=$(pwd)
+
+while :; do
+  check_files_in_directory
+  if [ "$current_directory" == "/" ]; then
+    echo "Could not determine package manager"
+    exit 1
+  fi
+  # Move one folder up
+  cd ..
+  current_directory=$(pwd)
+done

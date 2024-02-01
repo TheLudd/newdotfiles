@@ -9,6 +9,7 @@ fi
 if	[ -n "$selection" ]
 then
 	ssid=`nmcli c show $selection | ag '.ssid:' -Q | sed 's/^.*:\s\+//'`
+	pwd=`nmcli c show $selection --show-secrets | ag '.psk:' -Q | awk '{print $2}'`
 	scan=`nmcli device wifi list --rescan no | ag "${ssid}"`
 	if [ -z "$scan" ]
 	then
@@ -17,7 +18,7 @@ then
 
 	if [ -n "$scan" ]
 	then
-		sudo nmcli dev wifi connect "$ssid" 
+		sudo nmcli dev wifi connect "$ssid" password "$pwd"
 	else
 		exit 1
 	fi

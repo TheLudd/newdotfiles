@@ -30,12 +30,10 @@ for (( i=0; i<${#reviewers}; i++ )); do
 	  reviewer=olchyk98
   elif [[ $char == "a" ]]; then
 	  reviewer=AnnaMalmgren
-  elif [[ $char == "s" ]]; then
-	  reviewer=Taff3r
-  elif [[ $char == "x" ]]; then
-	  reviewer=MaxLindblom
-  elif [[ $char == "w" ]]; then
-	  reviewer=SebCodesTheWeb
+  elif [[ $char == "t" ]]; then
+	  reviewer=TautvydasGec
+  elif [[ $char == "b" ]]; then
+	  reviewer=Urdat
   fi
   r="$r,$reviewer"
 done
@@ -61,4 +59,18 @@ if [[ "$nbrCommits" == "0" ]]; then
 	exit 1
 fi
 
-hub pull-request -b $base $opts -r $r -a $approver --push
+tmpFile=/tmp/pr-message-$(git log -n 1 --pretty=format:"%H")
+bodyFile="$tmpFile.body"
+
+
+git log $base.. --pretty=format:"%s%n%n%b" > $tmpFile
+vi $tmpFile &&
+
+title=`cat $tmpFile | head -n 1`
+cat $tmpFile | tail -n +3 > $bodyFile
+cat $bodyFile
+
+gh pr create -B $base -r $r -a $approver -t "$title" --body-file $bodyFile
+gh pr merge --auto -r -d
+
+rm $tmpFile $bodyFile

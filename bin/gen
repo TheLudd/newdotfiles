@@ -1,4 +1,9 @@
 #!/bin/bash
-target=features/step_definitions/definitions.js
+target=features/step_definitions/definitions.ts
 mkdir -p $(dirname $target)
-yarn -s cucumber-js -p gen | sed 's/;$//' | cat -s >> $target
+cmd=$(dpm)
+if [ "$cmd" == "pnpm" ]; then
+	pnpm --silent accept -p gen | sed 's/;$//' | cat -s >> $target
+else
+	yarn --silent accept -p gen | sed 's/;$//' | cat -s >> $target
+fi

@@ -2,6 +2,7 @@
 
 if [ `nmcli networking connectivity` != "full" ]
 then
+	echo -e ? \\uf49e
 	exit 1
 fi
 
