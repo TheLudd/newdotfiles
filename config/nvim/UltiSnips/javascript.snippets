@@ -18,6 +18,10 @@ snippet log "Description"
 console.log($1)
 endsnippet
 
+snippet dir "Description"
+console.dir($1, { depth: null })
+endsnippet
+
 snippet fac "Factory" b
 module.exports = function (
 
@@ -27,7 +31,7 @@ module.exports = function (
 endsnippet
 
 snippet facfac "Factory factory" b
-module.exports = function (
+export default function factory (
   $1
 ) {
   function `!v g:Abolish.camelcase(expand('%:t:r'))` ($2) {
@@ -36,6 +40,8 @@ module.exports = function (
 
   return `!v g:Abolish.camelcase(expand('%:t:r'))`
 }
+
+export type `!v g:Abolish.mixedcase(expand('%:t:r'))` = ReturnType<typeof factory>
 endsnippet
 
 snippet CRUDProjection "CRUDProjection" b
@@ -107,7 +113,7 @@ import { $2 } from '$1'
 endsnippet
 	
 snippet	dimp "default import" b
-import $2 from '$1'
+import ${2:name} from '$1'
 endsnippet
 
 snippet rimp "relative import" b
@@ -269,7 +275,7 @@ Promise.try(() => {
 endsnippet
 
 snippet ertf "export rtf" b
-import { rtfOf } from '@theludd/gaius-type-classes'
+import { rtfOf } from '@fassa/type-classes'
 
 export default function `!v g:Abolish.camelcase(expand('%:t:r'))` () {
   return rtfOf('')
@@ -277,19 +283,19 @@ export default function `!v g:Abolish.camelcase(expand('%:t:r'))` () {
 endsnippet
 
 snippet gtc "import gaius type classes" b
-import { $1 } from '@theludd/gaius-type-classes'
+import { $1 } from '@fassa/type-classes'
 endsnippet
 
 snippet gdbs "import gaius db-spec" b
-import { $1 } from '@theludd/gaius-db-spec'
+import { $1 } from '@fassa/db-spec'
 endsnippet
 
 snippet grs "import gaius rest server" b
-import { $1 } from '@theludd/gaius-rest-server'
+import { $1 } from '@fassa/rest-server'
 endsnippet
 
 snippet gss "import gaius socket server" b
-import { $1 } from '@theludd/gaius-socket-server'
+import { $1 } from '@fassa/socket-server'
 endsnippet
 
 snippet bpc "import blueprintjs/core" b
@@ -298,8 +304,8 @@ endsnippet
 
 snippet top "test operation" b
 import { assert } from 'chai'
-import { assertSyncRtf, createOperationTest } from '@theludd/gaius-test'
-import { processOperation } from '@theludd/gaius-event-sourcing'
+import { assertSyncRtf, createOperationTest } from '@fassa/test'
+import { processOperation } from '@fassa/event-sourcing'
 import proxyquire from 'proxyquire'
 
 const { deepEqual } = assert
@@ -313,7 +319,7 @@ full = p.communicate()[0].strip()
 snip.rv = full
 `', (verifyOperationMock) => {
   const `!p snip.rv = full` = proxyquire('.$2/${1:${VISUAL}}', {
-    '@theludd/gaius-event-sourcing': { verifyOperation: verifyOperationMock },
+    '@fassa/event-sourcing': { verifyOperation: verifyOperationMock },
   })
   const env = {}
   it('should $4', () => {
@@ -342,15 +348,15 @@ polyfill()
 endsnippet
 
 snippet ges "gaius event sourcing" b
-import { $1 } from '@theludd/gaius-event-sourcing'
+import { $1 } from '@fassa/event-sourcing'
 endsnippet
 
 snippet gt "gaius test" b
-import { $1 } from '@theludd/gaius-test'
+import { $1 } from '@fassa/test'
 endsnippet
 
 snippet gvs "gaius virtual streams" b
-import { $1 } from '@theludd/gaius-virtual-streams'
+import { $1 } from '@fassa/virtual-streams'
 endsnippet
 
 snippet y "yafu import" b
@@ -383,7 +389,7 @@ snippet sp "spread props" b
 endsnippet
 
 snippet gcom "gaius command" b
-import { rtfOf } from '@theludd/gaius-type-classes'
+import { rtfOf } from '@fassa/type-classes'
 
 export default {
   event: '`!v g:Abolish.camelcase(substitute(expand('%:t:r'), 'command-\(\w*\)-\(.*\)', '\2-\1', ''))`',
@@ -394,11 +400,11 @@ export default {
 endsnippet
 
 snippet gu "gaius users import" b
-import { $1 } from '@theludd/gaius-users'
+import { $1 } from '@fassa/users'
 endsnippet
 	
 snippet gutd "gaius users test doubles import" b
-import { $1 } from '@theludd/gaius-users/dist/test-doubles'
+import { $1 } from '@fassa/users/dist/test-doubles'
 endsnippet
 	
 snippet td "import test doubles" b
@@ -435,8 +441,8 @@ testSpaceOperation({
 endsnippet
 
 snippet spacecom "space command" b
-import { verifyOperation } from '@theludd/gaius-event-sourcing'
-import { rtfOf } from '@theludd/gaius-type-classes'
+import { verifyOperation } from '@fassa/event-sourcing'
+import { rtfOf } from '@fassa/type-classes'
 import { compose } from 'yafu'
 import { pick } from 'ramda'
 import verifyActorOwnsStreamSpace from './verify-actor-owns-stream-space'
@@ -463,7 +469,7 @@ setTimeout((d) => console.dir(d, { depth: 10 }), 400, $1)
 endsnippet
 
 snippet sh "state hook" b
-const [ $1, set`!p snip.rv = t[1].capitalize()` ] = useState($2)
+const [ $1, set`!p snip.rv = t[1][0].upper() + t[1][1:] if t[1] else t[1]` ] = useState($2)
 endsnippet
 
 snippet eh "effect hook" b
@@ -515,7 +521,7 @@ describe('`!v g:Abolish.mixedcase(expand('%:t:r'))`', () => {
 endsnippet
 
 snippet trtf "test rtf" b
-import { assertSyncRtf } from '@theludd/gaius-test'
+import { assertSyncRtf } from '@fassa/test'
 import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
 
 describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
@@ -576,7 +582,7 @@ import { $1 } from '@yafu/transduce'
 endsnippet
 
 snippet gc "@cucumber/cucumber" b
-import { $1 } from '@theludd/gaius-cucumber'
+import { $1 } from '@fassa/cucumber'
 endsnippet
 
 snippet col "collection" b
@@ -599,4 +605,29 @@ const $1 = new Transform({
   async transform (d, _, cb) {
   },
 })
+endsnippet
+
+snippet mock "mock test" b
+import { assert } from 'chai'
+import { afterEach, beforeEach, describe, it } from 'mocha'
+import { replace, reset } from 'fibble'
+import type * as `!v g:Abolish.mixedcase(expand('%:t:r'))` from './`!v RemoveTestAddJSSuffix()`'
+
+describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
+  let subject: typeof `!v g:Abolish.mixedcase(expand('%:t:r'))` 
+
+  beforeEach(async () => {
+    subject = await import('./`!v RemoveTestAddJSSuffix()`')
+  })
+
+  afterEach(reset)
+
+  it('works', async () => {
+    $1
+  })
+})
+endsnippet
+
+snippet ytu "yafu test utils" b
+import { $1 } from '@yafu/test-utils'
 endsnippet
