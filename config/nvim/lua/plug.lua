@@ -12,6 +12,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
+  'neovim/nvim-lspconfig',
   'folke/neodev.nvim',
   'folke/tokyonight.nvim',
 }
