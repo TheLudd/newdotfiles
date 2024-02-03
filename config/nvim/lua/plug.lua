@@ -32,5 +32,8 @@ local plugins = {
     build = "make install_jsregexp"
   },
   'saadparwaiz1/cmp_luasnip',
+
+  'tpope/vim-repeat',
+  'tpope/vim-surround',
 }
 require('lazy').setup(plugins)
