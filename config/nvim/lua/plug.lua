@@ -35,5 +35,8 @@ local plugins = {
 
   'tpope/vim-repeat',
   'tpope/vim-surround',
+
+  -- copilot
+  'github/copilot.vim'
 }
 require('lazy').setup(plugins)
