@@ -7,6 +7,9 @@ local opts = { noremap = true, silent = true }
 -- no ex mode
 keymap('n', 'Q', '<nop>', opts)
 
+-- yank rest of line
+keymap('n', 'Y', 'y$', opts)
+
 -- move easily between windows
 keymap('n', '<C-h>', '<C-w>h', opts)
 keymap('n', '<C-j>', '<C-w>j', opts)
