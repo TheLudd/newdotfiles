@@ -1,4 +1,5 @@
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     'git',
@@ -16,6 +17,10 @@ local plugins = {
   'folke/neodev.nvim',
   'folke/tokyonight.nvim',
 
+  -- mason
+  'williamboman/mason.nvim',
+  'williamboman/mason-lspconfig.nvim',
+
   -- cmp completion engine
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-buffer',
@@ -25,11 +30,11 @@ local plugins = {
 
   -- luasnip, required for cmp
   {
-    "L3MON4D3/LuaSnip",
+    'L3MON4D3/LuaSnip',
     -- follow latest release.
-    version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+    version = 'v2.*', -- Replace <CurrentMajor> by the latest released major (first number of latest release)
     -- install jsregexp (optional!).
-    build = "make install_jsregexp"
+    build = 'make install_jsregexp',
   },
   'saadparwaiz1/cmp_luasnip',
 
@@ -37,8 +42,6 @@ local plugins = {
   'tpope/vim-surround',
 
   -- copilot
-  'github/copilot.vim'
+  'github/copilot.vim',
 }
-require('lazy').setup(plugins, {
-  lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json'
-})
+require('lazy').setup(plugins, { lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json' })
