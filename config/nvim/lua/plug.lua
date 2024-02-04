@@ -39,4 +39,6 @@ local plugins = {
   -- copilot
   'github/copilot.vim'
 }
-require('lazy').setup(plugins)
+require('lazy').setup(plugins, {
+  lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json'
+})
