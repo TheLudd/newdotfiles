@@ -17,6 +17,9 @@ local plugins = {
   'folke/neodev.nvim',
   'folke/tokyonight.nvim',
 
+  -- treesitter for better syntax highlighting
+  { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+
   -- mason
   'williamboman/mason.nvim',
   'williamboman/mason-lspconfig.nvim',

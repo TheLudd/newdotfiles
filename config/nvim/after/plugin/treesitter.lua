@@ -1,0 +1,23 @@
+require'nvim-treesitter.configs'.setup {
+  auto_install = false,
+  highlight = { enable = true, disable = {} },
+  indent = { enable = true, disable = {} },
+  ensure_installed = {
+    'bash',
+    'c',
+    'html',
+    'javascript',
+    'jsdoc',
+    'json',
+    'lua',
+    'markdown',
+    'pug',
+    'python',
+    'regex',
+    'tsx',
+    'typescript',
+    'vim',
+    'yaml',
+  },
+  sync_install = false,
+}
