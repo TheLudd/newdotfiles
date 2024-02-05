@@ -20,6 +20,9 @@ local plugins = {
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
 
+  -- telscope
+  { 'nvim-telescope/telescope.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
+
   -- mason
   'williamboman/mason.nvim',
   'williamboman/mason-lspconfig.nvim',
