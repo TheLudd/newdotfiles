@@ -41,8 +41,15 @@ local plugins = {
   },
   'saadparwaiz1/cmp_luasnip',
 
+  -- basics
+  'tpope/vim-abolish', -- case insensitive search
+  'terryma/vim-multiple-cursors',
+  'tommcdo/vim-exchange',
+  'AndrewRadev/splitjoin.vim',
+  'tpope/vim-commentary',
   'tpope/vim-repeat',
   'tpope/vim-surround',
+  'godlygeek/tabular',
 
   -- copilot
   'github/copilot.vim',
