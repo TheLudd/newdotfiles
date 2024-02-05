@@ -15,7 +15,10 @@ vim.opt.rtp:prepend(lazypath)
 local plugins = {
   'neovim/nvim-lspconfig',
   'folke/neodev.nvim',
+
+  -- colorschemes
   'folke/tokyonight.nvim',
+  'nanotech/jellybeans.vim',
 
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },

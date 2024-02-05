@@ -28,3 +28,12 @@ require('telescope').setup {
     -- please take a look at the readme of the extension you want to configure
   },
 }
+
+local opts = { noremap = true, silent = true }
+local keymap = vim.api.nvim_set_keymap
+
+vim.cmd [[cnoreabbrev ls Telescope buffers]]
+
+keymap('n', '<leader>r', '<cmd>Telescope lsp_references<CR>', opts)
+keymap('n', '<leader>g', '<cmd>Telescope live_grep<CR>', opts)
+keymap('n', '<leader>f', '<cmd>Telescope find_files<CR>', opts)
