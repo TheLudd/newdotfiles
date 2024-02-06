@@ -35,7 +35,12 @@ command('Qa', 'qa', {})
 command('W', 'w', {})
 command('Wa', 'wa', {})
 
+-- open new file in same directory
 keymap('n', ',e', ':e <C-R>=expand("%:h") . "/" <CR>', opts)
 keymap('n', ',t', ':tabe <C-R>=expand("%:h") . "/" <CR>', opts)
 keymap('n', ',s', ':split <C-R>=expand("%:h") . "/" <CR>', opts)
 keymap('n', ',v', ':vsplit <C-R>=expand("%:h") . "/" <CR>', opts)
+
+-- go to test and source files
+keymap('n', 'gss', ':lua OpenTestFile("vsplit")<cr>', opts)
+keymap('n', 'gse', ':lua OpenTestFile("edit")<cr>', opts)
