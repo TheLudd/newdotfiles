@@ -20,6 +20,9 @@ local plugins = {
   'folke/tokyonight.nvim',
   'nanotech/jellybeans.vim',
 
+  -- typescript tools instead of typescript language server
+  { 'pmizio/typescript-tools.nvim', dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' }, opts = {} },
+
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
 
