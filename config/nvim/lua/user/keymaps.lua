@@ -46,3 +46,9 @@ keymap('n', 'gss', ':lua TestFinder.openTestFile("vsplit")<cr>', opts)
 keymap('n', 'gse', ':lua TestFinder.openTestFile("edit")<cr>', opts)
 keymap('n', 'gcs', ':lua TestFinder.openSourceFile("rightbelow vsplit")<cr>', opts)
 keymap('n', 'gce', ':lua TestFinder.openSourceFile("edit")<cr>', opts)
+
+-- Telescope
+keymap('n', '<leader>f', ':Telescope find_files<CR>', opts)
+keymap('n', '<leader>g', ':Telescope live_grep<CR>', opts)
+keymap('n', '<leader>r', ':Telescope lsp_references<CR>', opts)
+vim.cmd('cnoreabbrev ls :Telescope buffers<CR>')
