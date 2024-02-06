@@ -34,10 +34,10 @@ vim.cmd('cnoreabbrev Q q')
 vim.cmd('cnoreabbrev Qa qa')
 
 -- open new file in same directory
-keymap('n', ',e', ':e <C-R>=expand("%:h") . "/" <CR>', opts)
-keymap('n', ',t', ':tabe <C-R>=expand("%:h") . "/" <CR>', opts)
-keymap('n', ',s', ':split <C-R>=expand("%:h") . "/" <CR>', opts)
-keymap('n', ',v', ':vsplit <C-R>=expand("%:h") . "/" <CR>', opts)
+vim.cmd('map ,e :e <C-R>=expand("%:h") . "/" <CR>')
+vim.cmd('map ,t :tabe <C-R>=expand("%:h") . "/" <CR>')
+vim.cmd('map ,s :split <C-R>=expand("%:h") . "/" <CR>')
+vim.cmd('map ,v :vsplit <C-R>=expand("%:h") . "/" <CR>')
 
 -- go to test and source files
 keymap('n', 'gss', ':lua TestFinder.openTestFile("vsplit")<cr>', opts)
