@@ -42,5 +42,7 @@ keymap('n', ',s', ':split <C-R>=expand("%:h") . "/" <CR>', opts)
 keymap('n', ',v', ':vsplit <C-R>=expand("%:h") . "/" <CR>', opts)
 
 -- go to test and source files
-keymap('n', 'gss', ':lua OpenTestFile("vsplit")<cr>', opts)
-keymap('n', 'gse', ':lua OpenTestFile("edit")<cr>', opts)
+keymap('n', 'gss', ':lua TestFinder.openTestFile("vsplit")<cr>', opts)
+keymap('n', 'gse', ':lua TestFinder.openTestFile("edit")<cr>', opts)
+keymap('n', 'gcs', ':lua TestFinder.openSourceFile("rightbelow vsplit")<cr>', opts)
+keymap('n', 'gce', ':lua TestFinder.openSourceFile("edit")<cr>', opts)
