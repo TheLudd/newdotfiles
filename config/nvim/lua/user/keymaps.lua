@@ -60,3 +60,6 @@ keymap('v', '<C-c>', '"+y', opts)
 -- Clear search with space
 keymap('n', '<Space>', ':nohlsearch<CR>', opts)
 
+-- git
+keymap('n', 'ghc', ':GitBlameCopySHA<CR>', opts)
+keymap('n', 'ghu', ':GitBlameOpenFileURL<CR>', opts)
