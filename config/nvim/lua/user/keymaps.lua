@@ -50,3 +50,13 @@ keymap('n', '<leader>f', ':Telescope find_files<CR>', opts)
 keymap('n', '<leader>g', ':Telescope live_grep<CR>', opts)
 keymap('n', '<leader>r', ':Telescope lsp_references<CR>', opts)
 vim.cmd('cnoreabbrev ls :Telescope buffers<CR>')
+
+-- search file with ctrl s
+vim.cmd('nnoremap <C-s> :%s/')
+
+-- copy visual selection to clipboard
+keymap('v', '<C-c>', '"+y', opts)
+
+-- Clear search with space
+keymap('n', '<Space>', ':nohlsearch<CR>', opts)
+
