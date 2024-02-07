@@ -40,15 +40,9 @@ local plugins = {
   'hrsh7th/cmp-cmdline',
   'hrsh7th/nvim-cmp',
 
-  -- luasnip, required for cmp
-  {
-    'L3MON4D3/LuaSnip',
-    -- follow latest release.
-    version = 'v2.*', -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-    -- install jsregexp (optional!).
-    build = 'make install_jsregexp',
-  },
-  'saadparwaiz1/cmp_luasnip',
+  -- ultisnips
+  'SirVer/ultisnips',
+  'quangnguyen30192/cmp-nvim-ultisnips',
 
   -- basics
   'tpope/vim-abolish', -- case insensitive search

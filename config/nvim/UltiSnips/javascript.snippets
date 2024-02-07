@@ -1,0 +1,415 @@
+snippet r "Require" b
+const $1 = require('$1')
+endsnippet
+
+snippet R "Require ramda" b
+const { $1 } = require('ramda')
+endsnippet
+
+snippet RF "Require ramda-fantasy" b
+const RF = require('ramda-fantasy')
+endsnippet
+
+snippet log "Description"
+console.log($1)
+endsnippet
+
+snippet dir "Description"
+console.dir($1, { depth: null })
+endsnippet
+
+snippet fac "Factory" b
+module.exports = function (
+
+) {
+  $1
+}
+endsnippet
+
+snippet facfac "Factory factory" b
+export default function factory (
+  $1
+) {
+  function `!v g:Abolish.camelcase(expand('%:t:r'))` ($2) {
+    $3
+  }
+
+  return `!v g:Abolish.camelcase(expand('%:t:r'))`
+}
+
+export type `!v g:Abolish.mixedcase(expand('%:t:r'))` = ReturnType<typeof factory>
+endsnippet
+
+snippet CRUDProjection "CRUDProjection" b
+const inherits = require('util').inherits
+module.exports = function (
+  CRUDProjectionFactory
+) {
+  function $1Projection () {
+    $1Projection.super_.call(this, '$1')
+  }
+
+  inherits($1Projection, CRUDProjectionFactory('$1'))
+  return $1Projection
+}
+endsnippet
+
+snippet des "describe" b
+describe('$1', () => {
+  $2
+})
+endsnippet
+
+snippet it "it block" b
+it('$1', () => {
+  $2
+})
+endsnippet
+
+snippet time "console.time"
+console.time('$1')
+console.timeEnd('$1')
+endsnippet
+
+snippet	di "Di variable"
+const $1 = di.get('$1')
+endsnippet
+
+snippet bef "Before each"
+beforeEach(() => {
+  $1
+})
+endsnippet
+
+snippet tim "test import" b
+import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAddJSSuffix()`'
+endsnippet
+
+snippet	imp "import" b
+import { $2 } from '$1'
+endsnippet
+	
+snippet	dimp "default import" b
+import ${2:name} from '$1'
+endsnippet
+
+snippet	f "function" w
+($1) => $2
+endsnippet
+
+snippet	fu "function with body" w
+($1) => {
+  $2
+}
+endsnippet
+
+snippet fun "function literal"
+function $1 ($2) {
+  $3
+}
+endsnippet
+	
+snippet ef "export function" b
+export const `!v g:Abolish.camelcase(expand('%:t:r'))` = ($1) => {
+  $2
+}
+endsnippet
+
+snippet ec "export component" b
+export const `!v g:Abolish.mixedcase(expand('%:t:r'))` = ($1) => {
+  $2
+}
+endsnippet
+
+snippet ed "export default" b
+export default $1
+endsnippet
+	
+snippet command "Command" b
+module.exports = function (
+  R,
+  ${1}Schemas,
+  authorizeIdReferences,
+  validateCommandInput,
+  ${2}Projection
+) {
+  return {
+    name: '$3',
+    event: '$4',
+    entityName: '$5',
+    createStream: $6,
+    getId: R.prop('$7'),
+    processData: $8,
+    projection: $2Projection,
+    schemaValidation: {
+      $9: $1Schemas.$10
+    },
+    validators: [
+      validateCommandInput,
+      authorizeIdReferences
+    ],
+    rest: {
+      route: '$11',
+      method: '$12',
+      getParams: R.$13,
+      responsePrefix: '$14'
+    }
+  }
+}
+endsnippet
+
+snippet deletecommand "Delete Command" b
+module.exports = function (
+  R,
+  authorize$1Id,
+  $1Projection
+) {
+  return {
+    name: 'Delete$1',
+    event: '$1Deleted',
+    entityName: '$2',
+    createStream: false,
+    getId: R.identity,
+    processData: R.identity,
+    projection: $1Projection,
+    validators: [
+      authorize$1Id
+    ],
+    rest: {
+      route: '/$3/:$4Id',
+      method: 'del',
+      getParams: R.prop('$4Id'),
+      responseCode: 204
+    }
+  }
+}
+endsnippet
+
+snippet getquery "Query" b
+module.exports = function (
+  R,
+  $1Storage,
+  authorize$2Id
+) {
+  return {
+    name: 'Get$2',
+    dbFunction: $1Storage.findById,
+    validators: [
+      authorize$2Id
+    ],
+    rest: {
+      route: '/$3/:$1Id',
+      getParams: R.prop('$1Id'),
+      responsePrefix: '$1'
+    }
+  }
+}
+endsnippet
+
+snippet query "Query" b
+module.exports = function (
+  R,
+  $1Storage,
+  authorize$2
+) {
+  return {
+    name: 'Get$3',
+    dbFunction: $1Storage.$4,
+    validators: [
+      authorize$2
+    ],
+    rest: {
+      route: '/$5',
+      getParams: R.$6,
+      responsePrefix: '$7'
+    }
+  }
+}
+endsnippet
+
+snippet c "constants" b
+const { $2 } = $1
+endsnippet
+
+snippet gtc "import gaius type classes" b
+import { $1 } from '@fassa/type-classes'
+endsnippet
+
+snippet gdbs "import gaius db-spec" b
+import { $1 } from '@fassa/db-spec'
+endsnippet
+
+snippet grs "import gaius rest server" b
+import { $1 } from '@fassa/rest-server'
+endsnippet
+
+snippet gss "import gaius socket server" b
+import { $1 } from '@fassa/socket-server'
+endsnippet
+
+snippet $ "inter" i
+${$1}$2
+endsnippet
+	
+snippet ff "fantasy functions import" b
+import { $1 } from '@yafu/fantasy-functions'
+endsnippet
+
+snippet fap "fantasy array polyfill" b
+import polyfill from '@yafu/fantasy-array-polyfill'
+
+polyfill()
+endsnippet
+
+snippet ges "gaius event sourcing" b
+import { $1 } from '@fassa/event-sourcing'
+endsnippet
+
+snippet gt "gaius test" b
+import { $1 } from '@fassa/test'
+endsnippet
+
+snippet gvs "gaius virtual streams" b
+import { $1 } from '@fassa/virtual-streams'
+endsnippet
+
+snippet y "yafu import" b
+import { $1 } from 'yafu'
+endsnippet
+
+snippet cu "yafu curry" b
+import { curry } from 'yafu'
+endsnippet
+
+snippet con "constructor" b
+constructor (props) {
+  super(props)
+}
+endsnippet
+
+snippet gcom "gaius command" b
+import { rtfOf } from '@fassa/type-classes'
+export default {
+  event: '`!v g:Abolish.camelcase(substitute(expand('%:t:r'), 'command-\(\w*\)-\(.*\)', '\2-\1', ''))`',
+  name: '`!v g:Abolish.mixedcase(substitute(expand('%:t:r'), 'command-', '', ''))`',
+  processOperation: rtfOf,
+  streamType: '$3',
+}
+endsnippet
+
+snippet gu "gaius users import" b
+import { $1 } from '@fassa/users'
+endsnippet
+	
+snippet gutd "gaius users test doubles import" b
+import { $1 } from '@fassa/users/dist/test-doubles'
+endsnippet
+	
+snippet td "import test doubles" b
+import { $1 } from './test-doubles'
+endsnippet
+	
+snippet pf "project function" b
+describe('#$1', () => {
+  const { $1 } = $2
+  it('should $3', () => {
+    const event = {
+      data: { $4 },
+    }
+    const result = $1(event)
+    const expected = { $5 }
+    deepEqual(result, expected)
+  })
+})
+endsnippet
+
+snippet tlog "timeout log"
+setTimeout((d) => console.dir(d, { depth: 10 }), 400, $1)
+endsnippet
+
+snippet sh "state hook" b
+const [ $1, set`!p snip.rv = t[1][0].upper() + t[1][1:] if t[1] else t[1]` ] = useState($2)
+endsnippet
+
+snippet eh "effect hook" b
+useEffect(() => {
+  $2
+}, $1)
+endsnippet
+
+snippet	u "utils import" b
+import { $1 } from '@mediatool/mt-utils/import'
+endsnippet
+
+snippet test "Test" b
+import { describe, it } from 'mocha'
+import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAndRetainSuffix()`'
+
+describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
+  it('${1:works}', () => {
+    `!v g:Abolish.camelcase(RemoveTestAndSuffix())`()
+  })
+})
+endsnippet
+
+snippet trtf "test rtf" b
+import { assertSyncRtf } from '@fassa/test'
+import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
+
+describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
+  const env = {}
+  it('${1:works}', () => {
+    const rtf = `!v g:Abolish.camelcase(expand('%:t:r'))`()
+    assertSyncRtf(env, '', rtf)
+  })
+})
+endsnippet
+
+snippet script "description"
+require('./load-credentials')
+const di = require('./di')
+const { createTransformStream } = require('@mediatool/mt-utils/lib/stream-helpers')
+const mongoClient = di.get('mongoClient')
+
+const { getCollection } = mongoClient
+
+async function main () {
+  $1
+}
+
+main()
+  .catch(console.log)
+  .finally(() => di.shutdown())
+endsnippet
+
+snippet st 
+setTimeout(() => {
+  $1
+}, ${2:100})
+endsnippet
+
+snippet yt "@yafu/transduce" b
+import { $1 } from '@yafu/transduce'
+endsnippet
+
+snippet gc "@cucumber/cucumber" b
+import { $1 } from '@fassa/cucumber'
+endsnippet
+
+snippet col "collection" b
+const $1 = await getCollection('$1')
+endsnippet
+
+snippet consoleWriter "consoleWriter" b
+const consoleWriter = new Writable({
+  objectMode: true,
+  write (d, _, cb) {
+    console.log(d)
+    cb()
+  },
+})
+endsnippet
+
+snippet ytu "yafu test utils" b
+import { $1 } from '@yafu/test-utils'
+endsnippet

@@ -1,0 +1,202 @@
+snippet r "Require" b
+`!p
+from subprocess import Popen, PIPE
+source = t[1]
+goodPart = source.rpartition('/')[2]
+p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
+full = p.communicate()[0].strip()
+snip.rv = full
+` = require '${1:${VISUAL}}'
+endsnippet
+
+snippet t "Test require" b
+`!p
+from subprocess import Popen, PIPE
+source = t[1]
+goodPart = source.rpartition('/')[2]
+p = Popen(['change-case', '-c', goodPart], stdout=PIPE)
+full = p.communicate()[0].strip()
+snip.rv = full
+` = getDep './${1:${VISUAL}}'
+endsnippet
+
+snippet test "Description" b
+`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
+
+describe '`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`', ->
+
+  When -> @result = `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`()
+  Then -> 
+endsnippet
+
+snippet asynctest "Description" b
+ `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
+
+describe '`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`', ->
+
+  When ->
+    @subject =  `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`()
+    @subject().then (@result) =>
+  Then -> 
+endsnippet
+
+snippet factest "Description" b
+ `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')` = getDep('./lib/`!v expand('%:r:gs?-test??:s?test\/unit\/??')`')
+
+describe '`!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`', ->
+
+  When ->
+    @subject =  `!v substitute(g:Abolish.camelcase(expand('%:t:r')), 'Test', '', '')`()
+    @result = @subject()
+  Then -> 
+endsnippet
+
+snippet G "Given"
+Given ->
+endsnippet
+
+snippet Gi "Given inject"
+Given inject ($1) ->
+endsnippet
+
+snippet W "When"
+When ->
+endsnippet
+
+snippet Wi "When inject"
+When inject ($1) ->
+endsnippet
+
+snippet Wd "When (done)"
+When (done) ->
+endsnippet
+
+snippet T "Then"
+Then ->
+endsnippet
+
+snippet A "And"
+And ->
+endsnippet
+
+snippet I "Invariant"
+Invariant ->
+endsnippet
+
+snippet f "function"
+-> $1
+endsnippet
+
+snippet fu "function with arguments" i
+($1) ->
+endsnippet
+
+snippet F "function"
+=> $1
+endsnippet
+
+snippet FU "function with arguments"
+($1) =>
+endsnippet
+
+snippet P "Blubird Pomise" b
+Promise = require 'bluebird'
+endsnippet
+
+snippet R "Ramda" b
+R = require 'ramda'
+endsnippet
+
+snippet RF "Ramda Fantasy" b
+RF = require 'ramda-fantasy'
+endsnippet
+
+snippet mon "Import monad" b
+$1 = RF.$1
+endsnippet
+
+snippet desm "Describe method" b
+describe '#$1', ->
+  When -> @subject.$1()
+  Then ->
+endsnippet
+
+snippet CRUDProjectionTest "CRUDProjectionTest" b
+factory = getDep '$1'
+CRUDProjection = di.get 'CRUDProjection'
+
+describe '$2Projection', ->
+
+  When ->
+    $2Projection = factory(CRUDProjection)
+    @subject = new $2Projection()
+  Then -> @subject instanceof CRUDProjection
+  And -> typeof @subject.when$2Created == 'function'
+endsnippet
+
+snippet fac "Factory" b
+module.exports = (
+
+) ->
+
+
+endsnippet
+
+snippet abtest "Abstract test" b
+abstract$1Test = getDep './test/abstract-$2'
+createDI = require('../..$3').createDI
+
+describe '$4 $1', abstract$1Test
+  createDI: createDI
+  env: '$5'
+endsnippet
+
+snippet abimp "Abstract test implementation" b
+module.exports = (opts) -> ->
+
+  fixture = [
+  ]
+
+  Given ->
+    @di = opts.createDI(opts.env)
+    @$1 = @di.get '$1'
+    @dbSetFixture = @di.get 'dbSetFixture'
+    factory = @di.get 'dbCollectionFactory'
+
+    @subject = factory 'testCollectionName',
+      setFixture: @dbSetFixture
+      $2: @$1
+
+  When -> @subject.setFixture(fixture)
+  When -> @subject.$2($3).then (@result) =>
+
+  afterBlock -> opts.cleanup? @di
+endsnippet
+
+snippet des "Describe" b
+describe '$1', ->
+endsnippet
+
+snippet fo "Test fork" i
+.fork null, (@result) =>
+endsnippet
+
+snippet di
+@$1 = @di.get '$1'
+endsnippet
+
+snippet u "import utils" b
+u = require('@mediatool/mt-utils/import')
+endsnippet
+
+snippet # "string interpolation" i
+#{$1}$2
+endsnippet
+
+snippet e "import errors" b
+errors = require('@mediatool/mt-errors/lib/errors')()
+endsnippet
+
+snippet tlog "timeout log" 
+setTimeout console.log, 500, $1
+endsnippet
