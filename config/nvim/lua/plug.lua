@@ -65,5 +65,9 @@ local plugins = {
 
   -- git
   'f-person/git-blame.nvim',
+
+  -- db plugin
+  'tpope/vim-dadbod',
+
 }
 require('lazy').setup(plugins, { lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json' })
