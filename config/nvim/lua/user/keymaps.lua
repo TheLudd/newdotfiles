@@ -63,3 +63,6 @@ keymap('n', '<Space>', ':nohlsearch<CR>', opts)
 -- git
 keymap('n', 'ghc', ':GitBlameCopySHA<CR>', opts)
 keymap('n', 'ghu', ':GitBlameOpenFileURL<CR>', opts)
+
+-- disable :Delete to avoid confusion with :DB
+vim.cmd('cnoreabbrev Delete echo "Use :Remove"')

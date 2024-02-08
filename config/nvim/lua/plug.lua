@@ -52,6 +52,7 @@ local plugins = {
 
   -- basics
   'tpope/vim-abolish', -- case insensitive search
+  'tpope/vim-eunuch', -- unix commands
   'terryma/vim-multiple-cursors',
   'tommcdo/vim-exchange',
   'AndrewRadev/splitjoin.vim',
