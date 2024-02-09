@@ -2,5 +2,5 @@
 for f in $@
 do
 	newname=`echo $f | sed -E 's/js$/ts/'`
-	mv $f $newname
+	~/code/rename-js-file/bin/rename-js-file $f $newname
 done
