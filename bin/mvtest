@@ -1,0 +1,6 @@
+#!/bin/bash
+for f in $@
+do
+	newname=`echo $f | sed 's,test/,lib/,' | sed -E 's/(.*)(\..*)/\1-test\2/'`
+	~/code/rename-js-file/bin/rename-js-file $f $newname
+done
