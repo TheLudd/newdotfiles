@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array to store the file-result mappings
-files=("pnpm-lock.yaml/pnpm" "yarn.lock/yarn" "package-lock.json/npm")
+files=("package-lock.json/npm" "pnpm-lock.yaml/pnpm" "yarn.lock/yarn")
 
 # Function to check if a file exists in the current directory
 check_files_in_directory() {
