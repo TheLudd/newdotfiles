@@ -13,7 +13,12 @@ cmp.setup({
     ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to false to only confirm explicit selections
   }),
-  sources = cmp.config.sources({ { name = 'nvim_lsp' }, { name = 'buffer' }, { name = 'path' }, { name = 'ultisnips' } }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'buffer',   option = { get_bufnrs = function() return vim.api.nvim_list_bufs() end } },
+    { name = 'path' },
+    { name = 'ultisnips' },
+  }),
 })
 
 cmp.setup.cmdline('/', { mapping = cmp.mapping.preset.cmdline(), sources = { { name = 'buffer' } } })
