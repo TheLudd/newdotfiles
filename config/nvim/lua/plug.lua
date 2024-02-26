@@ -21,13 +21,13 @@ local plugins = {
   'nanotech/jellybeans.vim',
 
   -- typescript tools instead of typescript language server
-  { 'pmizio/typescript-tools.nvim', dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' }, opts = {} },
+  { 'pmizio/typescript-tools.nvim',    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' }, opts = {} },
 
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
 
   -- telscope
-  { 'nvim-telescope/telescope.nvim', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'nvim-telescope/telescope.nvim',   dependencies = { 'nvim-lua/plenary.nvim' } },
 
   -- mason
   'williamboman/mason.nvim',
@@ -46,7 +46,7 @@ local plugins = {
 
   -- basics
   'tpope/vim-abolish', -- case insensitive search
-  'tpope/vim-eunuch', -- unix commands
+  'tpope/vim-eunuch',  -- unix commands
   'terryma/vim-multiple-cursors',
   'tommcdo/vim-exchange',
   'AndrewRadev/splitjoin.vim',
@@ -64,5 +64,11 @@ local plugins = {
   -- db plugin
   'tpope/vim-dadbod',
 
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    ft = { 'markdown' },
+    build = function() vim.fn['mkdp#util#install']() end,
+  },
 }
 require('lazy').setup(plugins, { lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json' })
