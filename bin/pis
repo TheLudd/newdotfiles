@@ -1,0 +1,9 @@
+#!/bin/bash
+listFile=~/newdotfiles/packages
+sudo pacman -S $@
+
+if [ $? -eq 0 ]; then
+  echo $@ | sed 's/ /\n/g' >> $listFile
+  cat $listFile | sort | uniq > /tmp/listfile
+  mv /tmp/listfile $listFile
+fi
