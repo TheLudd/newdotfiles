@@ -1,3 +1,4 @@
 config/zsh/*
 !config/zsh/.zlogin
 !config/zsh/.zshrc
+npmrc.local
