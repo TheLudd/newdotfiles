@@ -1,10 +1,28 @@
 #!/bin/bash
+
+#for battery in /sys/class/power_supply/BAT?
+#do
+#	status=$(cat $battery/status)
+#	[[ "$status" == "Full" ]] && exit 0
+
+	# status=$(echo $status | sed 's/Discharging/\\uf5df/' | sed 's/Charging/\\uf1e6/')
+	# capacity=$(cat $battery/capacity | sed 's/$/%/')
+	# echo -e $capacity $status | sed 's/\n//'
+# done
+
 for battery in /sys/class/power_supply/BAT?
 do
-	status=$(cat $battery/status)
-	[[ "$status" == "Full" ]] && exit 0
+    status=$(cat $battery/status)
+    [[ "$status" == "Full" ]] && exit 0
 
-	status=$(echo $status | sed 's/Discharging/\\uf5df/' | sed 's/Charging/\\uf1e6/')
-	capacity=$(cat $battery/capacity | sed 's/$/%/')
-	echo -e $capacity $status | sed 's/\n//'
+    capacity=$(cat $battery/capacity)
+    if [[ "$status" == "Charging" ]]; then
+        icon=🔌
+    elif (( capacity > 30 )); then
+        icon=🔋
+    else
+        icon=🪫
+    fi
+
+    echo -e "$capacity% $icon"
 done

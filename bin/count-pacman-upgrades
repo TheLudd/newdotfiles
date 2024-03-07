@@ -2,13 +2,13 @@
 
 if [ `nmcli networking connectivity` != "full" ]
 then
-	echo -e ? \\uf49e
+	echo -e ? 📦
 	exit 1
 fi
 
 function writestatus() {
 	if [[ "$count" != "0" ]]; then
-		echo -e $count \\uf49e
+		echo -e $count 📦
 	fi
 }
 
