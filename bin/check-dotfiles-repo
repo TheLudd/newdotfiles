@@ -1,0 +1,32 @@
+#!/bin/bash
+repoPath="$HOME/newdotfiles"
+
+# if [ -n "$(git -C $repoPath status -s)" ]; then
+#   echo 🖊.
+# fi
+
+status=""
+
+# Check if branch is not master
+branchName=$(git -C $repoPath rev-parse --abbrev-ref HEAD)
+if [ "$branchName" != "master" ]; then
+  status+="($branchName) "
+fi
+
+# Check if on master branch and if files are not pushed to origin
+if [ "$branchName" == "master" ]; then
+  localCommits=$(git -C $repoPath cherry -v)
+  if [ -n "$localCommits" ]; then
+    status+="🚀 "
+  fi
+fi
+
+# Add pen symbol if there are uncommitted changes or if status is not empty
+if [ -n "$(git -C $repoPath status -s)" ] || [ -n "$status" ]; then
+  status="🖊  $status"
+fi
+
+# Echo status if not empty
+if [ -n "$status" ]; then
+  echo $status
+fi
