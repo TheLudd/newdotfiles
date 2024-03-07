@@ -23,10 +23,6 @@ if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
 
-if [ `echo $TTY | xargs basename | sed 's/tty//'` -ge 4 ]; then
-    exit 0
-fi
-
 # start some nice programs
 
 if [ -d /etc/X11/xinit/xinitrc.d ] ; then
