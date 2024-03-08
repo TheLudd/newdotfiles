@@ -64,6 +64,10 @@ local plugins = {
   -- db plugin
   'tpope/vim-dadbod',
 
+  -- coffee specific
+  'kchmck/vim-coffee-script',
+
+
   {
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
