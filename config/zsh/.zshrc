@@ -29,6 +29,7 @@ export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
+export PNPM_HOME=$XDG_DATA_HOME/pnpm
 
 if [ ! -S ~/.ssh/ssh_auth_sock ]; then
   eval `ssh-agent`
@@ -105,3 +106,4 @@ update_prompt
 
 # Make sure to load the necessary Zsh modules for colors and hooks
 autoload -U colors && colors
+
