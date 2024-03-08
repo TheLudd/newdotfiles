@@ -14,6 +14,7 @@ fwupd
 gcc
 git
 github-cli
+hacksaw
 htop
 kbd
 less
@@ -43,12 +44,14 @@ reflector
 ripgrep
 rsync
 rxvt-unicode
+shotgun
 slock
 the_silver_searcher
 tree
 ttf-liberation
 tzdata
 usbutils
+xclip
 xf86-input-libinput
 xf86-video-nouveau
 xorg-init
