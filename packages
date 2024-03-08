@@ -1,3 +1,4 @@
+
 alsa-utils
 archlinux-wallpaper
 autorandr
@@ -35,8 +36,9 @@ pavucontrol
 picom
 pipewire
 pkg-config
+pulseaudio
+pulseaudio-alsa
 pulseaudio-bluetooth
-pulseaudio pulseaudio-alsa
 python3
 python-neovim
 python-pip
