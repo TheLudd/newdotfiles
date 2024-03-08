@@ -1,6 +1,0 @@
-prefix=$HOME/.local/share/npm
-cache=$HOME/.cache/npm
-init-module=$HOME/.config/npm/config/npm-init.js
-logs-dir=$HOME/.state/npm/logs
-enable-pre-post-scripts=true
-userconfig=$HOME/.config/npm/.npmrc.local
