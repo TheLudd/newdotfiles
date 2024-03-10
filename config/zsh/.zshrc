@@ -1,12 +1,6 @@
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_STATE_HOME="$HOME/.state"
-
 export PATH="$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$HOME/.yarn/bin:$XDG_DATA_HOME/npm/bin:$XDG_DATA_HOME/pnpm"
 
 # Lines configured by zsh-newuser-install
-HISTFILE=$XDG_DATA_HOME/zsh/history
 HISTSIZE=1000
 SAVEHIST=1000
 setopt autocd extendedglob
