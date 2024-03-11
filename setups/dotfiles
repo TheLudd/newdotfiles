@@ -1,8 +1,0 @@
-#!/bin/bash
-base=`pwd`
-for path in dotfiles/*
-do
-	file=`basename $path`
-	ln -sf $base/$path ~/.$file
-done
-ln -sf $base/bin ~/
