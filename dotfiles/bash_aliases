@@ -31,3 +31,4 @@ alias a='ag --path-to-ignore $XDG_CONFIG_HOME/ag/ignore'
 alias p='pnpm'
 alias nv='cd ~/newdotfiles/config/nvim/'
 alias mvjs=~/code/rename-js-file/bin/rename-js-file
+alias sudo="sudo -E"
