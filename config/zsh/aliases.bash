@@ -33,3 +33,5 @@ alias p='pnpm'
 alias nv='cd ~/newdotfiles/config/nvim/'
 alias mvjs=~/code/rename-js-file/bin/rename-js-file
 alias sudo="sudo -E"
+alias ...="cd ../.."
+alias ....="cd ../../.."
