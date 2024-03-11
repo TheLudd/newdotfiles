@@ -8,7 +8,7 @@ unsetopt beep
 bindkey -v
 bindkey '^R' history-incremental-search-backward
 
-source $HOME/.bash_aliases
+source $ZDOTDIR/aliases.bash
 
 export EDITOR='nvim'
 
