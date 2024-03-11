@@ -9,6 +9,7 @@ bindkey -v
 bindkey '^R' history-incremental-search-backward
 
 source $ZDOTDIR/aliases.bash
+source $ZDOTDIR/colors.bash
 
 export EDITOR='nvim'
 
