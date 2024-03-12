@@ -14,6 +14,7 @@ require'nvim-treesitter.configs'.setup {
     'pug',
     'python',
     'regex',
+    'terraform',
     'tsx',
     'typescript',
     'vim',
