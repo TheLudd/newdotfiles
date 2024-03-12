@@ -1,0 +1,24 @@
+#!/bin/bash
+if [ -n "$1" ]
+then
+	device_comma=$1
+else
+  name=`bluetoothctl devices Paired | awk '{print $3}' | dmenu -i -l 100`
+  device_comma=`bluetoothctl devices Paired | ag $name | awk '{print $2}'`
+fi
+
+device=$(echo $device_comma | sed 's/:/_/g')
+
+bluetoothctl connect $device_comma
+sleep 3
+
+card=$(pacmd list-cards | ag 'name:' | ag -Q "bluez_card.$device" | sed 's/.*<\(.*\)>.*/\1/')
+pacmd set-card-profile $card handsfree_head_unit
+sleep 1
+
+sink=$(pacmd list-sinks | ag 'name:' | ag -Q "bluez_sink.$device" | sed 's/.*<\(.*\)>.*/\1/')
+pacmd set-default-sink $sink
+sleep 1
+
+source=$(pacmd list-sources | ag 'name:' | ag -Q "bluez_source.$device" | sed 's/.*<\(.*\)>.*/\1/')
+pacmd set-default-source $source
