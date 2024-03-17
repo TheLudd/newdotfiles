@@ -43,6 +43,8 @@ pulseaudio-bluetooth
 python3
 python-neovim
 python-pip
+rabbitmq
+redis
 reflector
 ripgrep
 rsync
