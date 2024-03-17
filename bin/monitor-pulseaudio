@@ -1,0 +1,7 @@
+#!/bin/bash
+$HOME/bin/calculate-sound
+
+pactl subscribe | grep --line-buffered "change" | while read -r line; do
+   $HOME/bin/calculate-sound
+   kill -40 $(pidof dwmblocks)
+done
