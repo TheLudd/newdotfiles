@@ -1,0 +1,32 @@
+#!/bin/bash
+activeSink=$(pacmd list-sinks | ag --after=1 -Q '* index' | tail -n 1 | sed 's/name: <//g' | sed 's/>//g' | sed 's/^[ \t]*//')
+
+activeSource=$(pacmd list-sources | ag --after=1 -Q '* index' | tail -n 1 | sed 's/name: <//g' | sed 's/>//g' | sed 's/^[ \t]*//')
+
+IFS='.' read -r sinkType sinkId sinkProfile <<< "$activeSink"
+IFS='.' read -r sourceType sourceId sourceProfile <<< "$activeSource"
+
+if [ "$sinkType" == "bluez_sink" ]; then
+  sinkIdColon=$(echo $sinkId | sed 's/_/:/g')
+  sinkDevice=$(bluetoothctl info $sinkIdColon | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
+fi
+
+if [ "$sourceType" == "bluez_source" ]; then
+  sourceIdColon=$(echo $sourceId | sed 's/_/:/g')
+  sourceDevice=$(bluetoothctl info $sourceIdColon | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
+else
+  sourceDevice=$sourceId
+fi
+
+target=/tmp/sound-info
+
+echo "sinkDevice    $sinkDevice" > $target
+echo "sourceDevice  $sourceDevice" >> $target
+echo "sinkType      $sinkType" >> $target
+echo "sourceType    $sourceType" >> $target
+echo "sinkId        $sinkId" >> $target
+echo "sourceId      $sourceId" >> $target
+echo "sinkProfile   $sinkProfile" >> $target
+echo "sourceProfile $sourceProfile" >> $target
+echo "sinkIdColon   $sinkIdColon" >> $target
+echo "sourceIdColon $sourceIdColon" >> $target

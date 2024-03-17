@@ -1,0 +1,18 @@
+#!/bin/bash
+infoFile=/tmp/sound-info
+if [ -f "$infoFile" ];
+then
+  sinkDevice=$(cat $infoFile | ag 'sinkDevice' | awk '{print $2}')
+  sourceDevice=$(cat $infoFile | ag 'sourceDevice' | awk '{print $2}')
+  sourceType=$(cat $infoFile | ag 'sourceType' | awk '{print $2}')
+  sinkType=$(cat $infoFile | ag 'sinkType' | awk '{print $2}')
+  if [ "$sinkDevice" == "$sourceDevice" ]; then
+    if [ "$sourceType" == "bluez_source" ]; then
+      echo -e "$sinkDevice 🎧"
+    fi
+  elif [ "$sinkType" == "bluez_sink" ]; then
+    echo -e "$sinkDevice 🎧🎤"
+  else
+    echo -e "🔊 🎤"
+  fi
+fi

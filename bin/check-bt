@@ -1,0 +1,8 @@
+#!/bin/bash
+list=$(bluetoothctl list)
+
+if [ -z "$list" ]; then
+  echo -e "\e[31m \e[0m"
+else
+  echo -e "\e[34m \e[0m"
+fi
