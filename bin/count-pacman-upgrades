@@ -12,4 +12,4 @@ function writestatus() {
 	fi
 }
 
-{ sudo pacman -Sy > /dev/null && count=`pacman -Qu | wc -l` && writestatus $count; } &
+{ sudo pacman -Sy > /dev/null && count=`pacman -Qu | sed '/[ignored]/d' | wc -l` && writestatus $count; } &
