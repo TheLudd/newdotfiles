@@ -60,6 +60,7 @@ local plugins = {
 
   -- git
   'f-person/git-blame.nvim',
+  'tpope/vim-fugitive',
 
   -- db plugin
   'tpope/vim-dadbod',
