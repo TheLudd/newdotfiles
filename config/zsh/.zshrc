@@ -25,6 +25,8 @@ export GNUPGHOME="$XDG_DATA_HOME"/gnupg
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
 export PNPM_HOME=$XDG_DATA_HOME/pnpm
+export REDISCLI_HISTFILE="$XDG_DATA_HOME"/redis/rediscli_history
+export REDISCLI_RCFILE="$XDG_CONFIG_HOME"/redis/redisclirc
 
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME"/aws/credentials
 export AWS_CONFIG_FILE="$XDG_CONFIG_HOME"/aws/config
