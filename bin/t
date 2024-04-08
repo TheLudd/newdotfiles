@@ -13,7 +13,7 @@ if [ "$pm" == "npm" ]; then
 elif [ "$pm" == "yarn" ]; then
 		yarn test $@
 elif [ "$pm" == "pnpm" ]; then
-		pnpm test $@
+		pnpm -s test $@
 else
 		echo "Unknown package manager: $pm"
 		exit 1
