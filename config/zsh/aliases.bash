@@ -35,3 +35,4 @@ alias mvjs=~/code/rename-js-file/bin/rename-js-file
 alias sudo="sudo -E"
 alias ...="cd ../.."
 alias ....="cd ../../.."
+alias uw='nodemon -q -x "clear; u" -e js,jsx,ts,tsx'
