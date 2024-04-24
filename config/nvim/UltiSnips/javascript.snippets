@@ -121,6 +121,18 @@ export const `!v g:Abolish.mixedcase(expand('%:t:r'))` = ($1) => {
 }
 endsnippet
 
+snippet eC "export class" b
+export class `!v g:Abolish.mixedcase(expand('%:t:r'))` $1{
+  $2
+}
+endsnippet
+
+snippet eco "export const" b
+export const `!v g:Abolish.camelcase(expand('%:t:r'))` = {
+  $2
+}
+endsnippet
+
 snippet ed "export default" b
 export default $1
 endsnippet
