@@ -1,0 +1,3 @@
+#!/bin/bash
+card=$(pacmd list-cards | ag 'name:' | ag -Q "bluez_card" | sed 's/.*<\(.*\)>.*/\1/')
+pacmd set-card-profile $card a2dp_sink
