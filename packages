@@ -62,6 +62,7 @@ ttf-liberation
 tzdata
 usbutils
 vlc
+wget
 xclip
 xf86-input-libinput
 xf86-video-nouveau
