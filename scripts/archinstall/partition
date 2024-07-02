@@ -30,4 +30,22 @@ mount --mkdir ${DISK}p1 /mnt/boot
 swapon ${DISK}p2
 mount --mkdir /dev/mapper/home_crypt /mnt/home
 
-echo "Partitions have been created, formatted, encrypted, and mounted."
+# Configure crypttab
+echo "home_crypt UUID=$(blkid -s UUID -o value ${DISK}p4) none luks" >> /mnt/etc/crypttab
+
+# Configure fstab
+genfstab -U /mnt >> /mnt/etc/fstab
+
+# Add encrypt hook in mkinitcpio.conf
+sed -i 's/^HOOKS=(\(.*\)filesystems\(.*\))/HOOKS=(\1encrypt filesystems\2)/' /mnt/etc/mkinitcpio.conf
+
+# Rebuild initramfs inside chroot
+arch-chroot /mnt mkinitcpio -P
+
+# Configure GRUB for encrypted partition
+sed -i 's/^GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value ${DISK}p4):home_crypt root=\/dev\/mapper\/home_crypt \1"/' /mnt/etc/default/grub
+
+# Update GRUB configuration inside chroot
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+echo "Partitions have been created, formatted, encrypted, and mounted. Configuration files updated."
