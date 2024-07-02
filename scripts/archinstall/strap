@@ -1,2 +1,0 @@
-#!/bin/bash
-pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr unzip wget

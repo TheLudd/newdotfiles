@@ -2,6 +2,12 @@
 
 # Define the disk
 DISK="/dev/nvme0n1"
+#
+# Check if the disk is in use
+if lsof | grep $DISK; then
+    echo "Error: $DISK is currently in use."
+    exit 1
+fi
 
 # Wipe existing filesystems
 wipefs -a $DISK
@@ -29,6 +35,8 @@ mount ${DISK}p3 /mnt
 mount --mkdir ${DISK}p1 /mnt/boot
 swapon ${DISK}p2
 mount --mkdir /dev/mapper/home_crypt /mnt/home
+
+pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr unzip wget neovim
 
 # Configure crypttab
 echo "home_crypt UUID=$(blkid -s UUID -o value ${DISK}p4) none luks" >> /mnt/etc/crypttab
