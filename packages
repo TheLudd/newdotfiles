@@ -27,6 +27,7 @@ make
 man-db
 man-pages
 mplayer
+neovim
 networkmanager
 network-manager-applet
 nodejs
