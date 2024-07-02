@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Define the disk
+DISK="/dev/nvme0n1"
+
+# Define the partition table
+sfdisk $DISK << EOF
+,1G,U
+,8G,S
+,100G,L
+,,L
+EOF
+
+# Format the partitions
+mkfs.fat -F32 ${DISK}p1
+mkswap ${DISK}p2
+mkfs.ext4 ${DISK}p3
+
+# Encrypt the home partition
+cryptsetup luksFormat ${DISK}p4
+cryptsetup open ${DISK}p4 home_crypt
+mkfs.ext4 /dev/mapper/home_crypt
+
+# Mount and activate swap
+mount ${DISK}p1 /boot/efi
+swapon ${DISK}p2
+mount ${DISK}p3 /
+mount /dev/mapper/home_crypt /home
