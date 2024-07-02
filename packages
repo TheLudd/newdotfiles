@@ -59,6 +59,7 @@ the_silver_searcher
 tree
 ttf-liberation
 tzdata
+unzip
 usbutils
 vlc
 wget
@@ -71,4 +72,5 @@ xorg-setxkbmap
 xorg-xinit
 xorg-xrandr
 xsel
+zip
 zsh-syntax-highlighting
