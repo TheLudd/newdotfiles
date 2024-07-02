@@ -3,7 +3,10 @@
 # Define the disk
 DISK="/dev/nvme0n1"
 
-# Define the partition table
+# Wipe existing filesystems
+wipefs -a $DISK
+
+# Create the partition table
 sfdisk $DISK << EOF
 ,1G,U
 ,8G,S
@@ -21,8 +24,10 @@ cryptsetup luksFormat ${DISK}p4
 cryptsetup open ${DISK}p4 home_crypt
 mkfs.ext4 /dev/mapper/home_crypt
 
-# Mount and activate swap
-mount ${DISK}p1 /boot/efi
+# Mount the partitions
+mount ${DISK}p3 /mnt
+mount --mkdir ${DISK}p1 /mnt/boot
 swapon ${DISK}p2
-mount ${DISK}p3 /
-mount /dev/mapper/home_crypt /home
+mount --mkdir /dev/mapper/home_crypt /mnt/home
+
+echo "Partitions have been created, formatted, encrypted, and mounted."
