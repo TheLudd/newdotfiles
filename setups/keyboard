@@ -1,2 +1,0 @@
-#!/bin/bash
-sudo localectl set-x11-keymap se '' '' caps:escape
