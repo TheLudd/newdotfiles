@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <username> <password>"
+    exit 1
+fi
+
+USERNAME=$1
+PASSWORD=$2
+
+# Create the user with a home directory
+useradd -m -G wheel -s /bin/bash $USERNAME
+
+# Set the user's password
+echo "$USERNAME:$PASSWORD" | chpasswd
+
+# Install sudo if it's not already installed
+pacman -S --noconfirm sudo
+
+# Ensure the wheel group has sudo privileges
+sed -i '/^# %wheel ALL=(ALL) ALL$/s/^# //' /etc/sudoers
+
+# Configure sudoers to not require a password for the new user
+echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+echo "User $USERNAME created and granted sudo privileges."
