@@ -1,9 +1,0 @@
-#!/bin/bash
-# Create the EFI directory if it doesn't exist
-mkdir -p /boot/efi
-
-# Install GRUB
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
-
-# Generate the GRUB configuration file
-grub-mkconfig -o /boot/grub/grub.cfg
