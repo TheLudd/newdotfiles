@@ -28,6 +28,7 @@ export PNPM_HOME=$XDG_DATA_HOME/pnpm
 export REDISCLI_HISTFILE="$XDG_DATA_HOME"/redis/rediscli_history
 export REDISCLI_RCFILE="$XDG_CONFIG_HOME"/redis/redisclirc
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME"/aws/credentials
 export AWS_CONFIG_FILE="$XDG_CONFIG_HOME"/aws/config
