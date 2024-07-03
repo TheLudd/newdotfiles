@@ -63,7 +63,19 @@ arch-chroot /mnt mkinitcpio -P
 # Install and configure GRUB
 echo "Installing and configuring GRUB"
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-arch-chroot /mnt sed -i 's/^GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value ${DISK}p4):home_crypt root=\/dev\/nvme0n1p3 \1"/' /etc/default/grub
+
+# Capture the UUID before entering chroot
+HOME_PART_UUID=$(blkid -s UUID -o value ${DISK}p4)
+
+# Modify /etc/default/grub 
+sed -i "s/^GRUB_CMDLINE_LINUX=\"\(.*\)\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$HOME_PART_UUID:home_crypt root=\/dev\/nvme0n1p3 \1\"/" /mnt/etc/default/grub
+
+# Generate GRUB configuration inside chroot
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
-echo "Partitions have been created, formatted, encrypted, and mounted. Configuration files updated."
+if [ -f /mnt/boot/grub/grub.cfg ]; then
+  echo "Partitions have been created, formatted, encrypted, and mounted. GRUB has been installed and configured."
+else
+  echo "GRUB installation failed."
+fi
+
