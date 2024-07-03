@@ -8,59 +8,59 @@ DISK="/dev/nvme0n1"
 wipefs -a $DISK
 
 # Create the partition table
-echo Creating partitions on $DISK
+echo "Creating partitions on $DISK"
 sfdisk $DISK << EOF
-,1G,U
+2048,1G,U
 ,8G,S
 ,100G,L
 ,,L
 EOF
 
 # Format the partitions
-echo Creating FAT32 filesystem on ${DISK}p1 (EFI boot partition)
+echo "Creating FAT32 filesystem on ${DISK}p1 (EFI boot partition)"
 mkfs.fat -F32 ${DISK}p1
-echo Creating swap filesystem on ${DISK}p2 (swap partition)
+echo "Creating swap filesystem on ${DISK}p2 (swap partition)"
 mkswap ${DISK}p2
-echo Creating ext4 filesystem on ${DISK}p3 (root partition)
+echo "Creating ext4 filesystem on ${DISK}p3 (root partition)"
 mkfs.ext4 ${DISK}p3
 
 # Encrypt the home partition
-echo Creating LUKS encrypted filesystem on ${DISK}p4 (home partition)
+echo "Creating LUKS encrypted filesystem on ${DISK}p4 (home partition)"
 cryptsetup luksFormat ${DISK}p4
-echo Opening encrypted filesystem
+echo "Opening encrypted filesystem"
 cryptsetup open ${DISK}p4 home_crypt
-echo Creating ext4 filesystem on home partition
+echo "Creating ext4 filesystem on home partition"
 mkfs.ext4 /dev/mapper/home_crypt
 
 # Mount the partitions
-echo Mounting partitions
+echo "Mounting partitions"
 mount ${DISK}p3 /mnt
 mount --mkdir ${DISK}p1 /mnt/boot
 swapon ${DISK}p2
 mount --mkdir /dev/mapper/home_crypt /mnt/home
 
 # Install base system
-echo Installing base system
+echo "Installing base system"
 pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr unzip wget neovim
 
 # Configure crypttab
-echo Configuring crypttab
+echo "Configuring crypttab"
 echo "home_crypt UUID=$(blkid -s UUID -o value ${DISK}p4) none luks" >> /mnt/etc/crypttab
 
 # Configure fstab
-echo Configuring fstab
+echo "Configuring fstab"
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Add encrypt hook in mkinitcpio.conf
-echo Adding encrypt hook in mkinitcpio.conf
+echo "Adding encrypt hook in mkinitcpio.conf"
 sed -i 's/^HOOKS=(\(.*\)filesystems\(.*\))/HOOKS=(\1encrypt filesystems\2)/' /mnt/etc/mkinitcpio.conf
 
 # Rebuild initramfs inside chroot
-echo Rebuilding initramfs
+echo "Rebuilding initramfs"
 arch-chroot /mnt mkinitcpio -P
 
 # Install and configure GRUB
-echo Installing and configuring GRUB
+echo "Installing and configuring GRUB"
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 sed -i 's/^GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value ${DISK}p4):home_crypt root=\/dev\/nvme0n1p3 \1"/' /mnt/etc/default/grub
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
