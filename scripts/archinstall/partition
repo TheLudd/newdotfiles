@@ -5,6 +5,7 @@ set -e
 DISK="/dev/nvme0n1"
 
 # Wipe existing filesystems
+echo "Wiping existing filesystems on $DISK"
 wipefs -a $DISK
 
 # Create the partition table
@@ -53,7 +54,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 # Add encrypt hook in mkinitcpio.conf
 echo "Adding encrypt hook in mkinitcpio.conf"
-sed -i 's/^HOOKS=(\(.*\)filesystems\(.*\))/HOOKS=(\1encrypt filesystems\2)/' /mnt/etc/mkinitcpio.conf
+arch-chroot /mnt sed -i 's/^HOOKS=(\(.*\)filesystems\(.*\))/HOOKS=(\1encrypt filesystems\2)/' /etc/mkinitcpio.conf
 
 # Rebuild initramfs inside chroot
 echo "Rebuilding initramfs"
@@ -62,7 +63,7 @@ arch-chroot /mnt mkinitcpio -P
 # Install and configure GRUB
 echo "Installing and configuring GRUB"
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-sed -i 's/^GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value ${DISK}p4):home_crypt root=\/dev\/nvme0n1p3 \1"/' /mnt/etc/default/grub
+arch-chroot /mnt sed -i 's/^GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value ${DISK}p4):home_crypt root=\/dev\/nvme0n1p3 \1"/' /etc/default/grub
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 echo "Partitions have been created, formatted, encrypted, and mounted. Configuration files updated."
