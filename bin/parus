@@ -1,0 +1,9 @@
+#!/bin/bash
+listFile=~/newdotfiles/paru-packages
+paru -S $@
+
+if [ $? -eq 0 ]; then
+  echo $@ >> $listFile
+  cat $listFile | sed 's/ /\n/g' | sort | uniq > /tmp/listfile
+  mv /tmp/listfile $listFile
+fi
