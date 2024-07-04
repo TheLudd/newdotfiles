@@ -37,3 +37,5 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias uw='nodemon -q -x "clear; u" -e js,jsx,ts,tsx'
 alias cat='bat -pp '
+alias vi=nvim
+alias vim=nvim
