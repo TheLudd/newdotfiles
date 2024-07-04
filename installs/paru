@@ -1,0 +1,14 @@
+#!/bin/bash
+sudo pacman -S --needed base-devel
+
+# Clone paru repository
+cd 
+mkdir -p code
+cd code
+git clone https://aur.archlinux.org/paru.git
+
+# Change to paru directory
+cd paru
+
+# Build and install paru
+makepkg -si
