@@ -1,4 +1,7 @@
 #!/bin/bash
+# Enable parallel downloads in pacman
+sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
+
 # Get the directory two levels up from the script
 package_file="$(realpath "$(dirname "$0")/../../packages")"
 
