@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -e
+
+# Validate ISO path input
+if [ -z "$1" ]; then
+  echo "Usage: $0 <path-to-iso>"
+  exit 1
+fi
+
+ISO_PATH="$1"
+USB_DEV="/dev/sda"
+
+# Check if ISO file exists
+if [ ! -f "$ISO_PATH" ]; then
+  echo "ISO file not found at $ISO_PATH"
+  exit 1
+fi
+
+# Unmount the USB device if mounted
+if mount | grep -q ${USB_DEV}; then
+  echo "Unmounting ${USB_DEV}..."
+  sudo umount ${USB_DEV}*
+fi
+
+# Quickly wipe the partition table
+echo "Wiping partition table on ${USB_DEV}..."
+sudo dd if=/dev/zero of=${USB_DEV} bs=1M count=10 status=progress
+
+# Create a new partition table
+echo "Creating partition table on ${USB_DEV}..."
+sudo sfdisk ${USB_DEV} << EOF
+label: dos
+EOF
+
+# Create a primary partition
+echo "Creating primary partition on ${USB_DEV}..."
+echo ',,c,*' | sudo sfdisk ${USB_DEV}
+
+# Format the partition
+echo "Formatting partition on ${USB_DEV}1..."
+sudo mkfs.vfat -F32 ${USB_DEV}1
+
+# Write the ISO to the USB device
+echo "Writing ISO to ${USB_DEV}..."
+sudo dd if=${ISO_PATH} of=${USB_DEV} bs=4M status=progress oflag=sync
+
+sync
+echo "ISO installation to USB completed."
