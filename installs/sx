@@ -1,0 +1,14 @@
+#!/bin/bash
+sudo pacman -S --needed base-devel
+
+# Clone sx repository
+cd 
+mkdir -p code
+cd code
+git clone https://github.com/Earnestly/sx.git
+
+# Change to sx directory
+cd sx
+
+# Build and install sx
+sudo make install
