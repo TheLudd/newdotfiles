@@ -1,4 +1,6 @@
 #!/bin/bash
+mkdir -p $HOME/.config
+
 base=`pwd`
 for path in config/*
 do
