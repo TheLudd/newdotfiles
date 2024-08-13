@@ -8,11 +8,13 @@ DISK="/dev/nvme0n1"
 echo "Wiping existing filesystems on $DISK"
 wipefs -a $DISK
 
+swapsize=$(grep MemTotal /proc/meminfo | awk '{printf "%.0fG\n", ($2/1024/1024)*2}')
+
 # Create the partition table
 echo "Creating partitions on $DISK"
 sfdisk $DISK << EOF
 2048,1G,U
-,8G,S
+,${swapsize},S
 ,100G,L
 ,,L
 EOF
