@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo systemctl enable NetworkManager.service
-sudo systemctl start NetworkManager.service
-sudo systemctl enable bluetooth.service
-sudo systemctl start bluetooth.service
+cd /etc/systemd/system
+sudo ln -s /usr/lib/systemd/system/NetworkManager.service
+sudo ln -s /usr/lib/systemd/system/bluetooth.service
