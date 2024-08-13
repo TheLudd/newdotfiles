@@ -9,7 +9,7 @@ USERNAME=$1
 PASSWORD=$2
 
 # Create the user with a home directory
-useradd -m -G wheel -s /bin/bash $USERNAME
+useradd -m -G wheel -s /bin/zsh $USERNAME
 
 # Set the user's password
 echo "$USERNAME:$PASSWORD" | chpasswd
