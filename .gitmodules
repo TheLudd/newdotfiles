@@ -10,3 +10,6 @@
 [submodule "sources/dwmblocks"]
 	path = sources/dwmblocks
 	url = https://github.com/TheLudd/dwmblocks.git
+[submodule "sources/dmenu"]
+	path = sources/dmenu
+	url = https://github.com/TheLudd/dmenu.git
