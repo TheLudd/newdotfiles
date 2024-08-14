@@ -1,5 +1,5 @@
-#!/bin/bash
-wget -P /tmp https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Noto.zip
+#!/bin/zsh
+wget -P /tmp https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/DejaVuSansMono.tar.xz
 mkdir -p $XDG_DATA_HOME/fonts
-unzip /tmp/Noto.zip -d $XDG_DATA_HOME/fonts
+tar -xf /tmp/DejaVuSansMono.tar.xz -C $XDG_DATA_HOME/fonts
 fc-cache -fv
