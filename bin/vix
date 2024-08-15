@@ -4,4 +4,4 @@ if [ ! -f $fileName ]; then
 	echo "#!/bin/zsh" > $fileName
 	chmod +x $fileName
 fi
-vi $fileName
+nvim $fileName
