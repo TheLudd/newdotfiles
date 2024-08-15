@@ -5,6 +5,6 @@ for m in $monitors
 do
 	if [ "$m" != "eDP-1" ]
 	then
-		xrandr --output $m --auto --left-of eDP-1 --primary --scale 1
+		xrandr --output $m --primary
 	fi
 done
