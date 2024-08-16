@@ -7,9 +7,16 @@ fi
 
 USERNAME=$1
 PASSWORD=$2
+HOMEDIR="/home/$USERNAME"
 
-# Create the user with a home directory
-useradd -m -G wheel -s /bin/zsh $USERNAME
+# Check if the home directory exists
+if [ -d "$HOMEDIR" ]; then
+    echo "Home directory $HOMEDIR exists. Creating user without creating a new home directory."
+    useradd -d "$HOMEDIR" -s /bin/zsh -G wheel -M $USERNAME
+else
+    echo "Home directory $HOMEDIR does not exist. Creating user with a new home directory."
+    useradd -m -s /bin/zsh -G wheel $USERNAME
+fi
 
 # Set the user's password
 echo "$USERNAME:$PASSWORD" | chpasswd
