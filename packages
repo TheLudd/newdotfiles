@@ -9,6 +9,7 @@ bc
 blueberry
 bluez
 bluez-utils
+dosfstools
 dunst
 fakeroot
 feh
