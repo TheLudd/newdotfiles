@@ -21,8 +21,12 @@ fi
 # Set the user's password
 echo "$USERNAME:$PASSWORD" | chpasswd
 
-# Install sudo if it's not already installed
-pacman -S --noconfirm sudo
+if ! pacman -Q sudo &> /dev/null; then
+    echo "sudo is not installed. Installing sudo."
+    pacman -S --noconfirm sudo
+else
+    echo "sudo is already installed."
+fi
 
 # Ensure the wheel group has sudo privileges
 sed -i '/^# %wheel ALL=(ALL) ALL$/s/^# //' /etc/sudoers
