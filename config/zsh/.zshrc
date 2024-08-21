@@ -1,4 +1,4 @@
-export PATH="$HOME/bin:$HOME/.yarn/bin:$XDG_DATA_HOME/npm/bin:$XDG_DATA_HOME/pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+export PATH="$HOME/bin:$HOME/.yarn/bin:$XDG_DATA_HOME/pnpm:$XDG_DATA_HOME/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 # Lines configured by zsh-newuser-install
 HISTSIZE=100000
