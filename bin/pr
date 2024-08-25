@@ -64,7 +64,7 @@ bodyFile="$tmpFile.body"
 
 
 git log $base.. --pretty=format:"%s%n%n%b" > $tmpFile
-vi $tmpFile &&
+nvim $tmpFile &&
 
 title=`cat $tmpFile | head -n 1`
 cat $tmpFile | tail -n +3 > $bodyFile
