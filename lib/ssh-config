@@ -1,0 +1,47 @@
+Host *
+	AddKeysToAgent yes
+
+host production
+hostname 54.217.170.19
+
+host staging
+hostname 18.197.233.168
+User ludwig
+
+host old-staging
+hostname 18.197.10.147
+User ludwig
+
+host admin
+hostname 54.170.69.157
+User ludwig
+
+host pi
+hostname 31.211.237.135
+
+host oldproduction
+hostname 34.251.89.186
+User ludwig
+
+host officepi
+hostname 192.168.1.132
+# User pi
+
+host piserver
+hostname 192.168.1.215
+# User pi
+
+Host staging-bff
+Hostname 52.58.104.72
+User ludwig
+
+Host lekhuset
+Hostname ssh.lekhuset.info
+User lekhuset.info
+
+Host gaius-test
+Hostname ec2-34-240-195-150.eu-west-1.compute.amazonaws.com
+
+Host demo
+HostName 51.21.108.163
+User ludwig
