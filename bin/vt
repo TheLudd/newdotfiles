@@ -1,11 +1,13 @@
 #!/bin/bash
 path=$1
 
-subPath=`echo $path | sed 's,^[^/]*/,,'`
+dirname=$(dirname "$path")
+filename=$(basename "$path")
+filename_no_suffix="${filename%%.*}"
+suffix="${filename##*.}"
 
-srcFile=./lib/${subPath}
-testFile=./test/${subPath}
+srcFile=$dirname/$filename
+testFile=$dirname/$filename_no_suffix"-test."$suffix
 
-mkdir -p `dirname $testFile`
-touch $srcFile
-vi -O $testFile $srcFile
+touch $testFilea $srcFile
+nvim -O $testFile $srcFile
