@@ -198,5 +198,13 @@ errors = require('@mediatool/mt-errors/lib/errors')()
 endsnippet
 
 snippet tlog "timeout log" 
-setTimeout console.log, 500, $1
+setTimeout (d) -> console.log(d, { depth: null }), 500, $1
+endsnippet
+
+snippet log "log" 
+console.log $1
+endsnippet
+
+snippet dir "dir log" 
+console.dir $1, depth: null
 endsnippet
