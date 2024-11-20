@@ -1,0 +1,2 @@
+#!/bin/bash
+paru -Syu && kill -37 $(pidof dwmblocks)
