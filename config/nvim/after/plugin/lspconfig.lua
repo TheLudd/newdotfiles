@@ -1,7 +1,3 @@
-require('neodev').setup({
-  -- add any options here, or leave empty to use the default settings
-})
-
 local lspconfig = require('lspconfig')
 
 -- example to setup lua_ls and enable call snippets
