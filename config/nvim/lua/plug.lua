@@ -63,7 +63,7 @@ local plugins = {
   'tpope/vim-commentary',
   'tpope/vim-repeat',
   'tpope/vim-surround',
-  'godlygeek/tabular',
+  { "shirosaki/tabular", branch = "fix_leading_spaces" },
 
   -- copilot
   'github/copilot.vim',
