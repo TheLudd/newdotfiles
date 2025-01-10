@@ -41,6 +41,9 @@ local serverMappings = {
       on_attach(client, bufnr)
       buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>EslintFixAll<CR>', opts)
     end,
+    settings = {
+      workingDirectory = { mode = 'auto' },
+    },
   },
   jsonls = {
     on_attach = on_attach,
