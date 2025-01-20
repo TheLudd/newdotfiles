@@ -1,7 +1,7 @@
+local lspconfig = require("lspconfig")
 require('mason').setup()
 
 local function buf_set_keymap(bufnr, ...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-local function buf_set_option(bufnr, ...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
 -- Mappings.
 local opts = { noremap = true, silent = true }
@@ -20,7 +20,24 @@ end
 local prettier = { formatCommand = 'prettierd "${INPUT}"', formatStdin = true, env = { 'PRETTIERD_LOCAL_PRETTIER_ONLY=true' } }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+local on_json_ls_attach = function(client, bufnr)
+  on_attach(client, bufnr)
+  local has_biome = lspconfig.util.root_pattern("biome.json")(vim.api.nvim_buf_get_name(bufnr))
+  if has_biome then
+    client.server_capabilities.documentFormattingProvider = false
+  end
+  on_attach(client, bufnr)
+end
+
 local serverMappings = {
+  biome = {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    cmd = { "biome", "lsp-proxy" },
+    filetypes = { "javascript", "typescript", "typescriptreact", "json", "toml", "markdown", "html", "css" },
+    root_dir = lspconfig.util.root_pattern("biome.json"),
+    single_file_support = false,
+  },
   efm = {
     on_attach = on_attach,
     init_options = { documentFormatting = true },
@@ -46,7 +63,7 @@ local serverMappings = {
     },
   },
   jsonls = {
-    on_attach = on_attach,
+    on_attach = on_json_ls_attach,
     settings = {
       json = {
         -- Schemas https://www.schemastore.org
