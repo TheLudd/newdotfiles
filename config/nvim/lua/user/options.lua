@@ -1,11 +1,3 @@
-local term = vim.fn.getenv('TERM')
-
-if term == 'dvtm-256color' then
-  vim.cmd [[colorscheme jellybeans]]
-else
-  vim.cmd [[colorscheme tokyonight-night]]
-end
-
 vim.opt.relativenumber = true -- set relative numbered lines
 vim.opt.number = true -- set relative numbered lines
 vim.opt.incsearch = true
