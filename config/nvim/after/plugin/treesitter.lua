@@ -1,4 +1,10 @@
-require'nvim-treesitter.configs'.setup {
+local ok, treesitterConfigs = pcall(require, 'nvim-treesitter.configs')
+
+if not ok then
+  return
+end
+
+treesitterConfigs.setup {
   auto_install = false,
   highlight = { enable = true, disable = {} },
   indent = { enable = true, disable = {} },

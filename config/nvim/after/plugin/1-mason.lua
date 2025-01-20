@@ -1,4 +1,9 @@
-local lspconfig = require("lspconfig")
+local ok, lspconfig = pcall(require, "lspconfig")
+
+if not ok then
+  return
+end
+
 require('mason').setup()
 
 local function buf_set_keymap(bufnr, ...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
