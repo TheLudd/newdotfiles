@@ -354,6 +354,7 @@ import { $1 } from '@mediatool/mt-utils/import'
 endsnippet
 
 snippet test "Test" b
+import { assert } from 'chai'
 import { describe, it } from 'mocha'
 import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAndRetainSuffix()`'
 
@@ -424,4 +425,11 @@ endsnippet
 
 snippet ytu "yafu test utils" b
 import { $1 } from '@yafu/test-utils'
+endsnippet
+
+snippet ecf "export curried function" b
+import { curry } from '@yafu/curry'
+import { `!v g:Abolish.camelcase(substitute(expand('%:t'), '_curried.js', '', ''))` as raw`!v g:Abolish.mixedcase(substitute(expand('%:t'), '_curried.js', '', ''))` } from './`!v substitute(expand('%:t'), '_curried.js', '.ts', '')`'
+
+export const `!v g:Abolish.camelcase(substitute(expand('%:t'), '_curried.js', '', ''))` = curry(raw`!v g:Abolish.mixedcase(substitute(expand('%:t'), '_curried.js', '', ''))`)
 endsnippet
