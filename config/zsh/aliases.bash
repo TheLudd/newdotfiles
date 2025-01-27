@@ -39,3 +39,5 @@ alias uw='nodemon -q -x "clear; u" -e js,jsx,ts,tsx'
 alias cat='bat -pp '
 alias vi=nvim
 alias vim=nvim
+alias ca="run -w checkall"
+alias lw="run -w lint --write --unsafe"
