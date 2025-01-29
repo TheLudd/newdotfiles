@@ -35,6 +35,9 @@ local on_json_ls_attach = function(client, bufnr)
 end
 
 local serverMappings = {
+  terraformls = {
+    on_attach = on_attach,
+  },
   biome = {
     on_attach = on_attach,
     capabilities = capabilities,
