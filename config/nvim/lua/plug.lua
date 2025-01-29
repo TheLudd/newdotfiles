@@ -85,5 +85,15 @@ local plugins = {
     ft = { 'markdown' },
     build = function() vim.fn['mkdp#util#install']() end,
   },
+
+  -- terraform
+  {
+    'hashivim/vim-terraform',
+    ft = { 'terraform' }, -- Load only for Terraform files
+    config = function()
+      vim.g.terraform_align = 1
+      vim.g.terraform_fold_sections = 1
+    end
+  },
 }
 require('lazy').setup(plugins, { lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json' })
