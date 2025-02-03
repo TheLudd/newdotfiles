@@ -1,3 +1,9 @@
 #!/bin/bash
 card=$(pacmd list-cards | ag 'name:' | ag -Q "bluez_card" | sed 's/.*<\(.*\)>.*/\1/')
-pacmd set-card-profile $card handsfree_head_unit
+pacmd set-card-profile "$card" handsfree_head_unit
+
+# Get the corresponding source (microphone) for the Bluetooth card
+source=$(pacmd list-sources | ag 'name:' | ag -Q "bluez_source.$device" | sed 's/.*<\(.*\)>.*/\1/')
+
+# Set the microphone volume to 100%
+pactl set-source-volume "$source" 100%
