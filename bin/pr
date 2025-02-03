@@ -36,6 +36,8 @@ for (( i=0; i<${#reviewers}; i++ )); do
 	  reviewer=Urdat
   elif [[ $char == "x" ]]; then
 	  reviewer=unganemo
+  elif [[ $char == "g" || $char == "h" ]]; then
+	  reviewer=HarryHagelberg404
   fi
   r="$r,$reviewer"
 done
