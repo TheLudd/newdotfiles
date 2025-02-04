@@ -41,3 +41,5 @@ alias vi=nvim
 alias vim=nvim
 alias ca="run -w checkall"
 alias lw="run -w lint --write --unsafe"
+alias ts="run tsc --noEmit"
+alias tsw="run tsc --noEmit -w"
