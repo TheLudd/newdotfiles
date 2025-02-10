@@ -13,6 +13,8 @@ local opts = { noremap = true, silent = true }
 
 local on_attach = function(_, bufnr)
   buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.diagnostic.open_float()<CR><Cmd>lua vim.diagnostic.open_float()<CR>', opts)
+
   buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap(bufnr, 'n', 'R', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap(bufnr, 'n', '<space>r', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
