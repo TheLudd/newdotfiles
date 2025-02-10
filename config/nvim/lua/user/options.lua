@@ -16,3 +16,11 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
   pattern = "*.feature-template",
   command = "set filetype=cucumber",
 })
+
+vim.diagnostic.config({
+  float = {
+    format = function(diagnostic)
+      return string.format("%s\nSource: %s", diagnostic.message, diagnostic.source)
+    end,
+  },
+})
