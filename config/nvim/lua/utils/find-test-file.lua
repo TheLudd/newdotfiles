@@ -50,14 +50,24 @@ local function tryOpenFiles(filePaths)
   end
 end
 
-local function openFile(mode, findCandidates)
+local function openFile(mode, flags, findCandidates)
   local currentFile = vim.fn.expand('%')
   local candidates = findCandidates(currentFile)
   local sourceFile = tryOpenFiles(candidates)
-  if (sourceFile ~= nil) then vim.cmd(mode .. ' ' .. sourceFile) end
+
+  if sourceFile == nil and flags and flags:find('f') then
+    sourceFile = candidates[1] -- Open the first candidate if 'f' is present
+  end
+
+  if sourceFile then
+    vim.cmd(mode .. ' ' .. sourceFile)
+  end
 end
 
-function TestFinder.openTestFile(mode) openFile(mode, generateTestFileCandidates) end
+function TestFinder.openTestFile(mode, flags)
+  openFile(mode, flags, generateTestFileCandidates)
+end
 
-function TestFinder.openSourceFile(mode) openFile(mode, generateSourceFileCandidates) end
-
+function TestFinder.openSourceFile(mode, flags)
+  openFile(mode, flags, generateSourceFileCandidates)
+end

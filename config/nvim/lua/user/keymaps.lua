@@ -40,10 +40,14 @@ vim.cmd('map ,s :split <C-R>=expand("%:h") . "/" <CR>')
 vim.cmd('map ,v :vsplit <C-R>=expand("%:h") . "/" <CR>')
 
 -- go to test and source files
-keymap('n', 'gss', ':lua TestFinder.openTestFile("vsplit")<cr>', opts)
-keymap('n', 'gse', ':lua TestFinder.openTestFile("edit")<cr>', opts)
-keymap('n', 'gcs', ':lua TestFinder.openSourceFile("rightbelow vsplit")<cr>', opts)
-keymap('n', 'gce', ':lua TestFinder.openSourceFile("edit")<cr>', opts)
+keymap('n', 'gss', ':lua TestFinder.openTestFile("vsplit", "")<cr>', opts)
+keymap('n', 'gsS', ':lua TestFinder.openTestFile("vsplit", "f")<cr>', opts)
+keymap('n', 'gse', ':lua TestFinder.openTestFile("edit", "")<cr>', opts)
+keymap('n', 'gsE', ':lua TestFinder.openTestFile("edit", "f")<cr>', opts)
+keymap('n', 'gcs', ':lua TestFinder.openSourceFile("rightbelow vsplit", "")<cr>', opts)
+keymap('n', 'gcS', ':lua TestFinder.openSourceFile("rightbelow vsplit", "f")<cr>', opts)
+keymap('n', 'gce', ':lua TestFinder.openSourceFile("edit", "")<cr>', opts)
+keymap('n', 'gcE', ':lua TestFinder.openSourceFile("edit", "f")<cr>', opts)
 
 -- Telescope
 keymap('n', '<leader>f', ':Telescope find_files<CR>', opts)
