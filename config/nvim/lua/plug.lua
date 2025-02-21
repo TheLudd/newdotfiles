@@ -54,6 +54,9 @@ local plugins = {
   'SirVer/ultisnips',
   'quangnguyen30192/cmp-nvim-ultisnips',
 
+  -- rust
+  'rust-lang/rust.vim',
+
   -- basics
   'tpope/vim-abolish', -- case insensitive search
   'tpope/vim-eunuch',  -- unix commands
