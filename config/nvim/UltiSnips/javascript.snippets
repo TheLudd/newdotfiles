@@ -369,6 +369,24 @@ describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
 })
 endsnippet
 
+snippet fibtest "Test with fibble" b
+import { assert } from 'chai'
+import { replace, reset } from 'fibble'
+import { afterEach, beforeEach, describe, it } from 'mocha'
+
+describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
+  let `!v g:Abolish.camelcase(RemoveTestAndSuffix())`: typeof import('./`!v RemoveTestAndRetainSuffix()`').`!v g:Abolish.camelcase(RemoveTestAndSuffix())`
+
+  beforeEach(async () => {
+    replace('$1', $2)
+
+    `!v g:Abolish.camelcase(RemoveTestAndSuffix())` = (await import('./`!v RemoveTestAndRetainSuffix()`')).`!v g:Abolish.camelcase(RemoveTestAndSuffix())`
+  })
+
+  afterEach(reset)
+})
+endsnippet
+
 snippet trtf "test rtf" b
 import { assertSyncRtf } from '@fassa/test'
 import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
