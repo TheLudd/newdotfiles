@@ -30,6 +30,8 @@ export REDISCLI_RCFILE="$XDG_CONFIG_HOME"/redis/redisclirc
 export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
+export GHCUP_USE_XDG_DIRS=true
+export STACK_XDG=1
 
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME"/aws/credentials
 export AWS_CONFIG_FILE="$XDG_CONFIG_HOME"/aws/config
@@ -110,3 +112,4 @@ update_prompt
 # Make sure to load the necessary Zsh modules for colors and hooks
 autoload -U colors && colors
 
+[ -f "/home/ludwig/.local/share/ghcup/env" ] && . "/home/ludwig/.local/share/ghcup/env" # ghcup-env
