@@ -18,7 +18,7 @@ then
 
 	if [ -n "$scan" ]
 	then
-		sudo nmcli dev wifi connect "$ssid" password "$pwd"
+		sudo nmcli connection up "$selection"
 	else
 		exit 1
 	fi
