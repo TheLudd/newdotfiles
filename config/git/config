@@ -26,3 +26,4 @@
 	protocol = ssh
 [advice]
 	skippedCherryPicks = false
+  detachedHead = false
