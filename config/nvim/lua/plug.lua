@@ -81,7 +81,6 @@ local plugins = {
   -- coffee specific
   'kchmck/vim-coffee-script',
 
-
   {
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },

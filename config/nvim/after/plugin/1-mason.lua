@@ -73,6 +73,12 @@ local serverMappings = {
       workingDirectory = { mode = 'auto' },
     },
   },
+  hls = {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = { "haskell" },
+    root_dir = lspconfig.util.root_pattern("stack.yaml", "cabal.project", "package.yaml"),
+  },
   rust_analyzer = {
     on_attach = on_attach,
     capabilities = capabilities,
