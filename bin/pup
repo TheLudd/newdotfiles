@@ -1,2 +1,2 @@
 #!/bin/bash
-paru -Syu && kill -37 $(pidof dwmblocks)
+paru -Syu && kill -37 $(pidof dwmblocks) && sudo systemctl restart launcher.kolide-k2.service
