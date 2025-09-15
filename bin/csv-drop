@@ -1,0 +1,34 @@
+#!/bin/sh
+inplace=0
+n=""
+file=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -i) inplace=1 ;;
+    -n) n="$2"; shift ;;
+    *) file="$1" ;;
+  esac
+  shift
+done
+
+if [ -z "$n" ] || [ -z "$file" ]; then
+  echo "Usage: $0 [-i] -n N file" >&2
+  exit 1
+fi
+
+tmp=$(mktemp)
+
+awk -F, -v n="$n" '{
+  OFS=",";
+  for (i=n+1; i<=NF; i++) {
+    printf "%s%s", $i, (i<NF ? OFS : ORS)
+  }
+}' "$file" > "$tmp"
+
+if [ "$inplace" -eq 1 ]; then
+  mv "$tmp" "$file"
+else
+  cat "$tmp"
+  rm "$tmp"
+fi
