@@ -113,3 +113,5 @@ update_prompt
 autoload -U colors && colors
 
 [ -f "/home/ludwig/.local/share/ghcup/env" ] && . "/home/ludwig/.local/share/ghcup/env" # ghcup-env
+
+TRIAL_PERIOD_IN_DAYS=3000
