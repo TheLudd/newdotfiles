@@ -40,8 +40,14 @@ local plugins = {
   { 'nvim-telescope/telescope.nvim',   dependencies = { 'nvim-lua/plenary.nvim' } },
 
   -- mason
-  'williamboman/mason.nvim',
-  'williamboman/mason-lspconfig.nvim',
+  {
+    'williamboman/mason.nvim',
+    version = '^1', -- latest v1.x
+  },
+  {
+    'williamboman/mason-lspconfig.nvim',
+    version = '^1', -- latest v1.x
+  },
 
   -- cmp completion engine
   'hrsh7th/cmp-nvim-lsp',
