@@ -1,0 +1,5 @@
+#!/bin/zsh
+branch=$1
+old_base=$(git merge-base --fork-point $branch HEAD)
+
+git rebase --onto $branch "$old_base"
