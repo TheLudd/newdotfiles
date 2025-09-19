@@ -36,6 +36,10 @@ for (( i=0; i<${#reviewers}; i++ )); do
 	  reviewer=Urdat
   elif [[ $char == "x" ]]; then
 	  reviewer=unganemo
+  elif [[ $char == "n" ]]; then
+	  reviewer=JonathanNeville
+  elif [[ $char == "u" ]]; then
+	  reviewer=LajnaLegenden
   elif [[ $char == "g" || $char == "h" ]]; then
 	  reviewer=HarryHagelberg404
   fi
