@@ -119,6 +119,14 @@ export const `!v g:Abolish.camelcase(expand('%:t:r'))` = ($1) => {
 }
 endsnippet
 
+snippet ertf "export rtf function" b
+import { rtfOf } from '@fassa/type-classes'
+
+export const `!v g:Abolish.camelcase(expand('%:t:r'))` = ($1) => {
+  return rtfOf('')
+}
+endsnippet
+
 snippet ec "export component" b
 export const `!v g:Abolish.mixedcase(expand('%:t:r'))` = ($1) => {
   $2
@@ -388,14 +396,15 @@ describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
 endsnippet
 
 snippet trtf "test rtf" b
-import { assertSyncRtf } from '@fassa/test'
-import `!v g:Abolish.camelcase(expand('%:t:r'))` from '`!v GetTestImportPath()`'
+import { assertRTF } from '@yafu/test-utils'
+import { describe, it } from 'mocha'
+import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAndRetainSuffix()`'
 
-describe('`!v g:Abolish.camelcase(expand('%:t:r'))`', () => {
-  const env = {}
+describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
+	const env = {}
   it('${1:works}', () => {
-    const rtf = `!v g:Abolish.camelcase(expand('%:t:r'))`()
-    assertSyncRtf(env, '', rtf)
+		const rtf = `!v g:Abolish.camelcase(RemoveTestAndSuffix())`()
+    return assertRTF.equal(env, rtf, '')
   })
 })
 endsnippet
