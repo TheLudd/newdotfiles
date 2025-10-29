@@ -40,7 +40,9 @@ for (( i=0; i<${#reviewers}; i++ )); do
 	  reviewer=JonathanNeville
   elif [[ $char == "u" ]]; then
 	  reviewer=LajnaLegenden
-  elif [[ $char == "g" || $char == "h" ]]; then
+  elif [[ $char == "g" ]]; then
+	  reviewer=a-game
+  elif [[ $char == "h" ]]; then
 	  reviewer=HarryHagelberg404
   fi
   r="$r,$reviewer"

@@ -25,6 +25,7 @@ alias prp="pr -r p"
 alias pry="pr -r y"
 alias prc="pr -r c"
 alias prl="pr -r l"
+alias prg="pr -r g"
 alias y='yarn --use-yarnrc "$XDG_CONFIG_HOME/yarn/config"'
 alias yarn='yarn --use-yarnrc "$XDG_CONFIG_HOME/yarn/config"'
 alias ag='ag --path-to-ignore $XDG_CONFIG_HOME/ag/ignore'
