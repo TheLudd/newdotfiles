@@ -22,16 +22,51 @@ local on_attach = function(_, bufnr)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
-  buf_set_keymap(bufnr, 'n', '<space>F', '<cmd>lua vim.lsp.buf.format()<cr>', opts)
+  buf_set_keymap(bufnr, 'n', '<space>F', '<cmd>lua vim.lsp.buf.format({ async = false })', opts)
+
+  buf_set_keymap(bufnr, 'n', '<space>w', '', {
+    noremap = true,
+    silent = true,
+    callback = function()
+      local util = require("lspconfig.util")
+      local cwd = util.root_pattern("biome.json", "biome.jsonc")(vim.fn.expand("%:p"))
+      local file = vim.api.nvim_buf_get_name(0)
+
+      vim.fn.jobstart({ "biome", "check", "--write", file }, {
+        cwd = cwd or vim.fn.getcwd(),
+        on_exit = function(_, code)
+          if code == 0 then
+            vim.schedule(function()
+              vim.cmd("edit!")
+            end)
+          else
+          end
+        end,
+      })
+    end,
+    desc = "Format and organize imports via Biome",
+  })
 end
 
 local prettier = { formatCommand = 'prettierd "${INPUT}"', formatStdin = true, env = { 'PRETTIERD_LOCAL_PRETTIER_ONLY=true' } }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-local on_json_ls_attach = function(client, bufnr)
-  on_attach(client, bufnr)
-  local has_biome = lspconfig.util.root_pattern("biome.json")(vim.api.nvim_buf_get_name(bufnr))
-  if has_biome then
+local uv = vim.uv or vim.loop
+
+local function project_has_biome(root_dir)
+  local paths = { "biome.json", "biome.jsonc" }
+  for _, file in ipairs(paths) do
+    local full_path = table.concat({ root_dir, file }, "/")
+    if uv.fs_stat(full_path) then
+      return true
+    end
+  end
+  return false
+end
+
+local function on_attach_with_biome_check(client, bufnr)
+  local root_dir = client.config.root_dir or vim.fn.getcwd()
+  if project_has_biome(root_dir) and client.name ~= "biome" then
     client.server_capabilities.documentFormattingProvider = false
   end
   on_attach(client, bufnr)
@@ -45,16 +80,17 @@ local serverMappings = {
     on_attach = on_attach,
     capabilities = capabilities,
     cmd = { "biome", "lsp-proxy" },
-    filetypes = { "javascript", "typescript", "typescriptreact", "json", "toml", "markdown", "html", "css" },
-    root_dir = lspconfig.util.root_pattern("biome.json"),
+    root_dir = lspconfig.util.root_pattern("biome.json", "biome.jsonc"),
     single_file_support = false,
+
   },
   efm = {
-    on_attach = on_attach,
+    on_attach = on_attach_with_biome_check,
     init_options = { documentFormatting = true },
     filetypes = { 'lua', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+    root_dir = lspconfig.util.root_pattern(".prettierrc.yaml"),
     settings = {
-      rootMarkers = { '.git/' },
+      rootMarkers = { '.prettierrc.yaml' },
       languages = {
         lua = { { formatCommand = 'lua-format -i', formatStdin = true } },
         javascript = { prettier },
@@ -93,7 +129,7 @@ local serverMappings = {
     },
   },
   jsonls = {
-    on_attach = on_json_ls_attach,
+    on_attach = on_attach_with_biome_check,
     settings = {
       json = {
         -- Schemas https://www.schemastore.org
