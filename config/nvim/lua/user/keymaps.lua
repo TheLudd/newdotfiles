@@ -68,5 +68,11 @@ keymap('n', '<Space>', ':nohlsearch<CR>', opts)
 keymap('n', 'ghc', ':GitBlameCopySHA<CR>', opts)
 keymap('n', 'ghu', ':GitBlameOpenFileURL<CR>', opts)
 
+-- toggle arrow functions
+keymap('n', 'gA', [[:keeppatterns s/function \(.*\)(\(.*\))\(.*\){/const \1= (\2)\3=> {/<CR>:nohlsearch<CR>]], opts)
+-- arrow function → function
+keymap('n', 'gF', [[:keeppatterns s/const \(\h\w*\)\s*=\s*\(.*\)=>\s*/function \1 \2/<CR>:nohlsearch<CR>]], opts)
+
+
 -- disable :Delete to avoid confusion with :DB
 vim.cmd('cnoreabbrev Delete echo "Use :Remove"')
