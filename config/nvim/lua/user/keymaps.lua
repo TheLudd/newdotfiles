@@ -73,6 +73,9 @@ keymap('n', 'gA', [[:keeppatterns s/function \(.*\)(\(.*\))\(.*\){/const \1= (\2
 -- arrow function → function
 keymap('n', 'gF', [[:keeppatterns s/const \(\h\w*\)\s*=\s*\(.*\)=>\s*/function \1 \2/<CR>:nohlsearch<CR>]], opts)
 
+keymap('n', 'cmh', [[f)cf(, <Esc>]], opts)
+keymap('n', 'cml', [[f,cf ) => (<Esc>]], opts)
+
 
 -- disable :Delete to avoid confusion with :DB
 vim.cmd('cnoreabbrev Delete echo "Use :Remove"')
