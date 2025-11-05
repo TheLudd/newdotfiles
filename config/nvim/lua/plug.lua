@@ -49,6 +49,9 @@ local plugins = {
     version = '^1', -- latest v1.x
   },
 
+  -- formatting
+  { 'stevearc/conform.nvim', opts = {} },
+
   -- cmp completion engine
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-buffer',
