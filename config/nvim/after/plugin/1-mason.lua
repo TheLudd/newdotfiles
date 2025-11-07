@@ -13,8 +13,7 @@ local opts = { noremap = true, silent = true }
 
 local on_attach = function(_, bufnr)
   buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.diagnostic.open_float()<CR><Cmd>lua vim.diagnostic.open_float()<CR>',
-    opts)
+  buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.diagnostic.open_float()<CR><Cmd>lua vim.diagnostic.open_float()<CR>', opts)
 
   buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap(bufnr, 'n', 'R', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
@@ -22,33 +21,10 @@ local on_attach = function(_, bufnr)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
-  buf_set_keymap(bufnr, 'n', '<space>F', '<cmd>lua vim.lsp.buf.format({ async = false })', opts)
-
-  buf_set_keymap(bufnr, 'n', '<space>w', '', {
-    noremap = true,
-    silent = true,
-    callback = function()
-      local util = require("lspconfig.util")
-      local cwd = util.root_pattern("biome.json", "biome.jsonc")(vim.fn.expand("%:p"))
-      local file = vim.api.nvim_buf_get_name(0)
-
-      vim.fn.jobstart({ "biome", "check", "--write", file }, {
-        cwd = cwd or vim.fn.getcwd(),
-        on_exit = function(_, code)
-          if code == 0 then
-            vim.schedule(function()
-              vim.cmd("edit!")
-            end)
-          else
-          end
-        end,
-      })
-    end,
-    desc = "Format and organize imports via Biome",
-  })
+  buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.format({ async = false })<cr>', opts)
 end
 
-local prettier = { formatCommand = 'prettierd "${INPUT}"', formatStdin = true, env = { 'PRETTIERD_LOCAL_PRETTIER_ONLY=true' } }
+local biome = { formatCommand = 'biome format --stdin-file-path "${INPUT}"', formatStdin = true }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 local uv = vim.uv or vim.loop
@@ -82,21 +58,21 @@ local serverMappings = {
     cmd = { "biome", "lsp-proxy" },
     root_dir = lspconfig.util.root_pattern("biome.json", "biome.jsonc"),
     single_file_support = false,
-
+    filetypes = { 'lua', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
   },
   efm = {
     on_attach = on_attach_with_biome_check,
     init_options = { documentFormatting = true },
     filetypes = { 'lua', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
-    root_dir = lspconfig.util.root_pattern(".prettierrc.yaml"),
+    root_dir = lspconfig.util.root_pattern("biome.json", "biome.jsonc"),
     settings = {
       rootMarkers = { '.prettierrc.yaml' },
       languages = {
         lua = { { formatCommand = 'lua-format -i', formatStdin = true } },
-        javascript = { prettier },
-        javascriptreact = { prettier },
-        typescript = { prettier },
-        typescriptreact = { prettier },
+        javascript = { biome },
+        javascriptreact = { biome },
+        typescript = { biome },
+        typescriptreact = { biome },
       },
     },
   },

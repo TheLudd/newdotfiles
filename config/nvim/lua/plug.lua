@@ -13,7 +13,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  'neovim/nvim-lspconfig',
+  {
+      "neovim/nvim-lspconfig",
+      version = "v0.1.7",
+  },
   {
     "folke/lazydev.nvim",
     ft = "lua", -- only load on lua files
@@ -31,7 +34,7 @@ local plugins = {
   'nanotech/jellybeans.vim',
 
   -- typescript tools instead of typescript language server
-  { 'pmizio/typescript-tools.nvim',    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' }, opts = {} },
+  { 'pmizio/typescript-tools.nvim',    dependencies = { 'nvim-lua/plenary.nvim' }, opts = {} },
 
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },

@@ -5,7 +5,18 @@ if not ok then
 end
 
 -- example to setup lua_ls and enable call snippets
-lspconfig.lua_ls.setup({ settings = { Lua = { completion = { callSnippet = 'Replace' } } } })
+lspconfig.lua_ls.setup({
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { 'vim' },
+      },
+      completion = {
+        callSnippet = 'Replace',
+      },
+    },
+  },
+})
 
 require('lspconfig.configs').amendLsp = {
   default_config = {
@@ -18,4 +29,4 @@ require('lspconfig.configs').amendLsp = {
   },
 }
 
-lspconfig.amendLsp.setup {}
+-- lspconfig.amendLsp.setup {}
