@@ -14,8 +14,8 @@ vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
   {
-      "neovim/nvim-lspconfig",
-      version = "v0.1.7",
+    "neovim/nvim-lspconfig",
+    version = "v0.1.7",
   },
   {
     "folke/lazydev.nvim",
@@ -75,10 +75,28 @@ local plugins = {
   'tpope/vim-commentary',
   'tpope/vim-repeat',
   'tpope/vim-surround',
-  { "shirosaki/tabular", branch = "fix_leading_spaces" },
+  { "shirosaki/tabular",      branch = "fix_leading_spaces" },
 
   -- copilot
   { 'zbirenbaum/copilot.lua', dependencies = { 'copilotlsp-nvim/copilot-lsp' } },
+
+  -- copilot chat
+  {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    dependencies = {
+      { 'nvim-lua/plenary.nvim', branch = 'master' },
+    },
+    build = 'make tiktoken',
+    opts = {
+      model = 'gpt-5',
+      temperature = 0.1,
+      window = {
+        layout = 'vertical',
+        width = 0.5,
+      },
+      auto_insert_mode = false,
+    },
+  },
 
   -- git
   'f-person/git-blame.nvim',
