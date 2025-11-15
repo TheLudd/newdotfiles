@@ -78,7 +78,7 @@ local plugins = {
   { "shirosaki/tabular", branch = "fix_leading_spaces" },
 
   -- copilot
-  'github/copilot.vim',
+  { 'zbirenbaum/copilot.lua', dependencies = { 'copilotlsp-nvim/copilot-lsp' } },
 
   -- git
   'f-person/git-blame.nvim',
