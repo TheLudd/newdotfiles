@@ -79,3 +79,7 @@ keymap('n', 'cml', [[f,cf ) => (<Esc>]], opts)
 
 -- disable :Delete to avoid confusion with :DB
 vim.cmd('cnoreabbrev Delete echo "Use :Remove"')
+
+vim.keymap.set("n", "<C-f>e", function()
+  vim.diagnostic.setqflist()
+end, { silent = true })
