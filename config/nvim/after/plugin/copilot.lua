@@ -10,8 +10,8 @@ require('copilot').setup({
     enabled = true,
     auto_refresh = true,
     keymap = {
-      jump_prev = "[[",
-      jump_next = "]]",
+      jump_prev = '<C-p>',
+      jump_next = '<C-n>',
       accept = "<CR>",
       refresh = "gr",
       open = "<M-CR>"
@@ -31,14 +31,14 @@ require('copilot').setup({
       accept = '<C-h>',
       accept_word = '<C-w>',
       accept_line = '<C-l>',
-      next = false,
-      prev = false,
+      next = '<M-n>',
+      prev = '<M-p>',
       dismiss = "<C-]>",
     },
 
   },
   nes = {
-    enabled = false, -- requires copilot-lsp as a dependency
+    enabled = false,
     auto_trigger = false,
     keymap = {
       accept_and_goto = false,
@@ -81,3 +81,7 @@ require('copilot').setup({
   },
   server_opts_overrides = {},
 })
+
+vim.keymap.set("i", "<C-P>", function()
+  vim.cmd("Copilot panel")
+end, { desc = "Open Copilot Panel" })
