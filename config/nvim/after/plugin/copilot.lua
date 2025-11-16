@@ -4,7 +4,7 @@
 -- vim.gcopilot_node_command = '/usr/local/n/versions/node/22.21.1/bin/node'
 
 -- vim.api.nvim_set_keymap('i', '<C-h>', 'copilot#Accept("<CR>")', { silent = true, expr = true })
-  --
+--
 require('copilot').setup({
   panel = {
     enabled = true,
@@ -26,15 +26,16 @@ require('copilot').setup({
     auto_trigger = true,
     hide_during_completion = true,
     debounce = 75,
-    trigger_on_accept = true,
+    trigger_on_accept = false,
     keymap = {
-      accept = "<M-l>",
-      accept_word = false,
-      accept_line = false,
-      next = "<M-]>",
-      prev = "<M-[>",
+      accept = '<C-h>',
+      accept_word = '<C-w>',
+      accept_line = '<C-l>',
+      next = false,
+      prev = false,
       dismiss = "<C-]>",
     },
+
   },
   nes = {
     enabled = false, -- requires copilot-lsp as a dependency
