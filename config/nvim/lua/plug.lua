@@ -35,6 +35,7 @@ local plugins = {
 
   -- typescript tools instead of typescript language server
   { 'pmizio/typescript-tools.nvim',    dependencies = { 'nvim-lua/plenary.nvim' }, opts = {} },
+  'dmmulroy/tsc.nvim',
 
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
