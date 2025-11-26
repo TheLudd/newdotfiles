@@ -1,0 +1,3 @@
+#!/bin/zsh
+docker ps -q | xargs -r docker stop
+docker compose up -d
