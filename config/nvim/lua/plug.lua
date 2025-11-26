@@ -95,6 +95,9 @@ local plugins = {
         layout = 'vertical',
         width = 0.5,
       },
+      mappings = {
+        reset = false,
+      },
       auto_insert_mode = false,
     },
   },
