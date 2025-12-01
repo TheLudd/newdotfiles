@@ -34,6 +34,7 @@ network-manager-applet
 nodejs
 noto-fonts-emoji
 openssh
+pacman-contrib
 patch
 pavucontrol
 picom
