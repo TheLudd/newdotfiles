@@ -8,8 +8,9 @@ end
 
 local function replaceLibWithTest(path) return path:gsub('/lib/', '/test/'):gsub('^lib/', 'test/') end
 local function appendTestSuffix(path) return path:gsub('(%..+)$', '-test%1') end
+local function appendDotTestSuffix(path) return path:gsub('(%..+)$', '.test%1') end
 local function changeExtensionToCoffee(path) return path:gsub('(%..+)$', '.coffee') end
-local function removeTestSuffixAndChangeFolder(path) return path:gsub('-test', ''):gsub('/test/', '/lib/'):gsub('^test/', 'lib/') end
+local function removeTestSuffixAndChangeFolder(path) return path:gsub('-test', ''):gsub('.test', ''):gsub('/test/', '/lib/'):gsub('^test/', 'lib/') end
 
 local function generateSourceFileCandidates(file)
   local paths = {}
@@ -30,12 +31,13 @@ TestFinder = {}
 local function generateTestFileCandidates(file)
   local paths = {}
   paths[1] = appendTestSuffix(file)
-  paths[2] = swapExtension(paths[1])
-  paths[3] = replaceLibWithTest(file)
-  paths[4] = swapExtension(paths[3])
-  paths[5] = appendTestSuffix(paths[3])
-  paths[6] = swapExtension(paths[5])
-  paths[7] = changeExtensionToCoffee(paths[5])
+  paths[2] = appendDotTestSuffix(file)
+  paths[3] = swapExtension(paths[1])
+  paths[4] = replaceLibWithTest(file)
+  paths[5] = swapExtension(paths[3])
+  paths[6] = appendTestSuffix(paths[3])
+  paths[7] = swapExtension(paths[5])
+  paths[8] = changeExtensionToCoffee(paths[5])
 
   return paths
 end

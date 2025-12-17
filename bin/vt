@@ -7,7 +7,7 @@ filename_no_suffix="${filename%%.*}"
 suffix="${filename##*.}"
 
 srcFile=$dirname/$filename
-testFile=$dirname/$filename_no_suffix"-test."$suffix
+testFile=$dirname/$filename_no_suffix".test."$suffix
 
 touch $testFilea $srcFile
 nvim -O $testFile $srcFile
