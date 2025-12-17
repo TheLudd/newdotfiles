@@ -377,6 +377,17 @@ describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
 })
 endsnippet
 
+snippet vitest "vitest test" b
+import { describe, expect, it } from 'vitest'
+import { `!v g:Abolish.camelcase(RemoveTestAndSuffix())` } from './`!v RemoveTestAndRetainSuffix()`'
+
+describe('`!v g:Abolish.camelcase(RemoveTestAndSuffix())`', () => {
+  it('${1:works}', () => {
+    expect(`!v g:Abolish.camelcase(RemoveTestAndSuffix())`()).toBeUndefined()
+  })
+})
+endsnippet
+
 snippet fibtest "Test with fibble" b
 import { assert } from 'chai'
 import { replace, reset } from 'fibble'
