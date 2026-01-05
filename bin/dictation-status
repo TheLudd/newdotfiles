@@ -1,0 +1,6 @@
+#!/bin/sh
+# Output mic emoji when dictation is active
+
+if pgrep -f "[n]erd-dictation begin" > /dev/null; then
+    echo "🎤"
+fi
