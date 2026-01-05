@@ -69,6 +69,7 @@ usbutils
 vlc
 wget
 xclip
+xdotool
 xf86-input-libinput
 xf86-video-nouveau
 xorg-server
