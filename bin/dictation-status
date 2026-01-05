@@ -1,6 +1,8 @@
 #!/bin/sh
-# Output mic emoji when dictation is active
+# Output mic emoji with backend name when dictation is active
 
-if pgrep -f "[n]erd-dictation begin" > /dev/null; then
-    echo "🎤"
+if [ -f /tmp/whisper-dictation.pid ]; then
+    echo "🎤 (whisper)"
+elif pgrep -f "[n]erd-dictation begin" > /dev/null; then
+    echo "🎤 (vosk)"
 fi

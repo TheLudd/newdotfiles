@@ -1,13 +1,30 @@
 #!/bin/sh
-# Toggle nerd-dictation on/off with visual indicator for status bar
+# Toggle dictation on/off with visual indicator for status bar
+# Supports both vosk (nerd-dictation) and whisper backends
 
-if pgrep -f "[n]erd-dictation begin" > /dev/null; then
-    nerd-dictation end
-    sleep 0.3
+CONFIG_FILE="$HOME/.config/dictation-backend"
+BACKEND=$(cat "$CONFIG_FILE" 2>/dev/null || echo "vosk")
+
+WHISPER_PID="/tmp/whisper-dictation.pid"
+
+if [ "$BACKEND" = "whisper" ]; then
+    if [ -f "$WHISPER_PID" ]; then
+        whisper-dictation end
+        sleep 0.5
+    else
+        whisper-dictation begin
+        sleep 0.2
+    fi
 else
-    nerd-dictation begin \
-        --vosk-model-dir "/home/ludwig/.config/nerd-dictation/models/vosk-model-small-en-us-0.15" &
-    sleep 0.2
+    # vosk / nerd-dictation
+    if pgrep -f "[n]erd-dictation begin" > /dev/null; then
+        nerd-dictation end
+        sleep 0.3
+    else
+        nerd-dictation begin \
+            --vosk-model-dir "/home/ludwig/.config/nerd-dictation/models/vosk-model-small-en-us-0.15" &
+        sleep 0.2
+    fi
 fi
 
 # Signal dwmblocks to update dictation status

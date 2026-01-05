@@ -1,0 +1,40 @@
+#!/bin/sh
+# Switch between dictation backends: vosk (nerd-dictation) or whisper
+
+CONFIG_FILE="$HOME/.config/dictation-backend"
+
+# Ensure config dir exists
+mkdir -p "$(dirname "$CONFIG_FILE")"
+
+# Default to vosk if no config
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "vosk" > "$CONFIG_FILE"
+fi
+
+case "$1" in
+    vosk|whisper)
+        echo "$1" > "$CONFIG_FILE"
+        echo "Dictation backend set to: $1"
+        ;;
+    toggle)
+        current=$(cat "$CONFIG_FILE")
+        if [ "$current" = "vosk" ]; then
+            echo "whisper" > "$CONFIG_FILE"
+            notify-send -t 3000 "Dictation" "Switched to: whisper"
+        else
+            echo "vosk" > "$CONFIG_FILE"
+            notify-send -t 3000 "Dictation" "Switched to: vosk"
+        fi
+        ;;
+    "")
+        cat "$CONFIG_FILE"
+        ;;
+    *)
+        echo "Usage: dictation-backend [vosk|whisper|toggle]"
+        echo "  vosk    - use nerd-dictation (faster, real-time)"
+        echo "  whisper - use whisper (more accurate, slower)"
+        echo "  toggle  - switch between backends"
+        echo "  (empty) - show current backend"
+        exit 1
+        ;;
+esac

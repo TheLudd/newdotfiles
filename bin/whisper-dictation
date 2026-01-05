@@ -1,0 +1,92 @@
+#!/bin/bash
+# whisper-dictation - Simple whisper-based dictation with begin/end commands
+# Mimics nerd-dictation interface but uses faster-whisper for transcription
+
+RECORDING_PID_FILE="/tmp/whisper-dictation.pid"
+AUDIO_FILE="/tmp/whisper-dictation.wav"
+MODEL="${WHISPER_MODEL:-tiny}"
+
+begin() {
+    if [ -f "$RECORDING_PID_FILE" ]; then
+        echo "Already recording"
+        exit 1
+    fi
+
+    # Record audio using parecord (PulseAudio) or arecord (ALSA)
+    if command -v parecord &> /dev/null; then
+        parecord --channels=1 --rate=16000 --format=s16le --file-format=wav "$AUDIO_FILE" &
+    else
+        arecord -f S16_LE -r 16000 -c 1 "$AUDIO_FILE" &
+    fi
+
+    echo $! > "$RECORDING_PID_FILE"
+    echo "Recording started (PID: $!)"
+}
+
+end() {
+    if [ ! -f "$RECORDING_PID_FILE" ]; then
+        echo "Not recording"
+        exit 1
+    fi
+
+    # Stop recording
+    kill "$(cat "$RECORDING_PID_FILE")" 2>/dev/null
+    rm -f "$RECORDING_PID_FILE"
+
+    # Small delay to ensure file is written
+    sleep 0.2
+
+    if [ ! -f "$AUDIO_FILE" ]; then
+        echo "No audio file found"
+        exit 1
+    fi
+
+    # Transcribe using faster-whisper
+    TEXT=$(/home/ludwig/.local/share/whisper-dictation-venv/bin/python3 -c "
+import sys
+try:
+    from faster_whisper import WhisperModel
+    model = WhisperModel('$MODEL', device='cpu', compute_type='int8')
+    segments, _ = model.transcribe('$AUDIO_FILE', beam_size=5)
+    text = ' '.join([s.text.strip() for s in segments])
+    print(text)
+except Exception as e:
+    print(f'Error: {e}', file=sys.stderr)
+    sys.exit(1)
+" 2>/dev/null)
+
+    # Clean up audio file
+    rm -f "$AUDIO_FILE"
+
+    if [ -n "$TEXT" ]; then
+        # Copy to clipboard - paste manually with Ctrl+V
+        printf '%s' "$TEXT" | xclip -selection clipboard
+        notify-send -t 2000 "Whisper" "Ready to paste"
+    fi
+}
+
+cancel() {
+    if [ -f "$RECORDING_PID_FILE" ]; then
+        kill "$(cat "$RECORDING_PID_FILE")" 2>/dev/null
+        rm -f "$RECORDING_PID_FILE"
+    fi
+    rm -f "$AUDIO_FILE"
+    echo "Cancelled"
+}
+
+case "$1" in
+    begin)
+        begin
+        ;;
+    end)
+        end
+        ;;
+    cancel)
+        cancel
+        ;;
+    *)
+        echo "Usage: whisper-dictation {begin|end|cancel}"
+        echo "Environment: WHISPER_MODEL=tiny|base|small|medium|large (default: small)"
+        exit 1
+        ;;
+esac
