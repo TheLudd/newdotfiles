@@ -1,0 +1,18 @@
+#!/bin/sh
+# system-restore - bring a new machine up to speed
+# Usage: system-restore
+
+set -e
+
+echo "=== System Restore ==="
+
+echo "--- Pacman packages ---"
+pac-restore
+
+echo "--- AUR packages (paru) ---"
+paru-restore
+
+echo "--- Extras (pip, models, etc.) ---"
+setup-extras
+
+echo "=== Done ==="

@@ -1,0 +1,5 @@
+#!/bin/sh
+# paru-restore - install all saved AUR packages on a new machine
+# Usage: paru-restore
+
+paru -S --needed $(cat ~/newdotfiles/paru-packages)
