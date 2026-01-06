@@ -1,0 +1,5 @@
+#!/bin/sh
+# pac-restore - install all saved packages on a new machine
+# Usage: pac-restore
+
+sudo pacman -S --needed $(cat ~/newdotfiles/packages)
