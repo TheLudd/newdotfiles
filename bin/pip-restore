@@ -1,0 +1,21 @@
+#!/bin/sh
+# pip-restore - reinstall all pip packages on a new machine
+# Usage: pip-restore
+
+VENV_DIR="$HOME/.local/share/pip-venv"
+LIST_FILE="$HOME/newdotfiles/pip-packages"
+
+if [ ! -f "$LIST_FILE" ]; then
+    echo "No pip-packages file found"
+    exit 1
+fi
+
+# Create venv if needed
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating pip environment..."
+    python3 -m venv "$VENV_DIR"
+fi
+
+echo "Installing packages..."
+"$VENV_DIR/bin/pip" install --quiet $(cat "$LIST_FILE" | tr '\n' ' ')
+echo "Done."

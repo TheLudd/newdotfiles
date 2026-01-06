@@ -42,7 +42,7 @@ end() {
     fi
 
     # Transcribe using faster-whisper
-    TEXT=$(/home/ludwig/.local/share/whisper-dictation-venv/bin/python3 -c "
+    TEXT=$(/home/ludwig/.local/share/pip-venv/bin/python3 -c "
 import sys
 try:
     from faster_whisper import WhisperModel

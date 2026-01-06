@@ -1,0 +1,23 @@
+#!/bin/sh
+# pipis - pip install and save (like pis for pacman)
+# Installs pip packages to a shared venv, logs them for new machines
+# Usage: pipis <package> [package...]
+
+VENV_DIR="$HOME/.local/share/pip-venv"
+LIST_FILE="$HOME/newdotfiles/pip-packages"
+
+# Create venv if it doesn't exist
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating pip environment..."
+    python3 -m venv "$VENV_DIR"
+fi
+
+# Install packages
+"$VENV_DIR/bin/pip" install --quiet "$@"
+
+if [ $? -eq 0 ]; then
+    # Log packages
+    echo "$@" | tr ' ' '\n' >> "$LIST_FILE"
+    sort -u "$LIST_FILE" -o "$LIST_FILE"
+    echo "Installed: $@"
+fi

@@ -1,0 +1,31 @@
+#!/bin/sh
+# setup-extras - setup things that aren't packages (models, venvs, etc.)
+# Run once on a new machine after installing packages
+# Usage: setup-extras
+
+set -e
+
+echo "=== Setting up extras ==="
+
+# --- Pip packages ---
+echo "Installing pip packages..."
+pip-restore
+
+# --- Vosk model for nerd-dictation ---
+VOSK_MODEL_DIR="$HOME/.config/nerd-dictation/models"
+VOSK_MODEL="vosk-model-small-en-us-0.15"
+if [ ! -d "$VOSK_MODEL_DIR/$VOSK_MODEL" ]; then
+    echo "Downloading vosk model..."
+    mkdir -p "$VOSK_MODEL_DIR"
+    cd "$VOSK_MODEL_DIR"
+    curl -LO "https://alphacephei.com/vosk/models/$VOSK_MODEL.zip"
+    unzip -q "$VOSK_MODEL.zip"
+    rm "$VOSK_MODEL.zip"
+    echo "Vosk model installed."
+else
+    echo "Vosk model already exists, skipping."
+fi
+
+# --- Add future setup tasks below ---
+
+echo "=== Done ==="
