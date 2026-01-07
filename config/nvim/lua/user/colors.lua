@@ -41,5 +41,5 @@ if term == 'dvtm-256color' then
   --   end,
   -- })
 else
-  vim.cmd [[colorscheme tokyonight-night]]
+  vim.cmd [[colorscheme cyberpunk]]
 end
