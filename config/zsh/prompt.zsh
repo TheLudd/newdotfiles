@@ -28,7 +28,9 @@ parse_git_dirty() {
 # Get git branch info for prompt
 git_prompt_info() {
     git rev-parse --git-dir > /dev/null 2>&1 || return
-    local branch=$(git branch 2> /dev/null | grep '\*' | cut -d ' ' -f2-3)
+    local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
+    # If detached HEAD, show short commit hash instead
+    [[ -z "$branch" ]] && branch=$(git rev-parse --short HEAD 2> /dev/null)
     local branchStatus=$(parse_git_dirty)
     echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${branch}${branchStatus}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
