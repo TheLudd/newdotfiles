@@ -134,4 +134,4 @@ local plugins = {
   { 'folke/noice.nvim', dependencies = { 'MunifTanjim/nui.nvim' } },
   { 'folke/snacks.nvim' },
 }
-require('lazy').setup(plugins, { lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json' })
+require('lazy').setup(plugins)
