@@ -6,6 +6,21 @@ end
 
 require('mason').setup()
 
+-- Add borders to LSP floating windows (must be set before LSP servers are configured)
+local border = "rounded"
+
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+  border = border,
+})
+
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+  border = border,
+})
+
+vim.diagnostic.config({
+  float = { border = border },
+})
+
 local function buf_set_keymap(bufnr, ...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
 -- Mappings.
@@ -13,9 +28,9 @@ local opts = { noremap = true, silent = true }
 
 local on_attach = function(_, bufnr)
   buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.diagnostic.open_float()<CR><Cmd>lua vim.diagnostic.open_float()<CR>', opts)
+  buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.diagnostic.open_float({ border = "rounded" })<CR><Cmd>lua vim.diagnostic.open_float({ border = "rounded" })<CR>', opts)
 
-  buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover({ border = "rounded" })<CR>', opts)
   buf_set_keymap(bufnr, 'n', 'R', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap(bufnr, 'n', '<space>r', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
