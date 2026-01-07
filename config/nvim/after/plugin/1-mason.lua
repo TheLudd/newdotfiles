@@ -32,7 +32,7 @@ local on_attach = function(_, bufnr)
 
   buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover({ border = "rounded" })<CR>', opts)
   buf_set_keymap(bufnr, 'n', 'R', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap(bufnr, 'n', '<space>r', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap(bufnr, 'n', '<space>r', '<cmd>lua require("utils.rename").rename()<CR>', opts)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
