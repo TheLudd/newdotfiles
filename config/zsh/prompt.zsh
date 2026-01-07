@@ -35,12 +35,12 @@ git_prompt_info() {
 
 # Arrow color based on last command exit status
 prompt_arrow() {
-  if [ $? -eq 0 ]; then
-    arrow_color="%{$fg_bold[green]%}"
+  local exit_status=$1
+  if [[ $exit_status -eq 0 ]]; then
+    echo "%{$fg_bold[green]%}➜ %{$reset_color%}"
   else
-    arrow_color="%{$fg_bold[red]%}"
+    echo "%{$fg_bold[red]%}➜ %{$reset_color%}"
   fi
-  echo "${arrow_color}➜ %{$reset_color%}"
 }
 
 FOLDER_NAME="%{$fg_bold[cyan]%}%c%{$reset_color%}"
@@ -48,11 +48,26 @@ HOST_NAME="%{$fg_bold[cyan]%}%m%{$reset_color%}"
 
 # Dynamic prompt update
 autoload -Uz add-zsh-hook
-add-zsh-hook precmd update_prompt
 
 update_prompt() {
-  PROMPT="${HOST_NAME} $(prompt_arrow) ${FOLDER_NAME}$(git_prompt_info) "
+  local last_exit=$?  # Capture exit status immediately
+  PROMPT="${HOST_NAME} $(prompt_arrow $last_exit) ${FOLDER_NAME}$(git_prompt_info) "
 }
+
+# Hook for before each prompt (handles vim exit, command completion, etc.)
+add-zsh-hook precmd update_prompt
+
+# Hook for directory changes
+add-zsh-hook chpwd update_prompt
+
+# Widget to clear screen and reset prompt (for Ctrl+L)
+clear-screen-and-update() {
+  clear
+  update_prompt
+  zle reset-prompt
+}
+zle -N clear-screen-and-update
+bindkey '^L' clear-screen-and-update
 
 # Initial call to set the prompt
 update_prompt
