@@ -40,8 +40,9 @@ local plugins = {
   -- treesitter for better syntax highlighting
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
 
-  -- telscope
+  -- telescope
   { 'nvim-telescope/telescope.nvim',   dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'nvim-telescope/telescope-ui-select.nvim' },
 
   -- mason
   {
@@ -128,5 +129,9 @@ local plugins = {
       vim.g.terraform_fold_sections = 1
     end
   },
+
+  -- floating UI
+  { 'folke/noice.nvim', dependencies = { 'MunifTanjim/nui.nvim' } },
+  { 'folke/snacks.nvim' },
 }
 require('lazy').setup(plugins, { lockfile = vim.fn.expand('$XDG_DATA_HOME') .. '/nvim/lazy-lock.json' })

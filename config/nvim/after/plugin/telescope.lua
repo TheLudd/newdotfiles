@@ -27,13 +27,19 @@ telescope.setup {
     -- builtin picker
   },
   extensions = {
-    -- Your extension configuration goes here:
-    -- extension_name = {
-    --   extension_config_key = value,
-    -- }
-    -- please take a look at the readme of the extension you want to configure
+    ['ui-select'] = {
+      require('telescope.themes').get_dropdown({
+        layout_config = {
+          width = 0.4,
+          height = 0.3,
+        },
+      }),
+    },
   },
 }
+
+-- Load ui-select extension for vim.ui.select (code actions, etc.)
+telescope.load_extension('ui-select')
 
 local opts = { noremap = true, silent = true }
 local keymap = vim.api.nvim_set_keymap
