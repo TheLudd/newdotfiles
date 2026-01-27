@@ -13,7 +13,25 @@ if [ "$pm" == "npm" ]; then
 elif [ "$pm" == "yarn" ]; then
 		yarn $@
 elif [ "$pm" == "pnpm" ]; then
-		pnpm -s $@
+		# Find first non-flag argument (the command name)
+		cmd=""
+		for arg in "$@"; do
+			if [[ "$arg" != -* ]]; then
+				cmd="$arg"
+				break
+			fi
+		done
+		script_check=$(pnpm pkg get scripts.$cmd 2>/dev/null)
+		if [ "$script_check" != "{}" ]; then
+			pnpm run -s $@
+		else
+			bin_path=$(pnpm which $cmd 2>/dev/null)
+			if [ -n "$bin_path" ] && [[ "$bin_path" == *node_modules* ]]; then
+				pnpm exec $@
+			else
+				echo "no script or bin $cmd"
+			fi
+		fi
 else
 		echo "Unknown package manager: $pm"
 		exit 1

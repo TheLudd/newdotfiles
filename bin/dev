@@ -1,6 +1,12 @@
 #!/bin/bash
 
 firstArg=$1
+
+if [ -z "$firstArg" ]; then
+  echo "Usage: dev <branch> [additional yarn dev args]"
+  exit 1
+fi
+
 allArgs=("$@")
 restArgs=("${allArgs[@]:1}")
 
