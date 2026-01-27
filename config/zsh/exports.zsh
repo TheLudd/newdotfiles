@@ -15,6 +15,7 @@ export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export GHCUP_USE_XDG_DIRS=true
 export STACK_XDG=1
+export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
 
 # AWS configuration
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME"/aws/credentials
