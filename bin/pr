@@ -44,6 +44,8 @@ for (( i=0; i<${#reviewers}; i++ )); do
 	  reviewer=a-game
   elif [[ $char == "h" ]]; then
 	  reviewer=HarryHagelberg404
+  elif [[ $char == "e" ]]; then
+	  reviewer=Emogensen
   fi
   r="$r,$reviewer"
 done
