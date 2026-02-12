@@ -45,7 +45,26 @@ prompt_arrow() {
   fi
 }
 
-FOLDER_NAME="%{$fg_bold[cyan]%}%c%{$reset_color%}"
+# Path display: git-aware or standard with ~ substitution
+git_aware_path() {
+  local git_root
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+
+  if [[ -n "$git_root" ]]; then
+    local repo_parent=$(dirname "$git_root")
+    local repo_name=$(basename "$git_root")
+    local relative=${PWD#$git_root}
+
+    if [[ "$repo_parent" == "$HOME" ]]; then
+      echo "~/${repo_name}${relative}"
+    else
+      echo "$(basename "$repo_parent")/${repo_name}${relative}"
+    fi
+  else
+    echo "${PWD/#$HOME/~}"
+  fi
+}
+
 HOST_NAME="%{$fg_bold[cyan]%}%m%{$reset_color%}"
 
 # Dynamic prompt update
@@ -53,7 +72,8 @@ autoload -Uz add-zsh-hook
 
 update_prompt() {
   local last_exit=$?  # Capture exit status immediately
-  PROMPT="${HOST_NAME} $(prompt_arrow $last_exit) ${FOLDER_NAME}$(git_prompt_info) "
+  local folder="%{$fg_bold[cyan]%}$(git_aware_path)%{$reset_color%}"
+  PROMPT="${HOST_NAME} $(prompt_arrow $last_exit) ${folder}$(git_prompt_info) "
 }
 
 # Hook for before each prompt (handles vim exit, command completion, etc.)
