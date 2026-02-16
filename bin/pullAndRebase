@@ -1,7 +1,52 @@
 #!/bin/bash
 source $(dirname "$0")/../common/update-upstream
-branch=`git symbolic-ref --short -q HEAD`
-updateUpstream
-git pull
-git ch $branch
+
+branch=$(git symbolic-ref --short -q HEAD)
+
+# If already on master, just update
+if [[ "$branch" == "master" ]]; then
+	updateUpstream
+	exit 0
+fi
+
+# Find worktree with master checked out
+find_master_worktree() {
+	local wt=""
+	while IFS= read -r line; do
+		if [[ "$line" =~ ^worktree\ (.+)$ ]]; then
+			wt="${BASH_REMATCH[1]}"
+		elif [[ "$line" == "branch refs/heads/master" ]]; then
+			echo "$wt"
+			return 0
+		fi
+	done < <(git worktree list --porcelain)
+	return 1
+}
+
+master_worktree=$(find_master_worktree)
+
+if [[ -n "$master_worktree" ]]; then
+	# Check if master worktree is clean
+	if [[ -n $(git -C "$master_worktree" status --porcelain) ]]; then
+		echo "Error: Master worktree at '$master_worktree' has uncommitted changes"
+		exit 1
+	fi
+
+	# Fetch and update master in its worktree
+	git fetch --all --prune
+	git -C "$master_worktree" merge origin/master
+
+	# Handle upstream remote if present
+	upstream=$(git remote -v | awk '/upstream/{ print $0 }')
+	if [[ -n "$upstream" ]]; then
+		git -C "$master_worktree" merge upstream/master \
+			&& git -C "$master_worktree" push origin master
+	fi
+else
+	# No worktree with master - use local branch switching
+	updateUpstream
+	git pull
+	git ch "$branch"
+fi
+
 git rebase master
