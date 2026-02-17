@@ -1,4 +1,37 @@
 #!/bin/bash
-git checkout master -q
-git branch -vv | grep ": gone]" | awk '{print $1}' | xargs -r git branch -D
+
+# Find branches where remote tracking branch is gone
+# For worktree branches (+), the name is in $2; for regular branches, it's in $1
+gone_branches=$(git branch -vv | grep ": gone]" | awk '$1 == "+" {print $2} $1 != "+" && $1 != "*" {print $1}')
+
+if [[ -z "$gone_branches" ]]; then
+	echo "No gone branches to clean up"
+	exit 0
+fi
+
+# Get worktree list for lookups
+worktree_list=$(git worktree list --porcelain)
+
+for branch in $gone_branches; do
+	# Check if this branch has a worktree
+	wt_path=""
+	while IFS= read -r line; do
+		if [[ "$line" == worktree\ * ]]; then
+			current_wt="${line#worktree }"
+		elif [[ "$line" == "branch refs/heads/$branch" ]]; then
+			wt_path="$current_wt"
+			break
+		fi
+	done <<< "$worktree_list"
+
+	# Remove worktree if it exists
+	if [[ -n "$wt_path" ]]; then
+		echo "Removing worktree: $wt_path"
+		git worktree remove "$wt_path" 2>/dev/null || git worktree remove --force "$wt_path"
+	fi
+
+	# Delete the branch
+	git branch -D "$branch"
+done
+
 git branch | wc -l

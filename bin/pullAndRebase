@@ -1,5 +1,5 @@
 #!/bin/bash
-source $(dirname "$0")/../common/update-upstream
+source "$HOME/newdotfiles/common/update-upstream"
 
 branch=$(git symbolic-ref --short -q HEAD)
 
@@ -9,12 +9,12 @@ if [[ "$branch" == "master" ]]; then
 	exit 0
 fi
 
-# Find worktree with master checked out
+# Find worktree with master checked out (works in both bash and zsh)
 find_master_worktree() {
 	local wt=""
 	while IFS= read -r line; do
-		if [[ "$line" =~ ^worktree\ (.+)$ ]]; then
-			wt="${BASH_REMATCH[1]}"
+		if [[ "$line" == worktree\ * ]]; then
+			wt="${line#worktree }"
 		elif [[ "$line" == "branch refs/heads/master" ]]; then
 			echo "$wt"
 			return 0

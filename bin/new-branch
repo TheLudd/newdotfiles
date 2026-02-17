@@ -1,0 +1,22 @@
+#!/bin/bash
+source "$HOME/newdotfiles/common/update-upstream"
+
+branchName=$1
+if [ -z "$branchName" ]; then
+	echo "No branch name provided"
+	return 1 2>/dev/null || exit 1
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+parent_dir=$(dirname "$repo_root")
+
+if [[ "$parent_dir" != "$HOME/code" ]]; then
+	# Worktree mode: repo is nested (e.g., ~/code/project/master)
+	updateUpstream
+	git worktree add "$parent_dir/$branchName" -b "$branchName"
+	cd "$parent_dir/$branchName"
+else
+	# Regular mode: repo directly under ~/code
+	updateUpstream
+	git ch -b "$branchName"
+fi

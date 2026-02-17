@@ -1,9 +1,0 @@
-#!/bin/bash
-source $(dirname "$0")/../common/update-upstream
-branchName=$1
-if [ -z "$branchName" ]; then
-	echo No branch name provided
-	exit 1
-fi
-updateUpstream
-git ch -b $branchName
