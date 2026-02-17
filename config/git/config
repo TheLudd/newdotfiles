@@ -14,6 +14,7 @@
 	pf = push --force
 	m = rebase master
 	edit = reset HEAD~
+	wl = worktree list
 [push]
 	autoSetupRemote = true
 	default = simple
