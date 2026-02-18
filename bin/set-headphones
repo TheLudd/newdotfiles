@@ -3,8 +3,8 @@ if [ -n "$1" ]
 then
 	device_comma=$1
 else
-  name=`bluetoothctl devices Paired | awk '{print $3}' | dmenu -i -l 100`
-  device_comma=`bluetoothctl devices Paired | ag $name | awk '{print $2}'`
+  name=`echo "devices Paired" | bluetoothctl 2>/dev/null | grep "^Device" | cut -d' ' -f3- | dmenu -i -l 100`
+  device_comma=`echo "devices Paired" | bluetoothctl 2>/dev/null | grep "^Device" | grep "$name" | awk '{print $2}'`
 fi
 
 device=$(echo $device_comma | sed 's/:/_/g')
