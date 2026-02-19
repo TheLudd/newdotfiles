@@ -8,12 +8,12 @@ IFS='.' read -r sourceType sourceId sourceProfile <<< "$activeSource"
 
 if [ "$sinkType" == "bluez_sink" ]; then
   sinkIdColon=$(echo $sinkId | sed 's/_/:/g')
-  sinkDevice=$(bluetoothctl info $sinkIdColon | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
+  sinkDevice=$(echo "info $sinkIdColon" | bluetoothctl 2>/dev/null | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
 fi
 
 if [ "$sourceType" == "bluez_source" ]; then
   sourceIdColon=$(echo $sourceId | sed 's/_/:/g')
-  sourceDevice=$(bluetoothctl info $sourceIdColon | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
+  sourceDevice=$(echo "info $sourceIdColon" | bluetoothctl 2>/dev/null | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
 else
   sourceDevice=$sourceId
 fi
