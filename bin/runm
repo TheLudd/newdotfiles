@@ -1,12 +1,17 @@
 #!/bin/bash
 
-if [[ $# -lt 2 ]]; then
-  echo "Usage: runm <target> <project> [additional args...]"
+if [[ $# -lt 1 ]]; then
+  echo "Usage: runm <target> [project] [additional args...]"
   exit 1
 fi
 
 target="$1"
-project="$2"
-shift 2
+shift
 
-npx nx run-many -t "$target" -p "$project" "$@"
+if [[ $# -ge 1 && "$1" != -* ]]; then
+  project="$1"
+  shift
+  npx nx run-many -t "$target" -p "$project" "$@"
+else
+  npx nx run-many -t "$target" "$@"
+fi
