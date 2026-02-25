@@ -1,0 +1,59 @@
+#!/bin/bash
+# Sync "allow" permissions from all settings.local.json files to master settings.json
+# Usage: sync-claude-allows [worktree-root]
+# Default worktree-root: current directory
+
+set -euo pipefail
+
+WORKTREE_ROOT="${1:-.}"
+MASTER_SETTINGS="$WORKTREE_ROOT/master/.claude/settings.json"
+
+if [[ ! -f "$MASTER_SETTINGS" ]]; then
+    echo "Error: Master settings not found at $MASTER_SETTINGS" >&2
+    exit 1
+fi
+
+# Find all settings.local.json files, excluding node_modules
+LOCAL_FILES=$(find "$WORKTREE_ROOT" -path "*/node_modules" -prune -o -name "settings.local.json" -print 2>/dev/null)
+
+if [[ -z "$LOCAL_FILES" ]]; then
+    echo "No settings.local.json files found"
+    exit 0
+fi
+
+# Remove trailing commas from JSON (makes it valid for jq)
+strip_trailing_commas() {
+    sed -E 's/,(\s*[\]}])/\1/g'
+}
+
+# Extract all allow entries from local files, dedupe
+LOCAL_ALLOWS=$(echo "$LOCAL_FILES" | while read -r file; do
+    if [[ -f "$file" ]]; then
+        strip_trailing_commas < "$file" | jq -r '.permissions.allow[]? // empty' 2>/dev/null
+    fi
+done | sort -u)
+
+# Get current master allows
+MASTER_ALLOWS=$(strip_trailing_commas < "$MASTER_SETTINGS" | jq -r '.permissions.allow[]? // empty' | sort -u)
+
+# Find entries in local but not in master
+NEW_ALLOWS=$(comm -23 <(echo "$LOCAL_ALLOWS") <(echo "$MASTER_ALLOWS"))
+
+if [[ -z "$NEW_ALLOWS" ]]; then
+    echo "No new allows to add"
+    exit 0
+fi
+
+echo "Adding new allows:"
+echo "$NEW_ALLOWS" | sed 's/^/  /'
+
+# Build JSON array of new entries and merge into master
+NEW_ALLOWS_JSON=$(echo "$NEW_ALLOWS" | jq -R -s 'split("\n") | map(select(length > 0))')
+
+strip_trailing_commas < "$MASTER_SETTINGS" | jq --argjson new "$NEW_ALLOWS_JSON" '
+    .permissions.allow = (.permissions.allow + $new | unique | sort)
+' > "${MASTER_SETTINGS}.tmp"
+
+mv "${MASTER_SETTINGS}.tmp" "$MASTER_SETTINGS"
+
+echo "Updated $MASTER_SETTINGS"
