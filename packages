@@ -10,6 +10,7 @@ blueberry
 bluez
 bluez-utils
 discord
+docker-buildx
 dosfstools
 dunst
 fakeroot
