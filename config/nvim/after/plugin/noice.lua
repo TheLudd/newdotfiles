@@ -18,12 +18,13 @@ noice.setup({
   },
   views = {
     cmdline_popup = {
+      relative = 'editor',
       position = {
         row = '50%',
         col = '50%',
       },
       size = {
-        width = 60,
+        width = '80%',
         height = 'auto',
       },
       border = {
@@ -31,12 +32,13 @@ noice.setup({
       },
     },
     popupmenu = {
+      relative = 'editor',
       position = {
         row = '53%',
         col = '50%',
       },
       size = {
-        width = 60,
+        width = '80%',
         height = 10,
       },
       border = {
