@@ -6,13 +6,22 @@ then
   sourceDevice=$(cat $infoFile | ag 'sourceDevice' | awk '{print $2}')
   sourceType=$(cat $infoFile | ag 'sourceType' | awk '{print $2}')
   sinkType=$(cat $infoFile | ag 'sinkType' | awk '{print $2}')
+  sinkVolume=$(cat $infoFile | ag 'sinkVolume' | awk '{print $2}')
+  sinkMuted=$(cat $infoFile | ag 'sinkMuted' | awk '{print $2}')
+  if [ "$sinkMuted" == "yes" ]; then
+    speakerIcon="🔇"
+    headphoneIcon="🔇"
+  else
+    speakerIcon="🔊"
+    headphoneIcon="🎧"
+  fi
   if [ "$sinkDevice" == "$sourceDevice" ]; then
     if [ "$sourceType" == "bluez_source" ]; then
-      echo -e "$sinkDevice 🎧"
+      echo -e "$sinkDevice $sinkVolume $headphoneIcon"
     fi
   elif [ "$sinkType" == "bluez_sink" ]; then
-    echo -e "$sinkDevice 🎧🎤"
+    echo -e "$sinkDevice $sinkVolume $headphoneIcon🎤"
   else
-    echo -e "🔊 🎤"
+    echo -e "$sinkVolume $speakerIcon 🎤"
   fi
 fi

@@ -20,6 +20,9 @@ fi
 
 target=/tmp/sound-info
 
+sinkVolume=$(pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | grep -oP '\d+%' | head -1)
+sinkMuted=$(pactl get-sink-mute @DEFAULT_SINK@ 2>/dev/null | grep -oP '(yes|no)')
+
 echo "sinkDevice    $sinkDevice" > $target
 echo "sourceDevice  $sourceDevice" >> $target
 echo "sinkType      $sinkType" >> $target
@@ -30,3 +33,5 @@ echo "sinkProfile   $sinkProfile" >> $target
 echo "sourceProfile $sourceProfile" >> $target
 echo "sinkIdColon   $sinkIdColon" >> $target
 echo "sourceIdColon $sourceIdColon" >> $target
+echo "sinkVolume    $sinkVolume" >> $target
+echo "sinkMuted     $sinkMuted" >> $target
