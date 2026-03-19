@@ -33,7 +33,7 @@ for (( i=0; i<${#reviewers}; i++ )); do
   elif [[ $char == "t" ]]; then
 	  reviewer=TautvydasGec
   elif [[ $char == "b" ]]; then
-	  reviewer=Urdat
+	  reviewer=joajoan
   elif [[ $char == "x" ]]; then
 	  reviewer=unganemo
   elif [[ $char == "n" ]]; then
