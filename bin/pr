@@ -7,11 +7,6 @@ base=`echo $@ | sed -r 's/^.*-b ([^ ]+).*$/\1/'`
 # Find reviewer by -r flag
 reviewers=`echo $@ | sed -r 's/^.*-r ([^ ]+).*$/\1/'`
 
-if [[ -z "$reviewers" ]]; then
-	echo No reviewers specified
-	exit 1
-fi
-
 for (( i=0; i<${#reviewers}; i++ )); do
   char="${reviewers:$i:1}"
   if [[ $char == "m" ]]; then
@@ -52,11 +47,15 @@ done
 
 r=${r:1}
 
-nbrReviewers=`expr length $reviewers`
-if [[ $nbrReviewers == 1 ]]; then
-	approver=$r
-else
-	approver=theludd
+reviewerArgs=""
+if [[ -n "$reviewers" ]]; then
+	nbrReviewers=`expr length $reviewers`
+	if [[ $nbrReviewers == 1 ]]; then
+		approver=$r
+	else
+		approver=theludd
+	fi
+	reviewerArgs="-r $r -a $approver"
 fi
 
 # Default base branch to master
@@ -82,7 +81,7 @@ title=`cat $tmpFile | head -n 1`
 cat $tmpFile | tail -n +3 > $bodyFile
 cat $bodyFile
 
-gh pr create -B $base -r $r -a $approver -t "$title" --body-file $bodyFile
+gh pr create -B $base $reviewerArgs -t "$title" --body-file $bodyFile
 gh pr merge --auto -r -d
 
 rm $tmpFile $bodyFile
