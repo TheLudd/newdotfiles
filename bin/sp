@@ -1,0 +1,3 @@
+#!/bin/bash
+sink=$(pactl list short sinks | grep -i "Speaker" | head -1 | cut -f2)
+pactl set-default-sink "$sink"
