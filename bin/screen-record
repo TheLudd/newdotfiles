@@ -1,0 +1,46 @@
+#!/bin/bash
+# Screen recording with area selection using hacksaw + ffmpeg
+# Toggle: first run selects area and starts, second run stops
+
+PIDFILE="/tmp/screenrec.pid"
+NAMEFILE="/tmp/screenrec.name"
+OUTDIR="$HOME/Videos"
+
+if [[ -f "$PIDFILE" ]]; then
+    # Stop recording - use SIGINT for clean ffmpeg shutdown
+    pid="$(cat "$PIDFILE")"
+    original="$(cat "$NAMEFILE")"
+
+    kill -INT "$pid"
+    # Wait for ffmpeg to finish writing
+    while kill -0 "$pid" 2>/dev/null; do sleep 0.1; done
+
+    rm -f "$PIDFILE" "$NAMEFILE"
+
+    # Prompt for rename
+    newname=$(echo "" | dmenu -p "Save as (blank to keep):")
+    if [[ -n "$newname" ]]; then
+        mv "$original" "$OUTDIR/${newname}.mp4"
+        notify-send "Recording saved" "${newname}.mp4"
+    else
+        notify-send "Recording saved" "$(basename "$original")"
+    fi
+else
+    # Start recording
+    mkdir -p "$OUTDIR"
+    outfile="$OUTDIR/$(date +%Y%m%d-%H%M%S).mp4"
+
+    # hacksaw outputs WxH+X+Y format
+    geometry=$(hacksaw -f "%w %h %x %y")
+    read -r w h x y <<< "$geometry"
+
+    ffmpeg -f x11grab -framerate 30 \
+        -video_size "${w}x${h}" \
+        -i "${DISPLAY}+${x},${y}" \
+        -c:v libx264 -preset ultrafast \
+        "$outfile" &
+
+    echo $! > "$PIDFILE"
+    echo "$outfile" > "$NAMEFILE"
+    notify-send "Recording started"
+fi
