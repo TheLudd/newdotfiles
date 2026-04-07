@@ -65,25 +65,37 @@ if [[ $base == $@ ]]; then
 	base=master
 fi
 
-nbrCommits=`git rev-list $base.. --count`
+# Check if PR already exists for current branch
+if gh pr view --json number &>/dev/null; then
+	# PR exists - just add reviewers
+	if [[ -n "$r" ]]; then
+		gh pr edit --add-reviewer "$r"
+	else
+		echo "PR exists but no reviewers specified"
+		exit 1
+	fi
+else
+	# No PR - create one
+	nbrCommits=`git rev-list $base.. --count`
 
-if [[ "$nbrCommits" == "0" ]]; then
-	echo No commits since $base
-	exit 1
+	if [[ "$nbrCommits" == "0" ]]; then
+		echo No commits since $base
+		exit 1
+	fi
+
+	tmpFile=/tmp/pr-message-$(git log -n 1 --pretty=format:"%H")
+	bodyFile="$tmpFile.body"
+
+
+	git log $base.. --pretty=format:"%s%n%n%b" > $tmpFile
+	nvim $tmpFile &&
+
+	title=`cat $tmpFile | head -n 1`
+	cat $tmpFile | tail -n +3 > $bodyFile
+	cat $bodyFile
+
+	gh pr create -B $base $reviewerArgs -t "$title" --body-file $bodyFile
+	gh pr merge --auto -r -d
+
+	rm $tmpFile $bodyFile
 fi
-
-tmpFile=/tmp/pr-message-$(git log -n 1 --pretty=format:"%H")
-bodyFile="$tmpFile.body"
-
-
-git log $base.. --pretty=format:"%s%n%n%b" > $tmpFile
-nvim $tmpFile &&
-
-title=`cat $tmpFile | head -n 1`
-cat $tmpFile | tail -n +3 > $bodyFile
-cat $bodyFile
-
-gh pr create -B $base $reviewerArgs -t "$title" --body-file $bodyFile
-gh pr merge --auto -r -d
-
-rm $tmpFile $bodyFile
