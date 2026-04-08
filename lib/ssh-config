@@ -45,3 +45,7 @@ Hostname ec2-34-240-195-150.eu-west-1.compute.amazonaws.com
 Host demo
 HostName 51.21.108.163
 User ludwig
+
+Host scripts
+HostName 34.251.89.186
+User ludwig
