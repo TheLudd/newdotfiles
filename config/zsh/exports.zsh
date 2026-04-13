@@ -23,6 +23,3 @@ export AWS_CONFIG_FILE="$XDG_CONFIG_HOME"/aws/config
 
 # Misc
 TRIAL_PERIOD_IN_DAYS=3000
-
-# temp disable claude code auto update
-export DISABLE_AUTOUPDATER=1
