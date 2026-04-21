@@ -1,16 +1,21 @@
 #!/bin/bash
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: runm <target> [project] [additional args...]"
+  echo "Usage: runm <target[,target...]> [project...] [additional args...]"
   exit 1
 fi
 
 target="$1"
 shift
 
-if [[ $# -ge 1 && "$1" != -* ]]; then
-  project="$1"
+projects=()
+while [[ $# -ge 1 && "$1" != -* ]]; do
+  projects+=("$1")
   shift
+done
+
+if [[ ${#projects[@]} -gt 0 ]]; then
+  project=$(IFS=,; echo "${projects[*]}")
   npx nx run-many -t "$target" -p "$project" "$@"
 else
   npx nx run-many -t "$target" "$@"
