@@ -1,12 +1,12 @@
-#!/bin/bash
-# Sync "allow" permissions from all settings.local.json files to master settings.json
+#!/bin/zsh
+# Sync "allow" permissions from all settings.local.json files to ~/.claude/settings.json
 # Usage: sync-claude-allows [worktree-root]
 # Default worktree-root: current directory
 
 set -euo pipefail
 
 WORKTREE_ROOT="${1:-.}"
-MASTER_SETTINGS="$WORKTREE_ROOT/master/.claude/settings.json"
+MASTER_SETTINGS="${XDG_CONFIG_HOME}/claude/settings.json"
 
 if [[ ! -f "$MASTER_SETTINGS" ]]; then
     echo "Error: Master settings not found at $MASTER_SETTINGS" >&2
