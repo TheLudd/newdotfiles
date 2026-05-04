@@ -10,9 +10,9 @@ fi
 allArgs=("$@")
 restArgs=("${allArgs[@]:1}")
 
-cd ~/mediatool/webapp/
+cd ~/code/mediatool/master/webapp/
 branch=$1
 git fetch
 git checkout $branch
 git reset --hard origin/$branch
-yarn dev "${restArgs[@]}"
+run dev "${restArgs[@]}"
