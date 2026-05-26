@@ -1,20 +1,33 @@
 #!/bin/bash
 
-# Find branches where remote tracking branch is gone
+current_branch=$(git branch --show-current)
+
+# Branches where remote tracking branch is gone
 # For worktree branches (+), the name is in $2; for regular branches, it's in $1
 gone_branches=$(git branch -vv | grep ": gone]" | awk '$1 == "+" {print $2} $1 != "+" && $1 != "*" {print $1}')
 
-if [[ -z "$gone_branches" ]]; then
-	echo "No gone branches to clean up"
+# Branches with no commits beyond master
+merged_branches=$(git for-each-ref --format='%(refname:short)' refs/heads/ | while IFS= read -r branch; do
+	[[ "$branch" == "master" ]] && continue
+	[[ "$branch" == "$current_branch" ]] && continue
+	if [[ $(git rev-list "master..$branch" --count) -eq 0 ]]; then
+		echo "$branch"
+	fi
+done)
+
+branches_to_remove=$(printf '%s\n%s\n' "$gone_branches" "$merged_branches" | grep -v '^$' | sort -u)
+
+if [[ -z "$branches_to_remove" ]]; then
+	echo "No branches to clean up"
+	git branch | wc -l
 	exit 0
 fi
 
-# Get worktree list for lookups
 worktree_list=$(git worktree list --porcelain)
 
-for branch in $gone_branches; do
-	# Check if this branch has a worktree
+while IFS= read -r branch; do
 	wt_path=""
+	current_wt=""
 	while IFS= read -r line; do
 		if [[ "$line" == worktree\ * ]]; then
 			current_wt="${line#worktree }"
@@ -24,14 +37,12 @@ for branch in $gone_branches; do
 		fi
 	done <<< "$worktree_list"
 
-	# Remove worktree if it exists
 	if [[ -n "$wt_path" ]]; then
 		echo "Removing worktree: $wt_path"
 		git worktree remove "$wt_path" 2>/dev/null || git worktree remove --force "$wt_path"
 	fi
 
-	# Delete the branch
 	git branch -D "$branch"
-done
+done <<< "$branches_to_remove"
 
 git branch | wc -l
