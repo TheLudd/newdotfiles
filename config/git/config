@@ -11,7 +11,7 @@
 	b = branch
 	ch = checkout
 	fix = commit -a --amend --no-edit
-	pf = push --force
+	pf = push --force-with-lease
 	m = rebase master
 	edit = reset HEAD~
 	wl = worktree list
