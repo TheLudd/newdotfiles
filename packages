@@ -5,7 +5,6 @@ automake
 autorandr
 bat
 bc
-blueberry
 bluez
 bluez-utils
 discord
@@ -39,15 +38,14 @@ patch
 pavucontrol
 picom
 pipewire
+pipewire-audio
+pipewire-pulse
 pkg-config
-pulseaudio
-pulseaudio-alsa
-pulseaudio-bluetooth
 python3
 python-neovim
 python-pip
 rabbitmq
-redis
+valkey
 reflector
 ripgrep
 rsync
