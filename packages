@@ -62,6 +62,7 @@ terraform
 texinfo
 the_silver_searcher
 tree
+tree-sitter-cli
 ttf-liberation
 tzdata
 unzip

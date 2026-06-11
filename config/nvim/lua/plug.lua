@@ -38,7 +38,7 @@ local plugins = {
   'dmmulroy/tsc.nvim',
 
   -- treesitter for better syntax highlighting
-  { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+  { 'nvim-treesitter/nvim-treesitter', branch = 'main', lazy = false, build = ':TSUpdate' },
 
   -- telescope
   { 'nvim-telescope/telescope.nvim',   dependencies = { 'nvim-lua/plenary.nvim' } },
