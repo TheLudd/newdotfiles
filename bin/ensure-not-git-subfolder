@@ -1,0 +1,17 @@
+#!/bin/sh
+toplevel=$(git rev-parse --show-toplevel 2>/dev/null)
+
+if [ -z "$toplevel" ]; then
+  # Case 3: outside any git dir — fine
+  exit 0
+fi
+
+if [ "$toplevel" = "$PWD" ]; then
+  # Case 1: at git root — fine
+  exit 0
+fi
+
+# Case 2: inside a git repo but not at its root — user error
+echo "⚠️  WARNING: not at git root. Repo root is $toplevel — you probably meant to start Claude ther" >&2
+exit 2
+
