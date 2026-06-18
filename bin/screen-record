@@ -34,10 +34,15 @@ else
     geometry=$(hacksaw -f "%w %h %x %y")
     read -r w h x y <<< "$geometry"
 
+    # Capture system audio: the monitor source of the current default sink
+    monitor="$(pactl get-default-sink).monitor"
+
     ffmpeg -f x11grab -framerate 30 \
         -video_size "${w}x${h}" \
         -i "${DISPLAY}+${x},${y}" \
+        -f pulse -i "$monitor" \
         -c:v libx264 -preset ultrafast \
+        -c:a aac \
         "$outfile" &
 
     echo $! > "$PIDFILE"
