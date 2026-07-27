@@ -1,0 +1,10 @@
+#!/bin/bash
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
+
+sudo reflector \
+  --country Sweden,Germany,Denmark \
+  --protocol https \
+  --age 12 \
+  --latest 20 \
+  --sort rate \
+  --save /etc/pacman.d/mirrorlist
