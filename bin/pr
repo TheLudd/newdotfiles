@@ -83,11 +83,12 @@ else
 		exit 1
 	fi
 
-	tmpFile=/tmp/pr-message-$(git log -n 1 --pretty=format:"%H")
+	tmpFile=/tmp/pr-message-$(git branch --show-current | tr '/' '-')
 	bodyFile="$tmpFile.body"
 
-
-	git log $base.. --pretty=format:"%s%n%n%b" > $tmpFile
+	if [[ ! -f $tmpFile ]]; then
+		git log $base.. --pretty=format:"%s%n%n%b" > $tmpFile
+	fi
 	nvim $tmpFile &&
 
 	title=`cat $tmpFile | head -n 1`
