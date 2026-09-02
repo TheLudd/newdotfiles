@@ -3,6 +3,18 @@
 	name = Ludwig Magnusson
 [core]
 	editor = nvim
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true          # n / N to jump between files
+	side-by-side = true
+	line-numbers = true
+	hyperlinks = true
+[merge]
+	conflictStyle = zdiff3
+[diff]
+	colorMoved = default     # distinguishes moved code from added/removed
 [alias]
 	st = status -s
 	co = commit -a
@@ -15,6 +27,7 @@
 	m = rebase master
 	edit = reset HEAD~
 	wl = worktree list
+	dft = -c diff.external=difft diff
 [push]
 	autoSetupRemote = true
 	default = simple
