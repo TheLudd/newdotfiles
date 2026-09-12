@@ -45,6 +45,7 @@ paru -S - < paru-packages
 - **`setups/`** - Post-install configuration (symlinks, locale, services, ssh)
 - **`sources/`** - Git submodules for suckless tools (dwm, st, dvtm, dmenu, dwmblocks)
 - **`config/`** - Application configs, symlinked to `~/.config/`
+- **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `setups/claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
 - **`bin/`** - User scripts, symlinked to `~/bin/`
 - **`autorandr/`** - Monitor profiles with postswitch hooks
 - **`scripts/archinstall/`** - Fresh Arch Linux installation scripts
@@ -59,6 +60,10 @@ Located in `config/nvim/` with Lua configuration:
 - LSP via Mason for TypeScript and other languages
 - Tree-sitter for syntax highlighting
 - Plugins: Telescope, Cmp, Copilot, Noice, Snacks
+
+### Claude Code Hooks
+
+`claude/settings.json` registers `bin/claude-notify` for the `UserPromptSubmit`, `Stop`, `StopFailure` and `Notification` events. It plays a freedesktop sound and sends a dunst notification when Claude finishes a turn longer than 10s, needs input, or fails. It is silent when the Claude terminal is the focused window.
 
 ### Zsh Configuration
 

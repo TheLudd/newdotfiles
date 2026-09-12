@@ -1,0 +1,70 @@
+#!/bin/bash
+# Claude Code hook: play a sound and send a desktop notification when Claude
+# finishes a turn, needs input, or fails. Reads the hook JSON on stdin.
+#
+# Skips when the Claude terminal is the focused X window, and skips "done"
+# for turns shorter than CLAUDE_NOTIFY_MIN_SECONDS (default 10).
+set -euo pipefail
+
+min_seconds=${CLAUDE_NOTIFY_MIN_SECONDS:-10}
+sounds=/usr/share/sounds/freedesktop/stereo
+state_dir="${XDG_RUNTIME_DIR:-/tmp}/claude-notify"
+
+input=$(cat)
+field() { jq -r "$1 // empty" <<<"$input"; }
+
+event=$(field .hook_event_name)
+session=$(field .session_id)
+project=$(basename "$(field .cwd)")
+
+terminal_focused() {
+	[[ -n "${WINDOWID:-}" && -n "${DISPLAY:-}" ]] || return 1
+	[[ "$(xdotool getactivewindow 2>/dev/null)" == "$WINDOWID" ]]
+}
+
+record_turn_start() {
+	mkdir -p "$state_dir"
+	date +%s >"$state_dir/$session"
+}
+
+# Seconds since the prompt was submitted; a missing record counts as long.
+turn_seconds() {
+	local start_file="$state_dir/$session"
+	[[ -f "$start_file" ]] || { echo "$min_seconds"; return; }
+	echo $(($(date +%s) - $(<"$start_file")))
+}
+
+first_line() { head -n1 | cut -c1-120; }
+
+# notify <sound> <urgency> <title> <body>
+notify() {
+	setsid -f paplay "$sounds/$1.oga" >/dev/null 2>&1
+	notify-send --app-name=claude-code --urgency="$2" \
+		--hint="string:x-dunst-stack-tag:claude-$session" "$3" "$4"
+}
+
+case $event in
+UserPromptSubmit)
+	record_turn_start
+	;;
+Stop)
+	terminal_focused && exit 0
+	(($(turn_seconds) >= min_seconds)) || exit 0
+	notify complete normal "Claude done · $project" \
+		"$(field .last_assistant_message | first_line)"
+	;;
+StopFailure)
+	terminal_focused && exit 0
+	notify dialog-error critical "Claude failed · $project" \
+		"$(field .error_type): $(field .error_message | first_line)"
+	;;
+Notification)
+	terminal_focused && exit 0
+	case $(field .notification_type) in
+	permission_prompt | elicitation_dialog)
+		notify dialog-warning normal "Claude needs input · $project" \
+			"$(field .notification_message)"
+		;;
+	esac
+	;;
+esac

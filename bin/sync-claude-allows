@@ -6,7 +6,7 @@
 set -euo pipefail
 
 WORKTREE_ROOT="${1:-.}"
-MASTER_SETTINGS="${XDG_CONFIG_HOME}/claude/settings.json"
+MASTER_SETTINGS="$(realpath "${XDG_CONFIG_HOME}/claude/settings.json")"
 
 if [[ ! -f "$MASTER_SETTINGS" ]]; then
     echo "Error: Master settings not found at $MASTER_SETTINGS" >&2

@@ -1,0 +1,102 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(gh api:*)",
+      "Bash(gh pr *)",
+      "Bash(gh pr view:*)",
+      "Bash(git add:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout *)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git status:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(ls:*)",
+      "Bash(node_modules/.bin/mocha:*)",
+      "Bash(npm view:*)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm run accept:*)",
+      "Bash(pnpm run it:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run test:*)",
+      "Bash(pnpm run typecheck:*)",
+      "Bash(pnpm run unit:*)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm unit:*)",
+      "Bash(pnpm why:*)",
+      "Bash(runm *)",
+      "Bash(tail:*)",
+      "Bash(unzip:*)",
+      "Bash(xargs:*)",
+      "WebSearch",
+      "mcp__clickup__clickup_create_task",
+      "mcp__clickup__clickup_get_list",
+      "mcp__clickup__clickup_get_task",
+      "mcp__clickup__clickup_resolve_assignees",
+      "mcp__clickup__clickup_update_task"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(git push:*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/bin/claude-notify",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/bin/claude-notify",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/bin/claude-notify",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/bin/claude-notify",
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "high",
+  "tui": "fullscreen",
+  "editorMode": "vim",
+  "skipAutoPermissionPrompt": true
+}
