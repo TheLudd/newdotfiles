@@ -1,0 +1,19 @@
+#!/bin/bash
+# Show a commit. Optional number selects HEAD~<n>, -n lists file names only.
+# Usage: gsh [-n] [<n>] [<git show args>...]
+
+set -e
+
+rev=HEAD
+args=()
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		-n) args+=(--name-only) ;;
+		*[!0-9]*|'') args+=("$1") ;;
+		*) rev="HEAD~$1" ;;
+	esac
+	shift
+done
+
+git show "$rev" "${args[@]}"
