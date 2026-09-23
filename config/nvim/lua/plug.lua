@@ -108,7 +108,20 @@ local plugins = {
   'tpope/vim-fugitive',
 
   -- db plugin
-  'tpope/vim-dadbod',
+  {
+    'tpope/vim-dadbod',
+    config = function()
+      -- open the query result pane in a vertical split on the right.
+      -- b:db_input marks a result buffer; its extension varies per adapter
+      vim.api.nvim_create_autocmd('BufWinEnter', {
+        callback = function()
+          if vim.b.db_input then
+            vim.cmd('wincmd L')
+          end
+        end,
+      })
+    end,
+  },
 
   -- coffee specific
   'kchmck/vim-coffee-script',
