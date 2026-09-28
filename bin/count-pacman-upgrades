@@ -1,15 +1,8 @@
 #!/bin/bash
+# Prints the upgrade count cached by check-pacman-upgrades
 
-if [ `nmcli networking connectivity` != "full" ]
-then
-	echo -e ? 📦
-	exit 1
+count=$(cat "${XDG_CACHE_HOME:-$HOME/.cache}/pacman-upgrades" 2> /dev/null)
+
+if [[ -n $count && $count != 0 ]]; then
+	echo "$count 📦"
 fi
-
-function writestatus() {
-	if [[ "$count" != "0" ]]; then
-		echo -e $count 📦
-	fi
-}
-
-{ checkupdates > /dev/null && count=`checkupdates | sed '/\[ignored\]/d' | wc -l` && writestatus $count; } &

@@ -1,0 +1,9 @@
+[Unit]
+Description=Count pending pacman and AUR upgrades
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/nm-online -q -t 600
+ExecStart=%h/bin/check-pacman-upgrades
+Restart=on-failure
+RestartSec=15min

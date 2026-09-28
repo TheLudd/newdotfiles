@@ -1,0 +1,21 @@
+#!/bin/bash
+# Counts pending repo and AUR upgrades and caches the count for count-pacman-upgrades
+
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/pacman-upgrades"
+
+# checkupdates exits 2 when there is nothing to upgrade
+repo=$(checkupdates)
+[[ $? == 1 ]] && exit 1
+
+# paru exits 1 both when there is nothing to upgrade and on errors; only errors print to stderr
+errors=$(mktemp)
+aur=$(paru -Qua 2> "$errors")
+if [[ $? != 0 && -s $errors ]]; then
+	cat "$errors" >&2
+	rm "$errors"
+	exit 1
+fi
+rm "$errors"
+
+printf '%s\n%s\n' "$repo" "$aur" | sed '/^$/d; /\[ignored\]/d' | wc -l > "$cache"
+pkill -RTMIN+3 dwmblocks || true
