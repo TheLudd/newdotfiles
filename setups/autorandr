@@ -6,3 +6,6 @@ find autorandr -type f | while read -r file; do
         ln -s "$(realpath "$file")" "$targetDir/$(basename "$file")"
     fi
 done
+
+# Re-detect the profile after resume; udev hotplug events are unreliable across suspend
+sudo systemctl enable autorandr.service
