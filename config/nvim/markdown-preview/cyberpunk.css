@@ -1,0 +1,208 @@
+/* Cyberpunk palette for the preview's dark theme (header toggle / g:mkdp_theme) */
+main[data-theme="dark"] {
+  --cp-bg: #0a0b17;
+  --cp-panel: #10122a;
+  --cp-raised: #171a3a;
+  --cp-line: #2a2f63;
+  --cp-text: #d6dbff;
+  --cp-muted: #7f86c2;
+  --cp-cyan: #00e5ff;
+  --cp-magenta: #ff2bd6;
+  --cp-h3: #8fa8ff;
+  --cp-code: #5cffa8;
+  --cp-mono: "Source Code Pro", "DejaVuSansM Nerd Font", monospace;
+
+  /* page.css */
+  --foreground-color: var(--cp-text);
+  --background-color: var(--cp-panel);
+  --border-color: var(--cp-line);
+  --secondary-background-color: var(--cp-bg);
+
+  /* markdown.css */
+  --color-text-primary: var(--cp-text);
+  --color-text-tertiary: var(--cp-muted);
+  --color-text-link: var(--cp-cyan);
+  --color-bg-primary: var(--cp-panel);
+  --color-bg-secondary: var(--cp-panel);
+  --color-bg-tertiary: var(--cp-raised);
+  --color-border-primary: var(--cp-line);
+  --color-border-secondary: var(--cp-line);
+  --color-border-tertiary: var(--cp-muted);
+  --color-kbd-foreground: var(--cp-code);
+  --color-markdown-blockquote-border: var(--cp-magenta);
+  --color-markdown-table-border: var(--cp-line);
+  --color-markdown-table-tr-border: var(--cp-line);
+  --color-markdown-code-bg: var(--cp-raised);
+
+  background:
+    radial-gradient(ellipse at top left, #ff2bd61a, transparent 50%),
+    radial-gradient(ellipse at bottom right, #00e5ff14, transparent 50%),
+    var(--cp-bg);
+  background-attachment: fixed;
+}
+
+main[data-theme="dark"] ::selection {
+  background: var(--cp-magenta);
+  color: var(--cp-bg);
+}
+
+/* Page frame */
+main[data-theme="dark"] #page-header {
+  border-top: 2px solid var(--cp-magenta);
+}
+
+main[data-theme="dark"] .markdown-body {
+  box-shadow: 0 0 24px #00e5ff1f, inset 0 0 0 1px #00e5ff14;
+}
+
+/* Headings */
+main[data-theme="dark"] .markdown-body h1,
+main[data-theme="dark"] .markdown-body h2,
+main[data-theme="dark"] .markdown-body h3,
+main[data-theme="dark"] .markdown-body h4,
+main[data-theme="dark"] .markdown-body h5,
+main[data-theme="dark"] .markdown-body h6 {
+  font-family: var(--cp-mono);
+  letter-spacing: 0.02em;
+}
+
+main[data-theme="dark"] .markdown-body h1 {
+  color: var(--cp-magenta);
+  text-shadow: 0 0 6px #ff2bd64d;
+  border-bottom: 1px solid var(--cp-magenta);
+}
+
+main[data-theme="dark"] .markdown-body h2 {
+  color: var(--cp-cyan);
+  text-shadow: 0 0 5px #00e5ff33;
+  border-bottom: 1px solid var(--cp-line);
+}
+
+main[data-theme="dark"] .markdown-body h3 {
+  color: var(--cp-h3);
+}
+
+main[data-theme="dark"] .markdown-body h4,
+main[data-theme="dark"] .markdown-body h5,
+main[data-theme="dark"] .markdown-body h6 {
+  color: var(--cp-text);
+}
+
+/* The hover permalink sits before the text; take it out of the flow so the
+   wide mono font doesn't leave a gap where it and the following space were */
+main[data-theme="dark"] .markdown-body :is(h1, h2, h3, h4, h5, h6) {
+  position: relative;
+}
+
+main[data-theme="dark"] .markdown-body :is(h1, h2, h3, h4, h5, h6) .anchor {
+  position: absolute;
+  left: -24px;
+  margin-left: 0;
+  color: var(--cp-muted);
+}
+
+main[data-theme="dark"] .markdown-body .anchor svg {
+  fill: currentColor;
+  vertical-align: middle;
+}
+
+/* Inline */
+main[data-theme="dark"] .markdown-body strong {
+  color: #fff;
+}
+
+main[data-theme="dark"] .markdown-body a:hover {
+  color: var(--cp-magenta);
+  text-shadow: 0 0 8px #ff2bd680;
+}
+
+main[data-theme="dark"] .markdown-body code {
+  font-family: var(--cp-mono);
+  color: var(--cp-code);
+}
+
+main[data-theme="dark"] .markdown-body blockquote {
+  background: #ff2bd60d;
+  color: var(--cp-text);
+}
+
+main[data-theme="dark"] .markdown-body hr {
+  background: linear-gradient(90deg, var(--cp-magenta), var(--cp-cyan));
+  height: 2px;
+  border: 0;
+}
+
+main[data-theme="dark"] .markdown-body table tr:nth-child(2n) {
+  background: var(--cp-raised);
+}
+
+main[data-theme="dark"] .markdown-body th {
+  color: var(--cp-cyan);
+  font-family: var(--cp-mono);
+}
+
+/* Code blocks */
+main[data-theme="dark"] .markdown-body pre {
+  background: #07081a;
+  border: 1px solid var(--cp-line);
+  border-left: 3px solid var(--cp-cyan);
+}
+
+main[data-theme="dark"] .markdown-body pre code {
+  color: var(--cp-text);
+}
+
+main[data-theme="dark"] .hljs {
+  background: transparent;
+  color: var(--cp-text);
+}
+
+main[data-theme="dark"] .hljs-comment,
+main[data-theme="dark"] .hljs-quote {
+  color: var(--cp-muted);
+}
+
+main[data-theme="dark"] .hljs-keyword,
+main[data-theme="dark"] .hljs-selector-tag,
+main[data-theme="dark"] .hljs-built_in,
+main[data-theme="dark"] .hljs-name {
+  color: var(--cp-magenta);
+}
+
+main[data-theme="dark"] .hljs-string,
+main[data-theme="dark"] .hljs-regexp,
+main[data-theme="dark"] .hljs-attr {
+  color: var(--cp-code);
+}
+
+main[data-theme="dark"] .hljs-number,
+main[data-theme="dark"] .hljs-literal,
+main[data-theme="dark"] .hljs-title,
+main[data-theme="dark"] .hljs-function,
+main[data-theme="dark"] .hljs-type,
+main[data-theme="dark"] .hljs-class {
+  color: var(--cp-cyan);
+}
+
+/* TOC */
+main[data-theme="dark"] .markdown-body nav.table-of-contents {
+  font-family: var(--cp-mono);
+  font-size: 13px;
+  padding: 12px 16px;
+  background: #10122acc;
+  border: 1px solid var(--cp-line);
+  border-left: 2px solid var(--cp-magenta);
+}
+
+main[data-theme="dark"] .markdown-body nav.table-of-contents a {
+  color: var(--cp-muted);
+}
+
+main[data-theme="dark"] .markdown-body nav.table-of-contents > ul > li > a {
+  color: var(--cp-cyan);
+}
+
+main[data-theme="dark"] .markdown-body nav.table-of-contents a:hover {
+  color: var(--cp-magenta);
+  text-decoration: none;
+}

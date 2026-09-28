@@ -131,6 +131,22 @@ local plugins = {
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
     ft = { 'markdown' },
     build = function() vim.fn['mkdp#util#install']() end,
+    config = function(plugin)
+      -- g:mkdp_markdown_css replaces the default stylesheet, so extend a copy of it
+      local sources = {
+        plugin.dir .. '/app/_static/markdown.css',
+        vim.fn.stdpath('config') .. '/markdown-preview/toc.css',
+        vim.fn.stdpath('config') .. '/markdown-preview/cyberpunk.css',
+      }
+      local css = {}
+      for _, path in ipairs(sources) do
+        vim.list_extend(css, vim.fn.readfile(path))
+      end
+      local target = vim.fn.stdpath('cache') .. '/markdown-preview.css'
+      vim.fn.writefile(css, target)
+      vim.g.mkdp_markdown_css = target
+      vim.g.mkdp_theme = 'dark'
+    end,
   },
 
   -- terraform
