@@ -65,6 +65,12 @@ Located in `config/nvim/` with Lua configuration:
 
 `claude/settings.json` registers `bin/claude-notify` for the `UserPromptSubmit`, `Stop`, `StopFailure` and `Notification` events. It plays a freedesktop sound and sends a dunst notification when Claude finishes a turn longer than 10s, needs input, or fails. It is silent when the Claude terminal is the focused window.
 
+### margin (markdown reader/editor)
+
+margin lives in its own repo at `~/code/margin`. It serves every markdown file under `~/code` at http://localhost:48217 for reading and inline editing. Here it is wired up by:
+- `installs/margin`: runs `make install` in `~/code/margin`, installing to `~/.local/bin/margin`, and restarts the service
+- `config/systemd/user/margin.service`: a user service, enabled through `default.target.wants`
+
 ### Zsh Configuration
 
 Modular setup in `config/zsh/`:

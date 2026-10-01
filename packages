@@ -19,6 +19,7 @@ gcc
 git
 git-delta
 github-cli
+go
 hacksaw
 htop
 kbd

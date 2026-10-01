@@ -1,0 +1,10 @@
+[Unit]
+Description=margin, markdown reader/editor for ~/code (http://localhost:48217)
+
+[Service]
+ExecStart=%h/.local/bin/margin
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
