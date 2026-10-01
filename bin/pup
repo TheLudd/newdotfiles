@@ -1,2 +1,2 @@
 #!/bin/bash
-paru -Syu; check-pacman-upgrades; sudo systemctl restart launcher.kolide-k2.service
+paru -Syu --skipreview; check-pacman-upgrades; sudo systemctl restart launcher.kolide-k2.service
