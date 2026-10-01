@@ -67,9 +67,11 @@ Located in `config/nvim/` with Lua configuration:
 
 ### margin (markdown reader/editor)
 
-margin lives in its own repo at `~/code/margin`. It serves the markdown files in the folders listed in `~/.config/margin/config.json` (untracked, edited from margin's settings screen) at http://localhost:48217 for reading and inline editing. Here it is wired up by:
+margin lives in its own repo at `~/code/margin`. It serves the markdown files in the folders listed in `~/.config/margin/config.json` (untracked, edited from margin's settings screen) at http://margin.local for reading and inline editing. Here it is wired up by:
 - `installs/margin`: runs `make install` in `~/code/margin`, installing to `~/.local/bin/margin`, and restarts the service
-- `config/systemd/user/margin.service`: a user service, enabled through `default.target.wants`
+- `config/systemd/user/margin.service`: a user service listening on 127.0.0.1:48217 (`-host margin.local` lets it accept that name), enabled through `default.target.wants`
+- `nginx/margin.conf` + `setups/nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
+- `setups/hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
 
 ### Zsh Configuration
 

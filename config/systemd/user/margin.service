@@ -1,8 +1,8 @@
 [Unit]
-Description=margin, markdown reader/editor (http://localhost:48217)
+Description=margin, markdown reader/editor (http://margin.local)
 
 [Service]
-ExecStart=%h/.local/bin/margin
+ExecStart=%h/.local/bin/margin -host margin.local
 Restart=on-failure
 RestartSec=2
 

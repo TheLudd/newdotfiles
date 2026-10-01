@@ -1,0 +1,5 @@
+#!/bin/zsh
+# Serve margin at http://margin.local through nginx. The site config stays in
+# the dotfiles and is linked into nginx's sites-enabled.
+sudo ln -sf "$(realpath nginx/margin.conf)" /etc/nginx/sites-enabled/margin.conf
+sudo nginx -t && sudo systemctl enable --now nginx && sudo systemctl reload nginx
