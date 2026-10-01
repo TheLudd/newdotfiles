@@ -1,0 +1,2 @@
+#!/bin/bash
+paru -S --needed --skipreview --noconfirm google-chrome; sudo systemctl restart launcher.kolide-k2.service
