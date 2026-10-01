@@ -1,5 +1,5 @@
 [Unit]
-Description=margin, markdown reader/editor for ~/code (http://localhost:48217)
+Description=margin, markdown reader/editor (http://localhost:48217)
 
 [Service]
 ExecStart=%h/.local/bin/margin
