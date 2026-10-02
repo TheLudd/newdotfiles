@@ -16,6 +16,8 @@ export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export GHCUP_USE_XDG_DIRS=true
 export STACK_XDG=1
 export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
+export GOPATH="$XDG_DATA_HOME"/go
+export GOMODCACHE="$XDG_CACHE_HOME"/go/mod
 
 # AWS configuration
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_CONFIG_HOME"/aws/credentials
