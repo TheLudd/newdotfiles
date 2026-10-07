@@ -34,13 +34,18 @@ else
     geometry=$(hacksaw -f "%w %h %x %y")
     read -r w h x y <<< "$geometry"
 
-    # Capture system audio: the monitor source of the current default sink
+    # Capture system audio (monitor of the default sink) and the default mic,
+    # mixed into one track
     monitor="$(pactl get-default-sink).monitor"
+    mic="$(pactl get-default-source)"
 
     ffmpeg -f x11grab -framerate 30 \
         -video_size "${w}x${h}" \
         -i "${DISPLAY}+${x},${y}" \
-        -f pulse -i "$monitor" \
+        -thread_queue_size 1024 -f pulse -i "$monitor" \
+        -thread_queue_size 1024 -f pulse -i "$mic" \
+        -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[a]" \
+        -map 0:v -map "[a]" \
         -c:v libx264 -preset ultrafast \
         -c:a aac \
         "$outfile" &

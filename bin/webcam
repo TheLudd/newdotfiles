@@ -1,0 +1,27 @@
+#!/bin/bash
+# Toggle a small borderless webcam preview in the bottom-right screen corner.
+# dwm floats it on all tags (rule on instance "webcam"), so screen-record picks it up.
+
+PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.pid"
+DEVICE="$(ls /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
+
+if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")"
+    rm -f "$PIDFILE"
+    exit 0
+fi
+
+if [[ -z "$DEVICE" ]]; then
+    notify-send "Webcam" "No camera found"
+    exit 1
+fi
+
+mpv "av://v4l2:$DEVICE" \
+    --x11-name=webcam --title=webcam \
+    --demuxer-lavf-o=input_format=mjpeg,video_size=640x480 \
+    --profile=low-latency --untimed --no-cache \
+    --no-border --no-osc --no-audio \
+    --geometry=320x240-20-20 \
+    >/dev/null 2>&1 &
+
+echo $! > "$PIDFILE"
