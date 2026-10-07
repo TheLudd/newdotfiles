@@ -1,6 +1,7 @@
 #!/bin/bash
-# Toggle a small borderless webcam preview in the bottom-right screen corner.
-# dwm floats it on all tags (rule on instance "webcam"), so screen-record picks it up.
+# Toggle a small borderless webcam preview in the bottom-right corner of the
+# monitor under the mouse. dwm floats it on all tags (rule on instance "webcam"),
+# so screen-record picks it up. Move it with Mod+drag.
 
 PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.pid"
 DEVICE="$(ls /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
@@ -16,12 +17,21 @@ if [[ -z "$DEVICE" ]]; then
     exit 1
 fi
 
+# Name of the monitor containing the mouse pointer
+monitor_under_mouse() {
+    eval "$(xdotool getmouselocation --shell)"
+    xrandr --listmonitors | awk -v mx="$X" -v my="$Y" 'NR > 1 {
+        split($3, g, /[\/x+]/)  # W/mmWxH/mmH+X+Y
+        if (mx >= g[5] && mx < g[5] + g[1] && my >= g[6] && my < g[6] + g[3]) { print $4; exit }
+    }'
+}
+
 mpv "av://v4l2:$DEVICE" \
     --x11-name=webcam --title=webcam \
     --demuxer-lavf-o=input_format=mjpeg,video_size=640x480 \
     --profile=low-latency --untimed --no-cache \
     --no-border --no-osc --no-audio \
-    --geometry=320x240-20-20 \
+    --screen-name="$(monitor_under_mouse)" --geometry=320x240-20-20 \
     >/dev/null 2>&1 &
 
 echo $! > "$PIDFILE"
