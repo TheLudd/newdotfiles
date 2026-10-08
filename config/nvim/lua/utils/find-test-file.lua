@@ -38,6 +38,7 @@ local function generateTestFileCandidates(file)
   paths[6] = appendTestSuffix(paths[3])
   paths[7] = swapExtension(paths[5])
   paths[8] = changeExtensionToCoffee(paths[5])
+  paths[9] = swapExtension(paths[4])
 
   return paths
 end
