@@ -55,7 +55,6 @@ require('copilot').setup({
     trace_lsp_progress = false,
     log_lsp_messages = false,
   },
-  copilot_node_command = '/usr/local/n/versions/node/22.21.1/bin/node',
   workspace_folders = {},
   copilot_model = "",
   disable_limit_reached_message = false, -- Set to `true` to suppress completion limit reached popup

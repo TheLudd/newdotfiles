@@ -12,6 +12,7 @@ vim.opt.expandtab = true -- use spaces instead of tabs
 vim.opt.tabstop = 2 -- number of spaces that a <Tab> in the file counts for
 vim.opt.smartindent = true -- autoindent new lines
 vim.opt.shiftwidth = 2 -- number of spaces to use for autoindent
+vim.opt.winborder = 'rounded' -- border on floating windows (lsp hover, signature help)
 
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
   pattern = "*.feature-template",

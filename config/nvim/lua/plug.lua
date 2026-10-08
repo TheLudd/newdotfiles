@@ -34,7 +34,7 @@ local plugins = {
   'nanotech/jellybeans.vim',
 
   -- typescript tools instead of typescript language server
-  { 'pmizio/typescript-tools.nvim',    dependencies = { 'nvim-lua/plenary.nvim' }, opts = {} },
+  { 'pmizio/typescript-tools.nvim',    dependencies = { 'nvim-lua/plenary.nvim' } },
   'dmmulroy/tsc.nvim',
 
   -- treesitter for better syntax highlighting

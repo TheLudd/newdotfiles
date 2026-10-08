@@ -1,5 +1,3 @@
-local border = "rounded"
-
 local on_attach = function(_, bufnr)
   local opts = { noremap = true, silent = true }
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover({ border = "rounded" })<CR>', opts)
@@ -65,9 +63,5 @@ typescriptTools.setup {
   end,
   settings = {
     tsserver_file_preferences = { quotePreference = 'single' }
-  },
-  handlers = {
-    ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
-    ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
   },
 }

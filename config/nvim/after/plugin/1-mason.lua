@@ -6,19 +6,8 @@ end
 
 require('mason').setup()
 
--- Add borders to LSP floating windows (must be set before LSP servers are configured)
-local border = "rounded"
-
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = border,
-})
-
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-  border = border,
-})
-
 vim.diagnostic.config({
-  float = { border = border },
+  float = { border = "rounded" },
 })
 
 local function buf_set_keymap(bufnr, ...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
