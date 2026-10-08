@@ -36,10 +36,9 @@ local on_attach = function(_, bufnr)
   buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
   buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
-  buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua vim.lsp.buf.format({ async = false })<cr>', opts)
+  buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua require("utils.format").format()<cr>', opts)
 end
 
-local biome = { formatCommand = 'biome format --stdin-file-path "${INPUT}"', formatStdin = true }
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 local uv = vim.uv or vim.loop
@@ -84,10 +83,6 @@ local serverMappings = {
       rootMarkers = { '.prettierrc.yaml' },
       languages = {
         lua = { { formatCommand = 'lua-format -i', formatStdin = true } },
-        javascript = { biome },
-        javascriptreact = { biome },
-        typescript = { biome },
-        typescriptreact = { biome },
       },
     },
   },
