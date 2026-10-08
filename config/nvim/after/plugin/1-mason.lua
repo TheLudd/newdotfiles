@@ -70,9 +70,12 @@ local serverMappings = {
     on_attach = on_attach,
     capabilities = capabilities,
     cmd = { "biome", "lsp-proxy" },
+    on_new_config = function(new_config, root_dir)
+      new_config.cmd = { require('utils.format').biome_bin(root_dir), "lsp-proxy" }
+    end,
     root_dir = lspconfig.util.root_pattern("biome.json", "biome.jsonc"),
     single_file_support = false,
-    filetypes = { 'lua', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+    filetypes = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
   },
   efm = {
     on_attach = on_attach_with_biome_check,
