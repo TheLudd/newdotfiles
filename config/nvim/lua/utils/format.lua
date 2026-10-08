@@ -45,11 +45,17 @@ local function biome_check(bufnr)
   apply_lines(bufnr, old_lines, new_lines)
 end
 
--- Biome check when biome is attached, otherwise any formatting client.
+local function attached(bufnr, name)
+  return #vim.lsp.get_clients({ bufnr = bufnr, name = name }) > 0
+end
+
+-- Biome check when biome is attached, else eslint fixes, else any formatting client.
 M.format = function()
   local bufnr = vim.api.nvim_get_current_buf()
-  if #vim.lsp.get_clients({ bufnr = bufnr, name = 'biome' }) > 0 then
+  if attached(bufnr, 'biome') then
     biome_check(bufnr)
+  elseif attached(bufnr, 'eslint') then
+    vim.cmd('LspEslintFixAll')
   else
     vim.lsp.buf.format({ async = false })
   end

@@ -1,16 +1,3 @@
-local on_attach = function(_, bufnr)
-  local opts = { noremap = true, silent = true }
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover({ border = "rounded" })<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.diagnostic.open_float({ border = "rounded" })<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'R', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>r', '<cmd>lua require("utils.rename").rename()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>i', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>n', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>N', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<cmd>lua require("utils.format").format()<cr>', opts)
-end
-
 -- The project's own typescript, found like typescript-tools does: the nearest node_modules/typescript.
 local function find_typescript(bufnr)
   for root in vim.fs.parents(vim.api.nvim_buf_get_name(bufnr)) do
@@ -29,23 +16,20 @@ local function is_native(typescript)
   return typescript ~= nil and typescript.major ~= nil and typescript.major >= 7
 end
 
-vim.lsp.config('tsgo', {
-  cmd = function(dispatchers, config)
-    return vim.lsp.rpc.start({ config.root_dir .. '/node_modules/.bin/tsc', '--lsp', '--stdio' }, dispatchers,
-      { cwd = config.root_dir })
-  end,
-  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+-- TypeScript 7+: lspconfig's tsc server, which runs the project's `tsc --lsp`.
+-- cmd and root_dir share a binary cache, so both must come from the same loaded config.
+local tsc = vim.lsp.config.tsc
+vim.lsp.config('tsc', {
+  cmd = tsc.cmd,
   root_dir = function(bufnr, on_dir)
-    local typescript = find_typescript(bufnr)
-    if is_native(typescript) then
-      on_dir(typescript.root)
+    if is_native(find_typescript(bufnr)) then
+      tsc.root_dir(bufnr, on_dir)
     end
   end,
-  on_attach = on_attach,
-  capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities()),
 })
-vim.lsp.enable('tsgo')
+vim.lsp.enable('tsc')
 
+-- Older TypeScript: typescript-tools, which talks to tsserver.js.
 local ok, typescriptTools = pcall(require, 'typescript-tools')
 
 if not ok then
@@ -55,7 +39,6 @@ end
 local typescript_tools_util = require('typescript-tools.utils')
 
 typescriptTools.setup {
-  on_attach = on_attach,
   root_dir = function(bufnr, on_dir)
     if not is_native(find_typescript(bufnr)) then
       on_dir(typescript_tools_util.get_root_dir(bufnr))

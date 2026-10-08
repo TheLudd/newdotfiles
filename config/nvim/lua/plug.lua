@@ -13,10 +13,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  {
-    "neovim/nvim-lspconfig",
-    version = "v0.1.7",
-  },
+  "neovim/nvim-lspconfig",
   {
     "folke/lazydev.nvim",
     ft = "lua", -- only load on lua files
@@ -45,14 +42,8 @@ local plugins = {
   { 'nvim-telescope/telescope-ui-select.nvim' },
 
   -- mason
-  {
-    'williamboman/mason.nvim',
-    version = '^1', -- latest v1.x
-  },
-  {
-    'williamboman/mason-lspconfig.nvim',
-    version = '^1', -- latest v1.x
-  },
+  'mason-org/mason.nvim',
+  'mason-org/mason-lspconfig.nvim',
 
   -- cmp completion engine
   'hrsh7th/cmp-nvim-lsp',
