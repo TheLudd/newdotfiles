@@ -2,10 +2,14 @@
 # Toggle a small borderless webcam preview in the bottom-right corner of the
 # monitor under the mouse. dwm floats it on all tags (rule on instance "webcam"),
 # so screen-record picks it up. Move it with Mod+drag.
-# `webcam fullscreen` toggles fullscreen on a running preview.
+# `webcam fullscreen` animates a running preview to fullscreen and back.
 
 PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.pid"
 SOCKET="${XDG_RUNTIME_DIR:-/tmp}/webcam.sock"
+# Preview geometry before going fullscreen, restored when leaving it
+GEOMFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.geometry"
+FRAMES=15
+FRAME_DELAY=0.013
 # Prefer the external Brio, fall back to the laptop camera
 DEVICE="$(ls /dev/v4l/by-id/*Brio*-video-index0 /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
 
@@ -13,14 +17,87 @@ running() {
     [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null
 }
 
+mpv_get() {
+    echo "{\"command\":[\"get_property\",\"$1\"]}" | socat - "$SOCKET" | jq -r .data
+}
+
+mpv_set() {
+    echo "{\"command\":[\"set_property\",\"$1\",$2]}" | socat - "$SOCKET" >/dev/null
+}
+
+# "NAME X Y W H" for each active monitor. xrandr --current skips re-probing the
+# outputs, which takes ~0.4s.
+monitors() {
+    xrandr --current | awk '/ connected/ && match($0, /[0-9]+x[0-9]+\+[0-9]+\+[0-9]+/) {
+        split(substr($0, RSTART, RLENGTH), g, /[x+]/)  # WxH+X+Y
+        print $1, g[3], g[4], g[1], g[2]
+    }'
+}
+
+# "NAME X Y W H" of the monitor containing the point $1,$2
+monitor_at() {
+    monitors | awk -v px="$1" -v py="$2" 'px >= $2 && px < $2 + $4 && py >= $3 && py < $3 + $5 { print; exit }'
+}
+
+# "X Y W H" of the monitor containing the centre of geometry "$1" ("X Y W H")
+monitor_of() {
+    local x y w h
+    read -r x y w h <<< "$1"
+    monitor_at $((x + w / 2)) $((y + h / 2)) | cut -d' ' -f2-
+}
+
+# Ease window $1 from geometry "$2" to "$3" (both "X Y W H", absolute) on the
+# monitor at "$4" ("X Y W H"). dwm reads move requests relative to the monitor
+# and re-centres floating windows that cross its edge, so growing moves before
+# resizing and shrinking resizes before moving.
+animate() {
+    local args
+    args="$(awk -v win="$1" -v from="$2" -v to="$3" -v mon="$4" -v n="$FRAMES" -v delay="$FRAME_DELAY" 'BEGIN {
+        split(from, a, " "); split(to, b, " "); split(mon, m, " ")
+        grow = b[3] > a[3]
+        for (i = 1; i <= n; i++) {
+            t = 1 - (1 - i / n) ^ 3  # ease-out cubic
+            x = int(a[1] + (b[1] - a[1]) * t - m[1]); y = int(a[2] + (b[2] - a[2]) * t - m[2])
+            w = int(a[3] + (b[3] - a[3]) * t); h = int(a[4] + (b[4] - a[4]) * t)
+            move = sprintf("windowmove %s %d %d", win, x, y); size = sprintf("windowsize %s %d %d", win, w, h)
+            printf "%s %s sleep %s ", grow ? move : size, grow ? size : move, delay
+        }
+    }')"
+    # shellcheck disable=SC2086
+    xdotool $args
+}
+
+window_geometry() {
+    eval "$(xdotool getwindowgeometry --shell "$1")"
+    echo "$X $Y $WIDTH $HEIGHT"
+}
+
+toggle_fullscreen() {
+    local win small monitor
+    win="$(mpv_get window-id)"
+    if [[ "$(mpv_get fullscreen)" == "true" ]]; then
+        mpv_set fullscreen false
+        sleep 0.05
+        small="$(cat "$GEOMFILE")"
+        monitor="$(monitor_of "$small")"
+        animate "$win" "$(window_geometry "$win")" "$small" "$monitor"
+    else
+        small="$(window_geometry "$win")"
+        echo "$small" > "$GEOMFILE"
+        monitor="$(monitor_of "$small")"
+        animate "$win" "$small" "$monitor" "$monitor"
+        mpv_set fullscreen true
+    fi
+}
+
 if [[ "$1" == "fullscreen" ]]; then
-    running && echo 'cycle fullscreen' | socat - "$SOCKET" >/dev/null
+    running && toggle_fullscreen
     exit 0
 fi
 
 if running; then
     kill "$(cat "$PIDFILE")"
-    rm -f "$PIDFILE" "$SOCKET"
+    rm -f "$PIDFILE" "$SOCKET" "$GEOMFILE"
     exit 0
 fi
 
@@ -32,10 +109,7 @@ fi
 # Name of the monitor containing the mouse pointer
 monitor_under_mouse() {
     eval "$(xdotool getmouselocation --shell)"
-    xrandr --listmonitors | awk -v mx="$X" -v my="$Y" 'NR > 1 {
-        split($3, g, /[\/x+]/)  # W/mmWxH/mmH+X+Y
-        if (mx >= g[5] && mx < g[5] + g[1] && my >= g[6] && my < g[6] + g[3]) { print $4; exit }
-    }'
+    monitor_at "$X" "$Y" | cut -d' ' -f1
 }
 
 mpv "av://v4l2:$DEVICE" \
