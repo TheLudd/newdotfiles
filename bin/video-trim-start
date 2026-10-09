@@ -1,0 +1,17 @@
+#!/bin/bash
+# Trim the first N seconds (default 7) off a video.
+# Usage: video-trim-start <input> [seconds] [output]
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+	echo "usage: $(basename "$0") <input> [seconds=7] [output]" >&2
+	exit 1
+fi
+
+input=$1
+seconds=${2:-7}
+output=${3:-"${input%.*}-trimmed.${input##*.}"}
+
+# -ss after -i re-encodes for a frame-accurate cut; stream copy would snap to keyframes
+ffmpeg -hide_banner -i "$input" -ss "$seconds" -c:v libx264 -crf 18 -preset fast -c:a copy "$output"
+echo "$output"
