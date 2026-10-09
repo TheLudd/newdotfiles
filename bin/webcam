@@ -6,7 +6,8 @@
 
 PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.pid"
 SOCKET="${XDG_RUNTIME_DIR:-/tmp}/webcam.sock"
-DEVICE="$(ls /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
+# Prefer the external Brio, fall back to the laptop camera
+DEVICE="$(ls /dev/v4l/by-id/*Brio*-video-index0 /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
 
 running() {
     [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null
