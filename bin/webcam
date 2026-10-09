@@ -2,13 +2,24 @@
 # Toggle a small borderless webcam preview in the bottom-right corner of the
 # monitor under the mouse. dwm floats it on all tags (rule on instance "webcam"),
 # so screen-record picks it up. Move it with Mod+drag.
+# `webcam fullscreen` toggles fullscreen on a running preview.
 
 PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.pid"
+SOCKET="${XDG_RUNTIME_DIR:-/tmp}/webcam.sock"
 DEVICE="$(ls /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
 
-if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+running() {
+    [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null
+}
+
+if [[ "$1" == "fullscreen" ]]; then
+    running && echo 'cycle fullscreen' | socat - "$SOCKET" >/dev/null
+    exit 0
+fi
+
+if running; then
     kill "$(cat "$PIDFILE")"
-    rm -f "$PIDFILE"
+    rm -f "$PIDFILE" "$SOCKET"
     exit 0
 fi
 
@@ -28,10 +39,11 @@ monitor_under_mouse() {
 
 mpv "av://v4l2:$DEVICE" \
     --x11-name=webcam --title=webcam \
-    --demuxer-lavf-o=input_format=mjpeg,video_size=640x480 \
+    --demuxer-lavf-o=input_format=mjpeg,video_size=1280x720 \
     --profile=low-latency --untimed --no-cache \
     --no-border --no-osc --no-audio \
-    --screen-name="$(monitor_under_mouse)" --geometry=320x240-20-20 \
+    --screen-name="$(monitor_under_mouse)" --geometry=320x180-20-20 \
+    --input-ipc-server="$SOCKET" \
     >/dev/null 2>&1 &
 
 echo $! > "$PIDFILE"
