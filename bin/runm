@@ -16,7 +16,7 @@ done
 
 if [[ ${#projects[@]} -gt 0 ]]; then
   project=$(IFS=,; echo "${projects[*]}")
-  npx nx run-many -t "$target" -p "$project" "$@"
+  pnpm exec nx run-many -t "$target" -p "$project" "$@"
 else
-  npx nx run-many -t "$target" "$@"
+  pnpm exec nx run-many -t "$target" "$@"
 fi
