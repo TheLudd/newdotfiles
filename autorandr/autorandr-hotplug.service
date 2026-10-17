@@ -1,0 +1,14 @@
+# Started by autorandr/hotplug.rules on every DRM change event instead of the
+# package's autorandr.service. The USB-C monitor at home renegotiates its link
+# about two seconds after being plugged in; setting the mode during that
+# renegotiation leaves the panel black. Waiting first lets the link settle, and
+# any further events that arrive while this unit runs are merged into the
+# running job. Resume still goes through autorandr.service without the delay.
+[Unit]
+Description=autorandr after a monitor hotplug event, once the link has settled
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/sleep 3
+ExecStart=/usr/bin/autorandr --batch --change --default default
+KillMode=process

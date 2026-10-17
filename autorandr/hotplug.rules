@@ -1,0 +1,3 @@
+# Overrides the autorandr package's 40-monitor-hotplug.rules (same file name in
+# /etc wins) so hotplug events go through the settling unit.
+ACTION=="change", SUBSYSTEM=="drm", RUN+="/bin/systemctl start --no-block autorandr-hotplug.service"

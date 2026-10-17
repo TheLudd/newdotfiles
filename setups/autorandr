@@ -9,3 +9,9 @@ done
 
 # Re-detect the profile after resume; udev hotplug events are unreliable across suspend
 sudo systemctl enable autorandr.service
+
+# Hotplug events wait for the monitor link to settle before switching
+sudo ln -sf "$(realpath autorandr/autorandr-hotplug.service)" /etc/systemd/system/autorandr-hotplug.service
+sudo ln -sf "$(realpath autorandr/hotplug.rules)" /etc/udev/rules.d/40-monitor-hotplug.rules
+sudo systemctl daemon-reload
+sudo udevadm control --reload
