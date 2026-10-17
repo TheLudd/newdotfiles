@@ -1,0 +1,287 @@
+#!/home/ludwig/.local/share/pip-venv/bin/python
+"""dictation-stream - streaming dictation that types into the focused X11 window.
+
+Runs NVIDIA Nemotron streaming ASR on the CPU through sherpa-onnx. Text shows up
+word by word while you speak, like nerd-dictation did with vosk.
+
+Usage:
+  dictation-stream begin          start listening in the background
+  dictation-stream end            stop listening and flush the last words
+  dictation-stream status         exit 0 when a session is running
+  dictation-stream test FILE.wav  print what would be typed for a 16 kHz mono wav
+  dictation-stream install-model  download the model if it is missing
+
+Environment:
+  DICTATION_LANG   language code passed to the model (default: en)
+  DICTATION_MODEL  model directory name under $XDG_DATA_HOME/dictation/models
+
+Replacements for words the model keeps getting wrong live in
+~/.config/dictation/replacements.txt, one "heard => wanted" per line.
+"""
+
+import os
+import queue
+import re
+import signal
+import subprocess
+import sys
+import tarfile
+import time
+import urllib.request
+from pathlib import Path
+
+MODEL_NAME = os.environ.get(
+    "DICTATION_MODEL", "sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11"
+)
+MODEL_URL = f"https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/{MODEL_NAME}.tar.bz2"
+LANGUAGE = os.environ.get("DICTATION_LANG", "en")
+THREADS = 2
+SAMPLE_RATE = 16000
+CHUNK_SECONDS = 0.1
+
+DATA_DIR = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "dictation"
+MODEL_DIR = DATA_DIR / "models" / MODEL_NAME
+REPLACEMENTS_FILE = (
+    Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "dictation/replacements.txt"
+)
+LOG_FILE = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "dictation/dictation-stream.log"
+PID_FILE = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "dictation-stream.pid"
+
+
+# --- text post-processing -------------------------------------------------------
+
+def load_replacements(path):
+    """Parse 'heard => wanted' lines into (compiled regex, replacement) pairs."""
+    rules = []
+    if not path.exists():
+        return rules
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=>" not in line:
+            continue
+        heard, wanted = (part.strip() for part in line.split("=>", 1))
+        rules.append((re.compile(rf"\b{re.escape(heard)}\b", re.IGNORECASE), wanted))
+    return rules
+
+
+def apply_replacements(text, rules):
+    for pattern, wanted in rules:
+        text = pattern.sub(wanted, text)
+    return text
+
+
+# --- typing into the focused window ----------------------------------------------
+
+class XdotoolTypist:
+    def backspace(self, count):
+        if count > 0:
+            subprocess.run(["xdotool", "key", "--delay", "0", "--repeat", str(count), "BackSpace"], check=False)
+
+    def type(self, text):
+        if text:
+            subprocess.run(["xdotool", "type", "--delay", "5", "--", text], check=False)
+
+
+class PrintTypist:
+    def backspace(self, count):
+        if count > 0:
+            print(f"<backspace x{count}>")
+
+    def type(self, text):
+        if text:
+            print(f"<type {text!r}>")
+
+
+class LiveText:
+    """Keeps what has been typed in sync with the recognizer's current utterance.
+
+    Partial results change as more audio arrives, so the difference against what is
+    already on screen is backspaced and retyped. Utterances are joined with a space.
+    """
+
+    def __init__(self, typist):
+        self.typist = typist
+        self.typed = ""
+        self.needs_separator = False
+
+    def update(self, text):
+        wanted = (" " if self.needs_separator and text else "") + text
+        prefix = os.path.commonprefix([self.typed, wanted])
+        self.typist.backspace(len(self.typed) - len(prefix))
+        self.typist.type(wanted[len(prefix):])
+        self.typed = wanted
+
+    def finish_utterance(self):
+        if self.typed.strip():
+            self.needs_separator = True
+        self.typed = ""
+
+
+# --- recognition -------------------------------------------------------------------
+
+def create_recognizer():
+    import sherpa_onnx
+
+    return sherpa_onnx.OnlineRecognizer.from_transducer(
+        tokens=str(MODEL_DIR / "tokens.txt"),
+        encoder=str(MODEL_DIR / "encoder.int8.onnx"),
+        decoder=str(MODEL_DIR / "decoder.int8.onnx"),
+        joiner=str(MODEL_DIR / "joiner.int8.onnx"),
+        num_threads=THREADS,
+        decoding_method="greedy_search",
+        enable_endpoint_detection=True,
+        rule1_min_trailing_silence=1.5,
+        rule2_min_trailing_silence=0.8,
+    )
+
+
+class Dictation:
+    def __init__(self, typist):
+        self.recognizer = create_recognizer()
+        self.stream = self.recognizer.create_stream()
+        self.stream.set_option("language", LANGUAGE)
+        self.rules = load_replacements(REPLACEMENTS_FILE)
+        self.live = LiveText(typist)
+
+    def feed(self, samples):
+        self.stream.accept_waveform(SAMPLE_RATE, samples)
+        self._decode()
+        if self.recognizer.is_endpoint(self.stream):
+            self.live.finish_utterance()
+            self.recognizer.reset(self.stream)
+
+    def flush(self):
+        self.stream.input_finished()
+        self._decode()
+        self.live.finish_utterance()
+
+    def _decode(self):
+        while self.recognizer.is_ready(self.stream):
+            self.recognizer.decode_stream(self.stream)
+        text = self.recognizer.get_result(self.stream).strip()
+        self.live.update(apply_replacements(text, self.rules))
+
+
+# --- commands ----------------------------------------------------------------------
+
+def run_microphone():
+    import sounddevice as sd
+
+    PID_FILE.write_text(str(os.getpid()))
+    stopping = False
+
+    def stop(*_):
+        nonlocal stopping
+        stopping = True
+
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+
+    try:
+        dictation = Dictation(XdotoolTypist())
+        audio = queue.Queue()
+        blocksize = int(SAMPLE_RATE * CHUNK_SECONDS)
+        with sd.InputStream(
+            samplerate=SAMPLE_RATE,
+            channels=1,
+            dtype="float32",
+            blocksize=blocksize,
+            callback=lambda indata, *_: audio.put(indata[:, 0].copy()),
+        ):
+            while not stopping:
+                try:
+                    dictation.feed(audio.get(timeout=0.2))
+                except queue.Empty:
+                    pass
+        dictation.flush()
+    finally:
+        PID_FILE.unlink(missing_ok=True)
+
+
+def running_pid():
+    try:
+        pid = int(PID_FILE.read_text())
+        os.kill(pid, 0)
+        return pid
+    except (FileNotFoundError, ValueError, ProcessLookupError, PermissionError):
+        return None
+
+
+def begin():
+    if running_pid():
+        sys.exit("dictation-stream: already running")
+    if not MODEL_DIR.is_dir():
+        sys.exit(f"dictation-stream: model missing, run: dictation-stream install-model")
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, "ab") as log:
+        subprocess.Popen(
+            [sys.executable, __file__, "run"],
+            stdin=subprocess.DEVNULL,
+            stdout=log,
+            stderr=log,
+            start_new_session=True,
+        )
+
+
+def end():
+    pid = running_pid()
+    if pid is None:
+        sys.exit("dictation-stream: not running")
+    os.kill(pid, signal.SIGTERM)
+    deadline = time.time() + 10
+    while running_pid() and time.time() < deadline:
+        time.sleep(0.05)
+
+
+def test(wav_path):
+    import wave
+
+    import numpy as np
+
+    with wave.open(wav_path) as wav:
+        if wav.getframerate() != SAMPLE_RATE or wav.getnchannels() != 1:
+            sys.exit("dictation-stream: test needs a 16 kHz mono wav")
+        samples = np.frombuffer(wav.readframes(wav.getnframes()), dtype=np.int16).astype(np.float32) / 32768
+
+    dictation = Dictation(PrintTypist())
+    chunk = int(SAMPLE_RATE * CHUNK_SECONDS)
+    for start in range(0, len(samples), chunk):
+        dictation.feed(samples[start : start + chunk])
+    dictation.flush()
+
+
+def install_model():
+    if MODEL_DIR.is_dir():
+        print(f"Model already present: {MODEL_DIR}")
+        return
+    MODEL_DIR.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading {MODEL_URL} ...")
+    archive, _ = urllib.request.urlretrieve(MODEL_URL)
+    try:
+        with tarfile.open(archive, "r:bz2") as tar:
+            tar.extractall(MODEL_DIR.parent, filter="data")
+    finally:
+        os.unlink(archive)
+    print(f"Model installed: {MODEL_DIR}")
+
+
+def main(argv):
+    command = argv[1] if len(argv) > 1 else ""
+    if command == "begin":
+        begin()
+    elif command == "end":
+        end()
+    elif command == "run":
+        run_microphone()
+    elif command == "status":
+        sys.exit(0 if running_pid() else 1)
+    elif command == "test" and len(argv) == 3:
+        test(argv[2])
+    elif command == "install-model":
+        install_model()
+    else:
+        sys.exit(__doc__.strip())
+
+
+if __name__ == "__main__":
+    main(sys.argv)

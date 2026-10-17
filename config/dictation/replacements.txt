@@ -1,0 +1,10 @@
+# Words the model keeps hearing wrong, applied to dictated text as whole words,
+# case-insensitive: heard => wanted
+get hub => GitHub
+get lab => GitLab
+my sequel => MySQL
+postgres sequel => PostgreSQL
+node js => Node.js
+type script => TypeScript
+java script => JavaScript
+new vim => neovim
