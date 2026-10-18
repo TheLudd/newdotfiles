@@ -28,9 +28,9 @@ Read `ideate.md` of the feature. Its problem statement is the only input. Do not
    - the main types and their shapes, as concepts or a short type sketch
 4. For each edge case and failure mode, decide how it is handled.
 5. Decide the test strategy: what is unit-tested, what is integration-tested, where the seams are.
-6. Keep a running draft. Show it when the user asks, or when a decision changes it materially. Then keep going.
+6. Keep the running draft in `shape.md` from the first decision on. Update it when a decision changes it and commit a fixup. Never print it in the terminal. Then keep going.
 7. If the problem statement turns out to be wrong, say so and reopen `/ideate`. Do not patch around it.
-8. When the user says to save it, write `shape.md` and name `/plan` as the next stage.
+8. When the user says the stage is done, name `/plan` as the next stage.
 
 ## Output format
 

@@ -28,9 +28,9 @@ The problem is rarely done. Do not hurry toward finishing. The user says when to
    - what hurts, and how it is handled today
    - what success looks like, stated so it could be proven false
    - what is out of scope
-5. Keep a running draft of the statement. Show it when the user asks, or when an answer changes it materially. Then keep asking.
+5. Keep the running draft in `ideate.md` from the restatement on. Update it when an answer changes it and commit a fixup. Never print it in the terminal. Then keep asking.
 6. Never ask whether the problem is ready or nailed, and never propose moving on. If nothing is left to ask, say what is still weak in the draft.
-7. When the user says to save it, ask for the `rigor` level if it was not given, write `ideate.md`, and name `/shape` as the next stage.
+7. When the user says the stage is done, ask for the `rigor` level if it was not given, set it in `ideate.md`, and name `/shape` as the next stage.
 
 ## Output format
 

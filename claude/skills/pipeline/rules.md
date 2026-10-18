@@ -34,5 +34,9 @@ Build halts and asks when the implementation would need a signature or test that
 ## Gates
 
 - The user decides when a stage is done (see global CLAUDE.md).
-- Write the stage's artifact only when the user says to. Only then name the next stage.
+- The stage's artifact is the running draft. Write it as soon as a first draft exists and
+  keep it current; every later revision is a fixup commit. Never print a draft or any
+  markdown in the terminal; the file is where it is discussed, the reply says in one line
+  what changed.
+- A stage is never done until the user says so. Name the next stage only then.
 - If a later stage shows an earlier artifact is wrong, reopen that stage. Do not patch around it.

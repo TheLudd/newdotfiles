@@ -33,13 +33,13 @@ Do not reopen what the shape decides. If the shape turns out to be wrong, say so
    - unit tests named as behavior, "it returns x for y", following the `unit-test-style` and `skill-test-sum-types` skills
 6. Run the project's type check and tests. Types must compile. Every new test must fail because the stub is unimplemented, and for no other reason. Fix anything that fails for another reason.
 7. Split the work into ordered tasks, each making a named group of tests pass and leaving the code working.
-8. Keep a running draft of the diff and the task list. Show it when the user asks, or when a decision changes it materially. Then keep going.
-9. When the user says to save it, commit the stubs and tests, write `plan.md`, and name the build step as the next stage.
+8. Keep the running draft of the task list in `plan.md` from the first task on. Update it when a decision changes it and commit a fixup. Never print it in the terminal. Then keep going.
+9. When the user says the stage is done, commit the stubs and tests and name the build step as the next stage.
 
 ## Rigor
 
 - `hands-off`: the level is the user's go-ahead. Commit and write `plan.md` without a review round, and name the build step.
-- `checkpoints`: the diff is the review step. Commit and write only when the user says to.
+- `checkpoints`: the diff is the review step. Commit code only when the user says to.
 
 ## Output format
 
