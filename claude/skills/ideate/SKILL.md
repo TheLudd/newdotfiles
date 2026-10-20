@@ -1,16 +1,18 @@
 ---
 name: ideate
-description: 'First pipeline stage. Turns a vague idea into a problem statement through a one-question-at-a-time conversation. No solutions, design or code. Invoke with /ideate [idea or path].'
+description: 'First pipeline stage. Turns an idea into a written understanding of it through conversation. No design or code. Invoke with /ideate [idea or path].'
 disable-model-invocation: true
 ---
 
 # Ideate
 
-Turn an idea into a problem statement. Nothing else: no solutions, no design, no code.
+Understand the idea well enough that `/shape` can design it. Nothing else: no design, no code.
 
 Read `../pipeline/rules.md` first. Its artifact and gate rules apply.
 
-The problem is rarely done. Do not hurry toward finishing. The user says when to move on.
+An idea can be a problem to solve, a feature to add or a capability for a framework or an app. A feature does not need a problem behind it to be worth exploring.
+
+Push back. Say so when the idea seems unclear, inconsistent with itself or with the codebase, or weaker than a nearby alternative, and ask why when the reason would change the idea. The user decides; the pushback is there so the idea is tested before it is designed.
 
 ## Input
 
@@ -18,32 +20,29 @@ The problem is rarely done. Do not hurry toward finishing. The user says when to
 - A file path or URL: read it in full. Treat what it states as decided and ask only about what it leaves open.
 - Nothing: ask "What's the idea?"
 
-## Process
+## Conversation
 
-1. Restate the idea in one sentence and check it with the user.
-2. Ask one question at a time. Follow up on every vague answer until it is concrete.
-3. When the idea is a solution ("add a cache"), ask what hurts today until the problem underneath is visible.
-4. Cover, in whatever order the conversation needs:
-   - who has the problem
-   - what hurts, and how it is handled today
-   - what success looks like, stated so it could be proven false
-   - what is out of scope
-5. Keep the running draft in `ideate.md` from the restatement on. Update it when an answer changes it and commit a fixup. Never print it in the terminal. Then keep asking.
-6. Never ask whether the problem is ready or nailed, and never propose moving on. If nothing is left to ask, say what is still weak in the draft.
-7. When the user says the stage is done, ask for the `rigor` level if it was not given, set it in `ideate.md`, and name `/shape` as the next stage.
+We are talking ideas together, the way two engineers would before anyone designs anything.
 
-## Output format
+- Restate the idea and check it with the user. Start the draft in `ideate.md`.
+- Ask only what this idea needs to be understood. There is no specific checklist of topics. A technical idea and an app idea raise different questions.
+- A yes/no decision goes into the draft as a checklist item phrased as a statement, `- [ ] A deleted project deletes its view row.` A checked item is a yes. Anything else the user handles in the file or in the conversation.
+- When the conversation drifts into how to build it, notice it, and refocus on the idea unless the answer changes what the idea is.
+- Update the draft when an answer changes it and commit a fixup. The reply says in one line what changed.
+- Never ask whether the idea is ready and never propose moving on.
+- When the user says the stage is done, ask for the `rigor` level if it was not given, set it in `ideate.md`, and name the next stage for that level: `/build` for `hands-off`, `/shape` otherwise.
+
+## Draft
+
+A title, the `rigor` line, and an opening section under the heading that fits the idea, such as `## Problem`, `## Idea` or `## Feature`. Every other section comes from the idea: background, flows, decisions, out of scope, whatever it needs.
 
 ```markdown
 # <title>
 
 rigor: checkpoints
 
-## Problem
+## <Problem | Idea | Feature>
 <2-3 sentences>
 
-## Who
-## Today
-## Success
-## Out of scope
+<sections the idea needs>
 ```

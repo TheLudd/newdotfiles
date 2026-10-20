@@ -1,17 +1,18 @@
 # Pipeline rules
 
-Shared by the stage skills: `ideate`, `shape`, `plan`.
+Shared by the stage skills: `ideate`, `shape`, `plan`, `build`.
 
 ## Artifacts
 
-Each stage writes one markdown file to `~/code/plans/master/<project>/<feature>/`:
+Each stage writes one markdown file to `~/code/plans/<worktree>/<project>/<feature>/`:
 
-- `~/code/plans` is a bare repo with worktrees. `master` is the default worktree. Use another worktree only when the user names it.
+- `~/code/plans` is a bare repo with worktrees. `master` is the default worktree.
+- When a new idea is begun, create a worktree and branch for it named after `<feature>`. The user merges it back and removes it.
 - `<project>`: basename of the git root of the current directory
 - `<feature>`: lower-case, dash-separated slug
 - files: `ideate.md`, `shape.md`, `plan.md`
 
-Create the folder if missing. Each stage reads only the file of the stage before it.
+Create the folder if missing. Each stage reads only the artifact of the stage before it at the feature's rigor level.
 
 ## Commits
 
@@ -19,17 +20,24 @@ Artifacts in the plans repo and code in the project repo are committed the same 
 
 - The first write of an artifact or a piece of code is a normal commit.
 - Every change the user points out after that is a fixup commit (`git commit --fixup=<sha>`) targeting the commit it belongs to.
-- Never autosquash, amend, rebase or push. The user squashes, or drops a fixup they dislike.
+- Never autosquash, amend, rebase or push unless explicitly told to. The user squashes, or drops a fixup they dislike.
 - Never record a commit sha in an artifact. Squashing changes it.
 
 ## Rigor
 
-`ideate.md` carries a line `rigor: hands-off | checkpoints`. Default `checkpoints`. Later stages read it from there. The user may edit it at any time.
+`ideate.md` carries a line `rigor: hands-off | checkpoints | step-by-step`, chosen per feature. Default `checkpoints`. A project's CLAUDE.md may hint which level fits. Later stages read it from there. The user may edit it at any time.
 
-- `hands-off`: after `/shape`, plan and build run through without review stops.
-- `checkpoints`: the user reviews the plan diff, and build stops after each task.
+It sets which stages run and how closely the user follows the code:
 
-Build halts and asks when the implementation would need a signature or test that differs from the plan, at either level.
+- `hands-off`: ideate → build. Only the end product matters. Build works out the approach itself, writes no shape or plan, and runs through without stops.
+- `checkpoints`: ideate → shape → build. Build stops at the points that matter for the feature, and halts and asks when the code would need to depart from the shape's flow.
+- `step-by-step`: ideate → shape → plan → build. Build stops for the user to approve each function's test cases, and halts and asks when the code would need a signature that differs from the plan.
+
+Each stage names the next stage of the feature's level when the user says it is done.
+
+## Tests
+
+How the code is tested is up to the project. Follow what its CLAUDE.md, readme or spec says about testing. Only when the project says nothing, fall back to the `acceptance-tests`, `unit-test-style` and `skill-test-sum-types` skills.
 
 ## Gates
 
@@ -40,3 +48,10 @@ Build halts and asks when the implementation would need a signature or test that
   what changed.
 - A stage is never done until the user says so. Name the next stage only then.
 - If a later stage shows an earlier artifact is wrong, reopen that stage. Do not patch around it.
+
+## Focus
+
+- Stay with what the idea touches. Do not bring in modules, consumers or earlier work the
+  user has not connected to it, even when the codebase shows them nearby.
+- Something the user decides to exclude goes under `## Out of scope` in the stage's draft,
+  so later stages see it. It is not raised again.

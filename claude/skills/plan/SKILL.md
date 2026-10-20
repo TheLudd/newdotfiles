@@ -1,61 +1,44 @@
 ---
 name: plan
-description: 'Third pipeline stage. Turns the approach from /shape into code on a feature branch: typed stubs, failing tests and acceptance scenarios, plus an ordered task list. Invoke with /plan [feature].'
+description: 'Third pipeline stage, for step-by-step features only. Turns the shape from /shape into the functions to create, with their signatures and which calls which. No code. Invoke with /plan [feature].'
 disable-model-invocation: true
 ---
 
 # Plan
 
-Turn the approach into a diff: typed stubs and failing tests that define the work, plus the order to build it in. No implementation.
+Turn the shape into the contract for the code: which functions exist, their signatures and how they call each other. Everything is markdown. No code, no branch.
 
-Read `../pipeline/rules.md` first. Its artifact and gate rules apply.
+Read `../pipeline/rules.md` first. Its artifact, gate, test and focus rules apply.
 
 ## Input
 
 Read `shape.md` of the feature, and the `rigor` line of its `ideate.md`.
 
 - Feature given as an argument: use that folder.
-- Nothing given: list the features of the current project and ask which.
+- Nothing given: list the features of the current project across all plans worktrees and ask which.
 - No `shape.md`: say so and stop.
+- Rigor other than `step-by-step`: the feature skips this stage. Say so and ask before going on.
 
 Do not reopen what the shape decides. If the shape turns out to be wrong, say so and reopen `/shape`.
 
-## Process
+## Conversation
 
-1. Read the codebase at file level: the files, functions and tests the shape touches. Find how the project tests (unit runner, Cucumber or both) and follow it.
-2. Require a clean working tree. If it is dirty, say so and stop.
-3. Create a branch named after the feature slug, or a worktree if the repo has a worktree layout.
-4. Write the stubs:
-   - typed inputs and outputs, bodies unimplemented
-   - extend existing modules where the behavior belongs to them
-5. Write the tests:
-   - acceptance scenarios, where the project uses Cucumber: follow the `acceptance-tests` skill, step definitions included
-   - unit tests named as behavior, "it returns x for y", following the `unit-test-style` and `skill-test-sum-types` skills
-6. Run the project's type check and tests. Types must compile. Every new test must fail because the stub is unimplemented, and for no other reason. Fix anything that fails for another reason.
-7. Split the work into ordered tasks, each making a named group of tests pass and leaving the code working.
-8. Keep the running draft of the task list in `plan.md` from the first task on. Update it when a decision changes it and commit a fixup. Never print it in the terminal. Then keep going.
-9. When the user says the stage is done, commit the stubs and tests and name the build step as the next stage.
+- Read the codebase at file level: the files, functions, types and tests the shape touches.
+- List the functions to create or change, each with its signature and one line on what it does. Extend existing modules where the behavior belongs to them.
+- Show the flow at function level: which function calls which, from the entry point down, following the shape's flow.
+- Keep the running draft in `plan.md` from the first function on. Update it when a decision changes it and commit a fixup. The reply says in one line what changed.
+- When the user says the stage is done, name `/build` as the next stage.
 
-## Rigor
-
-- `hands-off`: the level is the user's go-ahead. Commit and write `plan.md` without a review round, and name the build step.
-- `checkpoints`: the diff is the review step. Commit code only when the user says to.
-
-## Output format
-
-`plan.md` in the plans repo holds the order. The code holds the contract.
+## Draft
 
 ```markdown
 # <title>
 
-rigor: <level>
-branch: <branch>
+## Functions
+### `<module>/<file>`
+<signature>
+<one line on what it does>
 
-## Tasks
-
-### 1. <task>
-tests: <test names or scenario titles it turns green>
-
-### 2. <task>
-tests: ...
+## Flow
+<who calls whom>
 ```
