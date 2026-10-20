@@ -49,6 +49,27 @@ How the code is tested is up to the project. Follow what its CLAUDE.md, readme o
 - A stage is never done until the user says so. Name the next stage only then.
 - If a later stage shows an earlier artifact is wrong, reopen that stage. Do not patch around it.
 
+## Writing
+
+Applies to every artifact and to the replies about it.
+
+- Keep fact, proposal and decision apart. Never mix two of them in one section.
+  - **Fact** is how the code behaves today. Present tense, under a heading that says so:
+    `### Today`, `### Existing: id resolution`. Name the module it comes from.
+  - **Proposal** is what the stage suggests. Its heading starts with `Proposed:` and its
+    sentences say `would`: "The persist listener would read the matching documents before
+    the write." Never "is added", "gets" or "has" for something that does not exist yet;
+    read on its own, that sentence claims it is already there.
+  - **Decision** is what the user has settled. A yes/no decision goes into the draft as a
+    checklist item phrased as a statement, `- [ ] A deleted project deletes its view row.`
+    A checked item is a yes. Anything else the user handles in the file or in the
+    conversation. A proposal the user has accepted is written as a decision, not left as a
+    proposal.
+- Explain with examples. A mechanism is shown as a code example, a data shape as example
+  data: a document, a payload, a table of rows. Show the same example before and after the
+  change, so the reader sees what moves. Prose says what the example shows; it does not
+  replace it. The stages' "no code" rule forbids implementation, not illustrative snippets.
+
 ## Focus
 
 - Stay with what the idea touches. Do not bring in modules, consumers or earlier work the

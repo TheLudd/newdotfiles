@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Turn the shape into the contract for the code: which functions exist, their signatures and how they call each other. Everything is markdown. No code, no branch.
 
-Read `../pipeline/rules.md` first. Its artifact, gate, test and focus rules apply.
+Read `../pipeline/rules.md` first. Its artifact, gate, test, focus and writing rules apply.
 
 ## Input
 

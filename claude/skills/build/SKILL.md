@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Write the code the feature's artifacts describe, with its tests.
 
-Read `../pipeline/rules.md` first. Its commit, rigor, test and focus rules apply.
+Read `../pipeline/rules.md` first. Its commit, rigor, test, focus and writing rules apply.
 
 ## Input
 

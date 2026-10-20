@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Understand the idea well enough that `/shape` can design it. Nothing else: no design, no code.
 
-Read `../pipeline/rules.md` first. Its artifact and gate rules apply.
+Read `../pipeline/rules.md` first. Its artifact, gate and writing rules apply.
 
 An idea can be a problem to solve, a feature to add or a capability for a framework or an app. A feature does not need a problem behind it to be worth exploring.
 
@@ -26,7 +26,6 @@ We are talking ideas together, the way two engineers would before anyone designs
 
 - Restate the idea and check it with the user. Start the draft in `ideate.md`.
 - Ask only what this idea needs to be understood. There is no specific checklist of topics. A technical idea and an app idea raise different questions.
-- A yes/no decision goes into the draft as a checklist item phrased as a statement, `- [ ] A deleted project deletes its view row.` A checked item is a yes. Anything else the user handles in the file or in the conversation.
 - When the conversation drifts into how to build it, notice it, and refocus on the idea unless the answer changes what the idea is.
 - Update the draft when an answer changes it and commit a fixup. The reply says in one line what changed.
 - Never ask whether the idea is ready and never propose moving on.

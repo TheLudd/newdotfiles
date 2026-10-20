@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Turn the idea into a technical approach the user can disagree with. Concrete enough to be wrong, not so concrete that it names files and functions. No code, no task order.
 
-Read `../pipeline/rules.md` first. Its artifact, gate, test and focus rules apply.
+Read `../pipeline/rules.md` first. Its artifact, gate, test, focus and writing rules apply.
 
 ## Input
 
@@ -34,13 +34,20 @@ Read `ideate.md` of the feature. It is the only input. Its opening section may b
 
 ## Draft
 
-A title, `## Approach` with the chosen approach and why and any options rejected, and `## Flow`. Every other section comes from the approach, such as scenarios, types, edge cases, tests and out of scope.
+A title, `## Approach` with the chosen approach and why and any options rejected, and `## Flow`. The approach opens with how the code behaves today and then the proposed change, on one worked example carried through both. Every other section comes from the approach, such as decisions, scenarios, types, edge cases, tests and out of scope.
 
 ```markdown
 # <title>
 
 ## Approach
-<chosen approach and why>
+### Today
+<how the code behaves now, on an example>
+### Proposed: <change>
+<what would change, on the same example>
+<why, and options rejected>
+
+## Decisions
+- [ ] <statement the user says yes or no to>
 
 ## Flow
 <action>
