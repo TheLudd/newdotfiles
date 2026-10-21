@@ -31,7 +31,7 @@ It sets which stages run and how closely the user follows the code:
 
 - `hands-off`: ideate → build. Only the end product matters. Build works out the approach itself, writes no shape or plan, and runs through without stops.
 - `checkpoints`: ideate → shape → build. Build stops at the points that matter for the feature, and halts and asks when the code would need to depart from the shape's flow.
-- `step-by-step`: ideate → shape → plan → build. Build stops for the user to approve each function's test cases, and halts and asks when the code would need a signature that differs from the plan.
+- `step-by-step`: ideate → shape → plan → build. Plan declares each function's test cases and the user checks them there. Build writes them as stated and halts and asks when the code would need a signature or a test case the plan does not have.
 
 Each stage names the next stage of the feature's level when the user says it is done.
 

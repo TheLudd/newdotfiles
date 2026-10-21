@@ -37,6 +37,6 @@ Do not reopen what the artifacts decide. If one turns out to be wrong, say so an
 
 ## Rigor
 
-- `step-by-step`: before writing a function's tests, list its test cases in `plan.md` as checklist items under the function, `- [ ] it returns zero for a project without tasks`. Write the tests once the user has checked them. Halt and ask when a signature would differ from the plan.
+- `step-by-step`: a function's tests are the cases `plan.md` lists for it, written as stated there, then its implementation. No stops. Halt and ask when a signature would differ from the plan or a function needs a case the plan does not list.
 - `checkpoints`: stop at the points that matter for this feature, such as a file format, a structure, or a chunk of working functionality. Halt and ask when the code would depart from the shape's flow.
 - `hands-off`: no stops.

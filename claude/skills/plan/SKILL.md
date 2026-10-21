@@ -1,12 +1,12 @@
 ---
 name: plan
-description: 'Third pipeline stage, for step-by-step features only. Turns the shape from /shape into the functions to create, their signatures and the calls between them, as one nested call block per entry point. Invoke with /plan [feature].'
+description: 'Third pipeline stage, for step-by-step features only. Turns the shape from /shape into the functions to create, their signatures, the calls between them and the test cases of each function, as one nested call block per entry point. Invoke with /plan [feature].'
 disable-model-invocation: true
 ---
 
 # Plan
 
-Turn the shape into the contract for the code: which functions exist, their signatures and how they call each other. The contract is a call block, not prose. No implementation, no branch.
+Turn the shape into the contract for the code: which functions exist, their signatures, how they call each other and what each one is tested for. The contract is a call block and a list of test cases, not prose. No implementation, no branch.
 
 Read `../pipeline/rules.md` first. Its artifact, gate, test, focus and writing rules apply.
 
@@ -25,6 +25,7 @@ Do not reopen what the shape decides. If the shape turns out to be wrong, say so
 
 - Read the codebase at file level: the files, functions, types and tests the shape touches.
 - Write one call block per entry point of the shape's flow. Extend existing modules where the behavior belongs to them.
+- Draft the test cases of every new function with its block, not after it. They are part of the contract and the user checks them in the file like any decision.
 - Keep the running draft in `plan.md` from the first block on. Update it when a decision changes it and commit a fixup. The reply says in one line what changed.
 - When the user says the stage is done, name `/build` as the next stage.
 
@@ -57,6 +58,17 @@ applyChangeToView(view: MaterializedView, change: GenericChange): RTF<Error, voi
     dbOperations.aggregate(view.base, createRecomputePipeline(view, ids))   // existing
 ```
 
+## Test cases
+
+A test case is one checklist item, "it returns x for y", and names both the input and the expected result. A line that names only an input is not a case. A function's cases are tested against doubles of the functions under it in the block, so a case never states what a callee does. Each new function has its own subsection under `## Tests`.
+
+```markdown
+### parseDuration
+- [ ] it returns 90 for '1m30s'
+- [ ] it returns null for ''
+- [ ] it throws for '1x'
+```
+
 ## Draft
 
 ```markdown
@@ -75,7 +87,12 @@ applyChangeToView(view: MaterializedView, change: GenericChange): RTF<Error, voi
 ...
 
 ## Tests
-<test file per function, the cases in one line each>
+
+### <function>
+- [ ] it returns <x> for <y>
+
+### <function>
+...
 
 ## Files
 - `<path>`: <functions>
