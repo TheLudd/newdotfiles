@@ -18,9 +18,14 @@ end
 
 -- TypeScript 7+: lspconfig's tsc server, which runs the project's `tsc --lsp`.
 -- cmd and root_dir share a binary cache, so both must come from the same loaded config.
+-- The native server relies on the client to watch files, which nvim disables on Linux by default;
+-- without it, changes made on disk outside nvim are never seen.
 local tsc = vim.lsp.config.tsc
 vim.lsp.config('tsc', {
   cmd = tsc.cmd,
+  capabilities = {
+    workspace = { didChangeWatchedFiles = { dynamicRegistration = true } },
+  },
   root_dir = function(bufnr, on_dir)
     if is_native(find_typescript(bufnr)) then
       tsc.root_dir(bufnr, on_dir)
