@@ -16,7 +16,6 @@ alias yui="yarn upgrade-interactive --latest && yarn-dedupe && yarn"
 alias rim="git rebase -i master"
 alias lb="git ch -b"
 alias nb=". new-branch"
-alias merge=". merge-branch"
 alias branch-done=". cleanup-branches"
 alias m="git checkout master"
 alias hi=". hub-init"
@@ -51,3 +50,12 @@ alias dov="docker compose down -v"
 alias aff="run nx affected -t "
 alias c="ensure-not-git-subfolder && claude"
 alias mp="nvim +MarkdownPreview "
+
+# merge-branch prints a directory when it removed the worktree we are in
+merge() {
+	local target rc
+	target=$(merge-branch)
+	rc=$?
+	[[ -z $target ]] || cd "$target"
+	return $rc
+}

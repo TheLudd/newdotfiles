@@ -1,79 +1,145 @@
 #!/bin/bash
-set -e
+# Fast-forwards master to the current branch, then deletes the branch, its
+# remote branch and its worktree. Every check runs before anything changes.
+#
+# Run through the `merge` shell function: when the current worktree is
+# removed, the directory to cd into is printed on stdout. All other output
+# goes to stderr.
+set -euo pipefail
 
-changes=$(git log master..)
+exec 3>&1 1>&2
 
-if [ -z "$changes" ]; then
-	echo "No changes to merge"
-	return 1 2>/dev/null || exit 1
-fi
+master=master
+remote=origin
 
-branch=$(git symbolic-ref --short -q HEAD)
-if [[ "$branch" == "master" ]]; then
-	echo "Already on master"
-	return 1 2>/dev/null || exit 1
-fi
+target=""
+trap '[[ -z $target ]] || echo "$target" >&3' EXIT
 
-repo_root=$(git rev-parse --show-toplevel)
-parent_dir=$(dirname "$repo_root")
-
-# Find master worktree (works in both bash and zsh)
-find_master_worktree() {
-	local wt=""
-	while IFS= read -r line; do
-		if [[ "$line" == worktree\ * ]]; then
-			wt="${line#worktree }"
-		elif [[ "$line" == "branch refs/heads/master" ]]; then
-			echo "$wt"
-			return 0
-		fi
-	done < <(git worktree list --porcelain)
-	return 1
+die() {
+	echo "merge-branch: $*"
+	exit 1
 }
 
-git pull
+ref_exists() {
+	git rev-parse --verify -q "$1" >/dev/null
+}
 
-if [[ "$parent_dir" != "$HOME/code" ]]; then
-	# Worktree mode
-	master_worktree=$(find_master_worktree)
+is_clean() {
+	[[ -z $(git -C "$1" status --porcelain) ]]
+}
 
-	if [[ -z "$master_worktree" ]]; then
-		echo "Error: No master worktree found"
-		return 1 2>/dev/null || exit 1
-	fi
+# Prints the path of the worktree that has branch $1 checked out
+worktree_of() {
+	local wt="" line
+	while IFS= read -r line; do
+		case "$line" in
+		"worktree "*) wt="${line#worktree }" ;;
+		"branch refs/heads/$1") echo "$wt" && return ;;
+		esac
+	done < <(git worktree list --porcelain)
+}
 
-	if [[ -n $(git -C "$master_worktree" status --porcelain) ]]; then
-		echo "Error: Master worktree has uncommitted changes"
-		return 1 2>/dev/null || exit 1
-	fi
+main_worktree() {
+	git worktree list --porcelain | sed -n '1s/^worktree //p'
+}
 
-	# Pull master in its worktree
-	git -C "$master_worktree" pull
+# --- Checks ---
 
-	# Rebase if master has new commits
-	if [[ -n $(git log ..master) ]]; then
-		git rebase master
-		git push --force
-	fi
+git rev-parse --git-dir >/dev/null 2>&1 || die "not in a git repository"
+git_dir=$(git rev-parse --absolute-git-dir)
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+current_worktree=$(git rev-parse --show-toplevel)
+is_linked=false
+[[ $git_dir == "$common_dir" ]] || is_linked=true
 
-	# Merge in master worktree
-	git -C "$master_worktree" merge "$branch"
-	git -C "$master_worktree" push
-
-	# Clean up: remove worktree and branch
-	cd "$master_worktree"
-	git worktree remove "$repo_root"
-	git branch -d "$branch"
-else
-	# Regular mode: use branch switching
-	git checkout master && git pull && git checkout "$branch"
-
-	if [[ -n $(git log ..master) ]]; then
-		git rebase master
-		git push --force
-	fi
-
-	git checkout master
-	git merge "$branch"
-	git push
+for state in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD; do
+	[[ ! -e $git_dir/$state ]] || die "a rebase, merge, cherry-pick or revert is in progress"
+done
+branch=$(git symbolic-ref --short -q HEAD) || die "HEAD is detached"
+[[ $branch != "$master" ]] || die "already on $master"
+ref_exists "refs/heads/$master" || die "no local $master branch"
+is_clean "$current_worktree" || die "uncommitted or untracked changes"
+if $is_linked && [[ -e $git_dir/locked ]]; then
+	die "this worktree is locked"
 fi
+
+master_worktree=$(worktree_of "$master")
+if [[ -n $master_worktree ]]; then
+	$is_linked || die "$master is checked out in $master_worktree, so this worktree cannot switch to it"
+	is_clean "$master_worktree" || die "$master worktree $master_worktree has uncommitted or untracked changes"
+fi
+
+# The remote branch is the upstream if one is set, otherwise $remote/$branch
+upstream_remote=$(git config "branch.$branch.remote" || true)
+upstream_ref=$(git config "branch.$branch.merge" || true)
+if [[ -z $upstream_remote || $upstream_remote == . ]]; then
+	upstream_remote=$remote
+	upstream_ref=refs/heads/$branch
+fi
+remote_branch=${upstream_ref#refs/heads/}
+tracking=refs/remotes/$upstream_remote/$remote_branch
+
+has_remote=false
+if git remote get-url "$remote" >/dev/null 2>&1; then
+	has_remote=true
+	git fetch --prune "$remote" || die "fetching $remote failed"
+fi
+if [[ $upstream_remote != "$remote" ]] && git remote get-url "$upstream_remote" >/dev/null 2>&1; then
+	git fetch --prune "$upstream_remote" || die "fetching $upstream_remote failed"
+fi
+
+if $has_remote; then
+	ref_exists "refs/remotes/$remote/$master" || die "$remote/$master does not exist"
+	base=$remote/$master
+	git merge-base --is-ancestor "$master" "$base" || die "$master has commits that are not on $base"
+else
+	base=$master
+fi
+
+has_remote_branch=false
+if ref_exists "$tracking"; then
+	has_remote_branch=true
+	[[ $(git rev-parse "$tracking") == $(git rev-parse HEAD) ]] ||
+		die "$branch is not in sync with $upstream_remote/$remote_branch"
+fi
+
+git merge-base --is-ancestor "$base" HEAD || die "$branch is not rebased onto $base"
+[[ -n $(git rev-list "$base..HEAD") ]] || die "$branch has no commits that are not on $base"
+
+sha=$(git rev-parse HEAD)
+
+# --- Merge ---
+
+# Remote first: the push is rejected unless it fast-forwards, and nothing
+# local has changed yet if it is
+if $has_remote; then
+	git push "$remote" "$sha:refs/heads/$master"
+fi
+
+if [[ -n $master_worktree ]]; then
+	git -C "$master_worktree" merge --ff-only "$branch"
+elif $is_linked; then
+	# master is not checked out anywhere; the old value guards against a race
+	git update-ref "refs/heads/$master" "$sha" "$(git rev-parse "$master")"
+else
+	git switch "$master"
+	git merge --ff-only "$branch"
+fi
+
+# --- Clean up ---
+
+if $has_remote_branch; then
+	git push "$upstream_remote" --delete "$remote_branch" ||
+		echo "merge-branch: could not delete $upstream_remote/$remote_branch"
+fi
+
+git_root=$current_worktree
+if $is_linked; then
+	git_root=${master_worktree:-$(main_worktree)}
+	# Clean was checked above. --force is needed to remove a worktree with submodules
+	git -C "$git_root" worktree remove --force "$current_worktree"
+	target=$git_root
+fi
+
+# -D: the branch is fully on master, -d would compare it to HEAD or the deleted upstream
+git -C "$git_root" branch -D "$branch"
