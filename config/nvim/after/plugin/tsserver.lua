@@ -34,6 +34,41 @@ vim.lsp.config('tsc', {
 })
 vim.lsp.enable('tsc')
 
+-- nvim ignores the server's interFileDependencies: a change in one file never re-pulls the diagnostics
+-- of the files importing it. Re-pull them for the other visible buffers on every change,
+-- and for a hidden buffer when it is shown again.
+local function tsc_client_id(bufnr)
+  local client = vim.lsp.get_clients({ bufnr = bufnr, name = 'tsc' })[1]
+  return client and client.id
+end
+
+vim.api.nvim_create_autocmd('LspNotify', {
+  callback = function(event)
+    local method = event.data.method
+    if method ~= 'textDocument/didChange' and method ~= 'textDocument/didOpen' then
+      return
+    end
+    local client = vim.lsp.get_client_by_id(event.data.client_id)
+    if not client or client.name ~= 'tsc' then
+      return
+    end
+    for bufnr in pairs(client.attached_buffers) do
+      if bufnr ~= event.buf then
+        vim.lsp.diagnostic._refresh(bufnr, client.id, true)
+      end
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd('BufEnter', {
+  callback = function(event)
+    local client_id = tsc_client_id(event.buf)
+    if client_id then
+      vim.lsp.diagnostic._refresh(event.buf, client_id)
+    end
+  end,
+})
+
 -- Older TypeScript: typescript-tools, which talks to tsserver.js.
 local ok, typescriptTools = pcall(require, 'typescript-tools')
 

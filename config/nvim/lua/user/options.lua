@@ -14,6 +14,18 @@ vim.opt.smartindent = true -- autoindent new lines
 vim.opt.shiftwidth = 2 -- number of spaces to use for autoindent
 vim.opt.winborder = 'rounded' -- border on floating windows (lsp hover, signature help)
 
+-- autoread only reloads buffers shown in a window; reload hidden ones too, so language servers
+-- see the files as they are on disk instead of a stale open buffer.
+vim.api.nvim_create_autocmd('FocusGained', {
+  callback = function()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == '' and vim.api.nvim_buf_get_name(buf) ~= '' then
+        vim.api.nvim_buf_call(buf, function() vim.cmd('checktime ' .. buf) end)
+      end
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
   pattern = "*.feature-template",
   command = "set filetype=cucumber",
