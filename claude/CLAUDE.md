@@ -9,3 +9,5 @@ When asked whether something is ready, answer yes or no first. A yes has no qual
 Filenames: always lower case and dash-separated words.
 
 When I ask you to explan stuff, I prefer step by step explanations or code/config examples as opposed to just text blocks.
+
+The verb says whether a thing exists: present tense only for what is in the code, "will" for what is decided but not built, "would" for suggestions. Code carries no tense; the sentence introducing it does ("we would add this function:"). No status labels such as Today/Proposed or Current/Needed.
