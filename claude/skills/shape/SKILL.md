@@ -40,10 +40,10 @@ A title, `## Approach` with the chosen approach and why and any options rejected
 # <title>
 
 ## Approach
-### Today
-<how the code behaves now, on an example>
-### Proposed: <change>
-<what would change, on the same example>
+### <subject as the code has it>
+<how the code behaves now, on an example, in the present tense>
+### <subject of the change>
+<what would change, on the same example, with would or will>
 <why, and options rejected>
 
 ## Decisions

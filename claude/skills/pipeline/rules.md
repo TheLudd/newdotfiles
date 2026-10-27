@@ -53,18 +53,26 @@ How the code is tested is up to the project. Follow what its CLAUDE.md, readme o
 
 Applies to every artifact and to the replies about it.
 
-- Keep fact, proposal and decision apart. Never mix two of them in one section.
-  - **Fact** is how the code behaves today. Present tense, under a heading that says so:
-    `### Today`, `### Existing: id resolution`. Name the module it comes from.
-  - **Proposal** is what the stage suggests. Its heading starts with `Proposed:` and its
-    sentences say `would`: "The persist listener would read the matching documents before
-    the write." Never "is added", "gets" or "has" for something that does not exist yet;
+- The verb says whether a thing exists. This holds in every section, the opening one,
+  model, flows and decisions included, and in every reply:
+  - **Exists in the code**: present tense, naming the module it lives in. "`crm` has
+    `accountStatuses`, a tenant-owned collection with only a `name`."
+  - **Decided, not built**: `will`. "Workflows will be a platform capability in
+    `aios/platform`."
+  - **Suggested, not decided**: `would`. "The persist listener would read the matching
+    documents before the write."
+  - Never the present tense, "is added", "gets" or "has" for something that is not built;
     read on its own, that sentence claims it is already there.
-  - **Decision** is what the user has settled. A yes/no decision goes into the draft as a
-    checklist item phrased as a statement, `- [ ] A deleted project deletes its view row.`
-    A checked item is a yes. Anything else the user handles in the file or in the
-    conversation. A proposal the user has accepted is written as a decision, not left as a
-    proposal.
+- Headings name the subject, never its status. `### Statuses in the app`, not
+  `### Today` or `### Existing: statuses`; `## Statuses without phases`, not
+  `## Proposed: ...`.
+- A yes/no decision goes into the draft as a checklist item with the same verbs: an open
+  item says `would`, `- [ ] A deleted project would delete its view row.` A checked item
+  is a yes and is rewritten to `will`. Anything else the user handles in the file or in the
+  conversation. A suggestion the user has accepted is rewritten with `will`.
+- Code and example data carry no tense. The sentence that introduces them does: "We would
+  add this function:", "A rejected task will produce this event:", "We need something like
+  this:". A code block marks existing functions `// existing`.
 - Explain with examples. A mechanism is shown as a code example, a data shape as example
   data: a document, a payload, a table of rows. Show the same example before and after the
   change, so the reader sees what moves. Prose says what the example shows; it does not
