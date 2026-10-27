@@ -23,7 +23,7 @@ elif [ "$pm" == "pnpm" ]; then
 		done
 		script_check=$(pnpm pkg get scripts.$cmd 2>/dev/null)
 		if [ "$script_check" != "{}" ]; then
-			pnpm run -s $@
+			pnpm_config_loglevel=silent pnpm run $@
 		else
 			bin_path=$(pnpm which $cmd 2>/dev/null)
 			if [ -n "$bin_path" ] && [[ "$bin_path" == *node_modules* ]]; then
