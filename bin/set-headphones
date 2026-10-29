@@ -12,13 +12,13 @@ device=$(echo $device_comma | sed 's/:/_/g')
 bluetoothctl connect $device_comma
 sleep 3
 
-card=$(pacmd list-cards | ag 'name:' | ag -Q "bluez_card.$device" | sed 's/.*<\(.*\)>.*/\1/')
-pacmd set-card-profile $card handsfree_head_unit
+card=$(pactl list short cards | awk -v c="bluez_card.$device" '$2 == c {print $2; exit}')
+pactl set-card-profile "$card" headset-head-unit 2>/dev/null || pactl set-card-profile "$card" handsfree_head_unit
 sleep 1
 
-sink=$(pacmd list-sinks | ag 'name:' | ag -Q "bluez_sink.$device" | sed 's/.*<\(.*\)>.*/\1/')
-pacmd set-default-sink $sink
+sink=$(pactl list short sinks | awk -v d="$device" '$2 ~ "^bluez_(sink|output)\\." d "\\." {print $2; exit}')
+pactl set-default-sink "$sink"
 sleep 1
 
-source=$(pacmd list-sources | ag 'name:' | ag -Q "bluez_source.$device" | sed 's/.*<\(.*\)>.*/\1/')
-pacmd set-default-source $source
+source=$(pactl list short sources | awk -v d="$device" '$2 ~ "^bluez_(source|input)\\." d "\\." {print $2; exit}')
+pactl set-default-source "$source"

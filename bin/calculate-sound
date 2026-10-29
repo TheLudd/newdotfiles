@@ -1,17 +1,16 @@
 #!/bin/bash
-activeSink=$(pacmd list-sinks | ag --after=1 -Q '* index' | tail -n 1 | sed 's/name: <//g' | sed 's/>//g' | sed 's/^[ \t]*//')
-
-activeSource=$(pacmd list-sources | ag --after=1 -Q '* index' | tail -n 1 | sed 's/name: <//g' | sed 's/>//g' | sed 's/^[ \t]*//')
+activeSink=$(pactl get-default-sink)
+activeSource=$(pactl get-default-source)
 
 IFS='.' read -r sinkType sinkId sinkProfile <<< "$activeSink"
 IFS='.' read -r sourceType sourceId sourceProfile <<< "$activeSource"
 
-if [ "$sinkType" == "bluez_sink" ]; then
+if [[ "$sinkType" == bluez_sink || "$sinkType" == bluez_output ]]; then
   sinkIdColon=$(echo $sinkId | sed 's/_/:/g')
   sinkDevice=$(echo "info $sinkIdColon" | bluetoothctl 2>/dev/null | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
 fi
 
-if [ "$sourceType" == "bluez_source" ]; then
+if [[ "$sourceType" == bluez_source || "$sourceType" == bluez_input ]]; then
   sourceIdColon=$(echo $sourceId | sed 's/_/:/g')
   sourceDevice=$(echo "info $sourceIdColon" | bluetoothctl 2>/dev/null | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
 else

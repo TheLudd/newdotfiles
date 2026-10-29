@@ -16,10 +16,10 @@ then
     headphoneIcon="🎧"
   fi
   if [ "$sinkDevice" == "$sourceDevice" ]; then
-    if [ "$sourceType" == "bluez_source" ]; then
+    if [[ "$sourceType" == bluez_source || "$sourceType" == bluez_input ]]; then
       echo -e "$sinkDevice $sinkVolume $headphoneIcon"
     fi
-  elif [ "$sinkType" == "bluez_sink" ]; then
+  elif [[ "$sinkType" == bluez_sink || "$sinkType" == bluez_output ]]; then
     echo -e "$sinkDevice $sinkVolume $headphoneIcon🎤"
   else
     echo -e "$sinkVolume $speakerIcon 🎤"
