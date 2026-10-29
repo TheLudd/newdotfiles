@@ -1,1 +1,1 @@
-/home/ludwig/.config/systemd/user/check-pacman-upgrades.timer
+../check-pacman-upgrades.timer
