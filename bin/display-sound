@@ -1,5 +1,5 @@
 #!/bin/bash
-infoFile=/tmp/sound-info
+infoFile="${XDG_RUNTIME_DIR:-/run/user/$UID}/sound-info"
 if [ -f "$infoFile" ];
 then
   sinkDevice=$(cat $infoFile | ag 'sinkDevice' | awk '{print $2}')

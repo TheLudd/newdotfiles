@@ -2,7 +2,7 @@
 Description=PulseAudio Monitor Service
 
 [Service]
-ExecStart=/home/ludwig/bin/monitor-pulseaudio
+ExecStart=%h/bin/monitor-pulseaudio
 
 [Install]
 WantedBy=default.target

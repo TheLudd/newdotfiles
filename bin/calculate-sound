@@ -17,7 +17,7 @@ else
   sourceDevice=$sourceId
 fi
 
-target=/tmp/sound-info
+target="${XDG_RUNTIME_DIR:-/run/user/$UID}/sound-info"
 
 sinkVolume=$(pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | grep -oP '\d+%' | head -1)
 sinkMuted=$(pactl get-sink-mute @DEFAULT_SINK@ 2>/dev/null | grep -oP '(yes|no)')
