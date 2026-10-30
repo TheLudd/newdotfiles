@@ -1,0 +1,11 @@
+#!/bin/bash
+# Runs `ca` (run -w checkall) on every commit of the current branch that is
+# not on the base branch (default master). Stops at the first failing commit,
+# with the rebase paused there: fix it, then `git rebase --continue`.
+set -euo pipefail
+
+base=${1:-master}
+
+# Rebasing onto the merge base keeps the commits where they are; unchanged
+# commits are reused, so the hashes stay the same when everything passes
+git rebase --exec "run -w checkall" "$(git merge-base "$base" HEAD)"
