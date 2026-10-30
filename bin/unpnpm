@@ -1,16 +1,54 @@
 #!/bin/bash
+# Runs pnpm i on every commit of the current branch that is not on the base
+# branch (default master) and amends a lock file change into that commit.
+# A pick that conflicts only in the lock file is resolved by running pnpm i.
+# Stops when pnpm i fails or changes any other file, or on any other conflict.
+set -euo pipefail
 
-function step() {
-	pnpm i
-	st=`git status --porcelain`
-	if [[ -n "$st" ]]; then
-		git fix
-	fi
-	git rebase --continue
-	branch=`git rev-parse --abbrev-ref HEAD`
-	if [[  "$branch" == "HEAD" ]]; then
-		step
-	fi
+lockfile=pnpm-lock.yaml
+
+fail() {
+	echo "unpnpm: $*" >&2
+	exit 1
 }
 
-step
+rebasing() {
+	[[ -d $(git rev-parse --git-path rebase-merge) ]]
+}
+
+# Only the lock file may be left changed in the working tree or index
+only_lockfile_changed() {
+	[[ -z $(git status --porcelain | grep -v " $lockfile\$") ]]
+}
+
+# Runs through `git rebase --exec` after each commit
+fix_commit() {
+	pnpm i
+	only_lockfile_changed || fail "pnpm i changed files other than $lockfile"
+	git diff --quiet HEAD -- "$lockfile" || git commit -q --amend --no-edit -- "$lockfile"
+}
+
+# The commit's own lock file is regenerated against the merged package files
+resolve_lockfile_conflict() {
+	[[ $(git diff --name-only --diff-filter=U) == "$lockfile" ]] ||
+		fail "conflict in files other than $lockfile"
+	git checkout --theirs -- "$lockfile"
+	pnpm i
+	git add -- "$lockfile"
+	[[ -z $(git status --porcelain | grep -v '^[^ ?] ') ]] || fail "pnpm i changed files other than $lockfile"
+}
+
+if [[ ${1:-} == --fix-commit ]]; then
+	fix_commit
+	exit
+fi
+
+base=${1:-master}
+[[ -z $(git status --porcelain) ]] || fail "uncommitted or untracked changes"
+
+git rebase --exec "$(realpath "$0") --fix-commit" "$(git merge-base "$base" HEAD)" || true
+while rebasing; do
+	[[ -n $(git diff --name-only --diff-filter=U) ]] || fail "stopped at $(git log -1 --format='%h %s')"
+	resolve_lockfile_conflict
+	GIT_EDITOR=true git rebase --continue || true
+done
