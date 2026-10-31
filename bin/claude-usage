@@ -6,7 +6,9 @@
 credentials="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json"
 [ -r "$credentials" ] || exit 0
 
-token=$(jq -r '.claudeAiOauth.accessToken // empty' "$credentials")
+now_ms=$(($(date +%s) * 1000))
+token=$(jq -r --argjson now "$now_ms" \
+    '.claudeAiOauth | select(.expiresAt > $now) | .accessToken // empty' "$credentials" 2>/dev/null)
 [ -n "$token" ] || exit 0
 
 curl -sf --max-time 5 https://api.anthropic.com/api/oauth/usage \
@@ -18,5 +20,7 @@ jq -r '
         elif .kind == "weekly_all" then "W"
         else (.scope.model.display_name // .kind)[0:1]
         end;
-    [.limits[] | "\(short) \(.percent)%"] | "🤖 " + join(" ")
-'
+    [.limits // [] | .[] | "\(short) \(.percent)%"]
+    | select(length > 0)
+    | "🤖 " + join(" ")
+' 2>/dev/null
