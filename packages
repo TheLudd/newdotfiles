@@ -23,6 +23,7 @@ go
 hacksaw
 htop
 inotify-tools
+jq
 kbd
 less
 libxft
