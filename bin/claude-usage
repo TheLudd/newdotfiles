@@ -1,26 +1,35 @@
 #!/bin/sh
 # Output Claude plan usage for dwmblocks: session, weekly and model-scoped weekly limits.
 # Reads the OAuth token Claude Code stores and asks the usage endpoint; no model call, no tokens.
-# Prints nothing when the token is missing, expired or the request fails.
+# Stdout stays empty when there is no usable login or the request fails; the reason goes to stderr.
+
+fail() {
+    echo "claude-usage: $*" >&2
+    exit 1
+}
 
 credentials="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json"
-[ -r "$credentials" ] || exit 0
+[ -r "$credentials" ] || fail "no credentials at $credentials"
+
+oauth=$(jq -c '.claudeAiOauth // empty' "$credentials") || fail "cannot parse $credentials"
+[ -n "$oauth" ] || fail "no claude.ai login in $credentials"
 
 now_ms=$(($(date +%s) * 1000))
-token=$(jq -r --argjson now "$now_ms" \
-    '.claudeAiOauth | select(.expiresAt > $now) | .accessToken // empty' "$credentials" 2>/dev/null)
-[ -n "$token" ] || exit 0
+token=$(echo "$oauth" | jq -r --argjson now "$now_ms" 'select(.expiresAt > $now) | .accessToken // empty')
+[ -n "$token" ] || fail "token expired, start Claude Code to refresh it"
 
-curl -sf --max-time 5 https://api.anthropic.com/api/oauth/usage \
+response=$(curl -sS --fail --max-time 5 https://api.anthropic.com/api/oauth/usage \
     -H "Authorization: Bearer $token" \
-    -H "anthropic-beta: oauth-2025-04-20" |
-jq -r '
+    -H "anthropic-beta: oauth-2025-04-20") || fail "usage request failed"
+
+usage=$(echo "$response" | jq -r '
     def short:
         if .kind == "session" then "S"
         elif .kind == "weekly_all" then "W"
         else (.scope.model.display_name // .kind)[0:1]
         end;
-    [.limits // [] | .[] | "\(short) \(.percent)%"]
-    | select(length > 0)
-    | "🤖 " + join(" ")
-' 2>/dev/null
+    [.limits // [] | .[] | "\(short) \(.percent)%"] | join(" ")
+') || fail "cannot parse usage response"
+[ -n "$usage" ] || fail "usage response has no limits"
+
+echo "🤖 $usage"
