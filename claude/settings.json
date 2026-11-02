@@ -48,7 +48,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -98,5 +98,6 @@
   "effortLevel": "high",
   "tui": "fullscreen",
   "editorMode": "vim",
+  "switchModelsOnFlag": false,
   "skipAutoPermissionPrompt": true
 }
