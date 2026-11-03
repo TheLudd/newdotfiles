@@ -8,6 +8,7 @@ then
   sinkType=$(cat $infoFile | ag 'sinkType' | awk '{print $2}')
   sinkVolume=$(cat $infoFile | ag 'sinkVolume' | awk '{print $2}')
   sinkMuted=$(cat $infoFile | ag 'sinkMuted' | awk '{print $2}')
+  cardProfile=$(cat $infoFile | ag 'cardProfile' | awk '{print $2}')
   if [ "$sinkMuted" == "yes" ]; then
     speakerIcon="🔇"
     headphoneIcon="🔇"
@@ -15,10 +16,8 @@ then
     speakerIcon="🔊"
     headphoneIcon="🎧"
   fi
-  if [ "$sinkDevice" == "$sourceDevice" ]; then
-    if [[ "$sourceType" == bluez_source || "$sourceType" == bluez_input ]]; then
-      echo -e "$sinkDevice $sinkVolume $headphoneIcon"
-    fi
+  if [[ "$cardProfile" == headset-head-unit* && "$sinkDevice" == "$sourceDevice" ]]; then
+    echo -e "$sinkDevice $sinkVolume $headphoneIcon"
   elif [[ "$sinkType" == bluez_sink || "$sinkType" == bluez_output ]]; then
     echo -e "$sinkDevice $sinkVolume $headphoneIcon🎤"
   else
