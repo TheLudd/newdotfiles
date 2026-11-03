@@ -13,7 +13,11 @@ bluetoothctl connect $device_comma
 sleep 3
 
 card=$(pactl list short cards | awk -v c="bluez_card.$device" '$2 == c {print $2; exit}')
+# a profile switch removes the sink; keep WirePlumber from pausing players on that
+wpctl settings linking.pause-playback false >/dev/null
 pactl set-card-profile "$card" headset-head-unit 2>/dev/null || pactl set-card-profile "$card" handsfree_head_unit
+sleep 1
+wpctl settings linking.pause-playback true >/dev/null
 sleep 1
 
 sink=$(pactl list short sinks | awk -v d="$device" '$2 ~ "^bluez_(sink|output)\\." d "\\." {print $2; exit}')
