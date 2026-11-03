@@ -20,5 +20,5 @@ sink=$(pactl list short sinks | awk -v d="$device" '$2 ~ "^bluez_(sink|output)\\
 pactl set-default-sink "$sink"
 sleep 1
 
-source=$(pactl list short sources | awk -v d="$device" '$2 ~ "^bluez_(source|input)\\." d "\\." {print $2; exit}')
+source=$(pactl list short sources | awk -v d="$device_comma" '$2 == "bluez_input." d {print $2; exit}')
 pactl set-default-source "$source"
