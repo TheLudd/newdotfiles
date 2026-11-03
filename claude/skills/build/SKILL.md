@@ -19,7 +19,7 @@ Read the `rigor` line of the feature's `ideate.md`, then the artifact build star
 
 - `hands-off`: `ideate.md`. Work out the approach yourself and do not write a `shape.md` or `plan.md`.
 - `checkpoints`: `shape.md`.
-- `step-by-step`: `plan.md`, and the scenarios in `shape.md`.
+- `commit-by-commit`: `plan.md`, and `shape.md` for the approach, flow and scenarios.
 
 Do not reopen what the artifacts decide. If one turns out to be wrong, say so and reopen its stage.
 
@@ -37,6 +37,6 @@ Do not reopen what the artifacts decide. If one turns out to be wrong, say so an
 
 ## Rigor
 
-- `step-by-step`: a function's tests are the cases `plan.md` lists for it, written as stated there, then its implementation. No stops. Halt and ask when a signature would differ from the plan or a function needs a case the plan does not list.
+- `commit-by-commit`: work through the commits of `plan.md` in order, one at a time. Find the next one by matching the branch's commit titles against the plan. Build only what that commit's description covers, commit it with the planned title, then stop and say in one line what it holds. Changes the user asks for are fixups of that commit. Go on to the next commit only when the user says so. Halt and ask when the work would not fit the planned commit, such as needing something a later commit holds or a commit the plan does not list.
 - `checkpoints`: stop at the points that matter for this feature, such as a file format, a structure, or a chunk of working functionality. Halt and ask when the code would depart from the shape's flow.
 - `hands-off`: no stops.

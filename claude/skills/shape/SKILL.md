@@ -30,7 +30,7 @@ Read `ideate.md` of the feature. It is the only input. Its opening section may b
 - Decide the test strategy: what is unit-tested, what is acceptance-tested, where the seams are.
 - Keep the running draft in `shape.md` from the first decision on. Update it when a decision changes it and commit a fixup. The reply says in one line what changed.
 - If the idea turns out to be wrong, say so and reopen `/ideate`. Do not patch around it.
-- When the user says the stage is done, name the next stage for the rigor level: `/build` for `checkpoints`, `/plan` for `step-by-step`.
+- When the user says the stage is done, name the next stage for the rigor level: `/build` for `checkpoints`, `/plan` for `commit-by-commit`.
 
 ## Draft
 

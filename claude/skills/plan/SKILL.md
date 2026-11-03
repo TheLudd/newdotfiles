@@ -1,14 +1,14 @@
 ---
 name: plan
-description: 'Third pipeline stage, for step-by-step features only. Turns the shape from /shape into the functions to create, their signatures, the calls between them and the test cases of each function, as one nested call block per entry point. Invoke with /plan [feature].'
+description: 'Third pipeline stage, for commit-by-commit features only. Turns the shape from /shape into the ordered list of commits that build it, each with a short description of what it handles. Invoke with /plan [feature].'
 disable-model-invocation: true
 ---
 
 # Plan
 
-Turn the shape into the contract for the code: which functions exist, their signatures, how they call each other and what each one is tested for. The contract is a call block and a list of test cases, not prose. No implementation, no branch.
+Turn the shape into the commits that build it, in order. Each entry is a commit title and a short description of what that commit handles. No signatures, no test cases, no implementation.
 
-Read `../pipeline/rules.md` first. Its artifact, gate, test, focus and writing rules apply.
+Read `../pipeline/rules.md` first. Its artifact, gate, focus and writing rules apply.
 
 ## Input
 
@@ -17,56 +17,28 @@ Read `shape.md` of the feature, and the `rigor` line of its `ideate.md`.
 - Feature given as an argument: use that folder.
 - Nothing given: list the features of the current project across all plans worktrees and ask which.
 - No `shape.md`: say so and stop.
-- Rigor other than `step-by-step`: the feature skips this stage. Say so and ask before going on.
+- Rigor other than `commit-by-commit`: the feature skips this stage. Say so and ask before going on.
 
 Do not reopen what the shape decides. If the shape turns out to be wrong, say so and reopen `/shape`.
 
 ## Conversation
 
-- Read the codebase at file level: the files, functions, types and tests the shape touches.
-- Write one call block per entry point of the shape's flow. Extend existing modules where the behavior belongs to them.
-- Draft the test cases of every new function with its block, not after it. They are part of the contract and the user checks them in the file like any decision.
-- Keep the running draft in `plan.md` from the first block on. Update it when a decision changes it and commit a fixup. The reply says in one line what changed.
+- Read the codebase at file level, enough to know where each part of the shape's flow lands.
+- Cut the work into commits a reviewer can read on their own. Each commit leaves the type check and tests passing, carries the tests of what it adds, and handles one thing: a type, a module's part of the flow, a scenario wired end to end.
+- Order them so each builds only on the ones before it.
+- Keep the running draft in `plan.md` from the first list on. Update it when the user changes it and commit a fixup. The reply says in one line what changed.
 - When the user says the stage is done, name `/build` as the next stage.
 
-## Call blocks
+## Commits
 
-A call block is a fenced code block in the project's language. Each function appears as its full signature. Under it, indented one level, the functions it calls, in call order, each with its own signature the first time it appears and as a bare call after that. Existing functions appear the same way, marked `// existing`. A branch is a comment line, `// fallback`, with the calls of that branch under it. A repeated call is a trailing comment, `// per view`.
-
-Nothing else goes in a block: no bodies, no control flow, no variables. The block is the contract; `/build` writes what is inside.
-
-Above each block, a heading names the entry point. Prose outside the blocks says only what a signature cannot: a type's meaning, a fact of the codebase a signature depends on.
-
-Which file holds which function is a reference list at the end of the draft, one file per line, not part of the blocks.
-
-```ts
-applyChangeToView(view: MaterializedView, change: GenericChange): RTF<Error, void, CollectionDBEnv>
-  classifyChange(view, change): Classification
-    isRelevantChange(view, change): boolean
-      collectOperatorPaths(change.data.operators): string[]
-    classifyBaseChange(view, change): IdSource[] | 'fallback'
-      findNamedValues(change.data.query, '_id'): Id[] | null
-  // skip
-  // fallback
-  repopulateView(view): RTF<Error, void, CollectionDBEnv>
-  // recompute
-  resolveAffectedIds(view, sources): RTF<Error, Id[], CollectionDBEnv>
-    resolveIdSource(view, source): RTF<Error, Id[], CollectionDBEnv>   // per source
-      dbOperations.distinct(collection, field, query)                   // existing
-      collectIds(result): Id[]
-  recomputeRows(view, ids): RTF<Error, ViewRow[], CollectionDBEnv>
-    dbOperations.aggregate(view.base, createRecomputePipeline(view, ids))   // existing
-```
-
-## Test cases
-
-A test case is one checklist item, "it returns x for y", and names both the input and the expected result. A line that names only an input is not a case. A function's cases are tested against doubles of the functions under it in the block, so a case never states what a callee does. Each new function has its own subsection under `## Tests`.
+Each commit is a numbered heading with its conventional commit title, followed by one to three sentences on what it handles and, when it matters, what it leaves for a later commit. The title is the message `/build` will commit with.
 
 ```markdown
-### parseDuration
-- [ ] it returns 90 for '1m30s'
-- [ ] it returns null for ''
-- [ ] it throws for '1x'
+### 1. feat(views): add MaterializedView and ViewRow types
+The view definition and the row shape from the shape's model. No behavior yet.
+
+### 2. feat(views): classify a change as skip, recompute or fallback
+The classification step of the flow, with its unit tests. Nothing calls it yet.
 ```
 
 ## Draft
@@ -74,26 +46,12 @@ A test case is one checklist item, "it returns x for y", and names both the inpu
 ```markdown
 # <title>
 
-## Types
-<new and changed types, as code>
+## Commits
 
-## <entry point>
+### 1. <type>(<scope>): <subject>
+<what it handles>
 
-```<lang>
-<call block>
-```
+### 2. ...
 
-## <entry point>
-...
-
-## Tests
-
-### <function>
-- [ ] it returns <x> for <y>
-
-### <function>
-...
-
-## Files
-- `<path>`: <functions>
+<## Out of scope, when the user excludes something>
 ```
