@@ -1,6 +1,6 @@
 ---
 name: plan
-description: 'Third pipeline stage, for commit-by-commit features only. Turns the shape from /shape into the ordered list of commits that build it, each with a short description of what it handles. Invoke with /plan [feature].'
+description: 'Third pipeline stage. Turns the shape from /shape into the ordered list of commits that build it, each with a short description of what it handles. Invoke with /plan [feature].'
 disable-model-invocation: true
 ---
 
@@ -12,12 +12,11 @@ Read `../pipeline/rules.md` first. Its artifact, gate, focus and writing rules a
 
 ## Input
 
-Read `shape.md` of the feature, and the `rigor` line of its `ideate.md`.
+Read `shape.md` of the feature.
 
 - Feature given as an argument: use that folder.
 - Nothing given: list the features of the current project across all plans worktrees and ask which.
 - No `shape.md`: say so and stop.
-- Rigor other than `commit-by-commit`: the feature skips this stage. Say so and ask before going on.
 
 Do not reopen what the shape decides. If the shape turns out to be wrong, say so and reopen `/shape`.
 

@@ -17,7 +17,6 @@ Read `ideate.md` of the feature. It is the only input. Its opening section may b
 - Feature given as an argument: use that folder.
 - Nothing given: list the features of the current project across all plans worktrees and ask which.
 - No `ideate.md`: say so and stop.
-- Rigor `hands-off`: the feature skips this stage. Say so and ask before going on.
 
 ## Conversation
 
@@ -30,7 +29,7 @@ Read `ideate.md` of the feature. It is the only input. Its opening section may b
 - Decide the test strategy: what is unit-tested, what is acceptance-tested, where the seams are.
 - Keep the running draft in `shape.md` from the first decision on. Update it when a decision changes it and commit a fixup. The reply says in one line what changed.
 - If the idea turns out to be wrong, say so and reopen `/ideate`. Do not patch around it.
-- When the user says the stage is done, name the next stage for the rigor level: `/build` for `checkpoints`, `/plan` for `commit-by-commit`.
+- When the user says the stage is done, name `/plan` and `/build` as the stages that can follow.
 
 ## Draft
 

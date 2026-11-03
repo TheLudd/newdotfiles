@@ -12,7 +12,7 @@ Each stage writes one markdown file to `~/code/plans/<worktree>/<project>/<featu
 - `<feature>`: lower-case, dash-separated slug
 - files: `ideate.md`, `shape.md`, `plan.md`
 
-Create the folder if missing. Each stage reads only the artifact of the stage before it at the feature's rigor level.
+Create the folder if missing. Each stage reads only the artifact of the stage before it.
 
 ## Commits
 
@@ -23,17 +23,15 @@ Artifacts in the plans repo and code in the project repo are committed the same 
 - Never autosquash, amend, rebase or push unless explicitly told to. The user squashes, or drops a fixup they dislike.
 - Never record a commit sha in an artifact. Squashing changes it.
 
-## Rigor
+## Stages
 
-`ideate.md` carries a line `rigor: hands-off | checkpoints | commit-by-commit`, chosen per feature. Default `checkpoints`. A project's CLAUDE.md may hint which level fits. Later stages read it from there. The user may edit it at any time.
+`ideate` → `shape` → `plan` → `build`. `shape` and `plan` are optional. The stage `build` is invoked after sets how closely it follows the work:
 
-It sets which stages run and how closely the user follows the code:
+- after `ideate`: build works out the approach itself and runs through without stops.
+- after `shape`: build stops at the points that matter for the feature, and halts and asks when the code would need to depart from the shape's flow.
+- after `plan`: build makes one planned commit at a time and stops after each, and halts and asks when the work would not fit the planned commits.
 
-- `hands-off`: ideate → build. Only the end product matters. Build works out the approach itself, writes no shape or plan, and runs through without stops.
-- `checkpoints`: ideate → shape → build. Build stops at the points that matter for the feature, and halts and asks when the code would need to depart from the shape's flow.
-- `commit-by-commit`: ideate → shape → plan → build. Plan lists the commits and what each handles. Build makes one planned commit at a time and stops after each, and halts and asks when the work would not fit the planned commits.
-
-Each stage names the next stage of the feature's level when the user says it is done.
+When the user says a stage is done, name the stages that can follow it.
 
 ## Tests
 

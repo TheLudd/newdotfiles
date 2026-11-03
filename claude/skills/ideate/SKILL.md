@@ -29,16 +29,14 @@ We are talking ideas together, the way two engineers would before anyone designs
 - When the conversation drifts into how to build it, notice it, and refocus on the idea unless the answer changes what the idea is.
 - Update the draft when an answer changes it and commit a fixup. The reply says in one line what changed.
 - Never ask whether the idea is ready and never propose moving on.
-- When the user says the stage is done, ask for the `rigor` level if it was not given, set it in `ideate.md`, and name the next stage for that level: `/build` for `hands-off`, `/shape` otherwise.
+- When the user says the stage is done, name `/shape` and `/build` as the stages that can follow.
 
 ## Draft
 
-A title, the `rigor` line, and an opening section under the heading that fits the idea, such as `## Problem`, `## Idea` or `## Feature`. Every other section comes from the idea: background, flows, decisions, out of scope, whatever it needs.
+A title and an opening section under the heading that fits the idea, such as `## Problem`, `## Idea` or `## Feature`. Every other section comes from the idea: background, flows, decisions, out of scope, whatever it needs.
 
 ```markdown
 # <title>
-
-rigor: checkpoints
 
 ## <Problem | Idea | Feature>
 <2-3 sentences>

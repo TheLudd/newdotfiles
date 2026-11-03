@@ -1,6 +1,6 @@
 ---
 name: build
-description: 'Last pipeline stage. Turns the last artifact of the feature into tested code on a feature branch, stopping for review as the rigor level says. Invoke with /build [feature].'
+description: 'Last pipeline stage. Turns the last artifact of the feature into tested code on a feature branch, stopping for review as that artifact says. Invoke with /build [feature].'
 disable-model-invocation: true
 ---
 
@@ -8,18 +8,18 @@ disable-model-invocation: true
 
 Write the code the feature's artifacts describe, with its tests.
 
-Read `../pipeline/rules.md` first. Its commit, rigor, test, focus and writing rules apply.
+Read `../pipeline/rules.md` first. Its commit, stage, test, focus and writing rules apply.
 
 ## Input
 
 - Feature given as an argument: use that folder.
 - Nothing given: list the features of the current project across all plans worktrees and ask which.
 
-Read the `rigor` line of the feature's `ideate.md`, then the artifact build starts from at that level. If it is missing, say so and stop.
+Start from the latest artifact the feature has. If it has none, say so and stop.
 
-- `hands-off`: `ideate.md`. Work out the approach yourself and do not write a `shape.md` or `plan.md`.
-- `checkpoints`: `shape.md`.
-- `commit-by-commit`: `plan.md`, and `shape.md` for the approach, flow and scenarios.
+- `plan.md`: build commit by commit. Read `shape.md` too, for the approach, flow and scenarios.
+- `shape.md`: build with checkpoints.
+- `ideate.md` only: build hands-off. Work out the approach yourself and do not write a `shape.md` or `plan.md`.
 
 Do not reopen what the artifacts decide. If one turns out to be wrong, say so and reopen its stage.
 
@@ -35,8 +35,8 @@ Do not reopen what the artifacts decide. If one turns out to be wrong, say so an
 5. Run the project's type check and tests before each commit.
 6. Commit as you go, following the commit rules.
 
-## Rigor
+## Stops
 
-- `commit-by-commit`: work through the commits of `plan.md` in order, one at a time. Find the next one by matching the branch's commit titles against the plan. Build only what that commit's description covers, commit it with the planned title, then stop and say in one line what it holds. Changes the user asks for are fixups of that commit. Go on to the next commit only when the user says so. Halt and ask when the work would not fit the planned commit, such as needing something a later commit holds or a commit the plan does not list.
-- `checkpoints`: stop at the points that matter for this feature, such as a file format, a structure, or a chunk of working functionality. Halt and ask when the code would depart from the shape's flow.
-- `hands-off`: no stops.
+- From `plan.md`: work through the commits of `plan.md` in order, one at a time. Find the next one by matching the branch's commit titles against the plan. Build only what that commit's description covers, commit it with the planned title, then stop and say in one line what it holds. Changes the user asks for are fixups of that commit. Go on to the next commit only when the user says so. Halt and ask when the work would not fit the planned commit, such as needing something a later commit holds or a commit the plan does not list.
+- From `shape.md`: stop at the points that matter for this feature, such as a file format, a structure, or a chunk of working functionality. Halt and ask when the code would depart from the shape's flow.
+- From `ideate.md`: no stops.
