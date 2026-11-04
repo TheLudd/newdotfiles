@@ -1,4 +1,5 @@
 #!/bin/bash
-# Folders that zsh and less write to but do not create.
+# Folders that zsh, less and gpg write to but do not create.
 set -euo pipefail
 mkdir -p "$(dirname "$HISTFILE")" "$XDG_CACHE_HOME/less"
+install -d -m 700 "$GNUPGHOME"

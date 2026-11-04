@@ -2,4 +2,7 @@
 # Install the AUR packages in `paru-packages`.
 set -euo pipefail
 command -v paru >/dev/null || { echo "paru is not installed (system/30-paru)"; exit 1; }
+# makepkg imports the packages' signing keys with gpg, which does not create
+# GNUPGHOME (~/.local/share/gnupg, from config/zsh/exports.zsh) itself
+install -d -m 700 "$GNUPGHOME"
 xargs -a paru-packages paru -S --needed --noconfirm
