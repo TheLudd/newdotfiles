@@ -7,6 +7,7 @@ bat
 bc
 bluez
 bluez-utils
+cmake
 difftastic
 discord
 docker
