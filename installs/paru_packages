@@ -3,4 +3,4 @@
 package_file="$(realpath "$(dirname "$0")/../paru-packages")"
 
 # Run paru with the package file and no confirmation
-xargs -a "$package_file" paru -Sy --noconfirm
+xargs -a "$package_file" paru -S --needed --noconfirm

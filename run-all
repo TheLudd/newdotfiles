@@ -1,6 +1,12 @@
 #!/bin/bash
+# Run every script in a folder, e.g. run-all installs.
+# Exports the XDG paths from lib/zshenv first: on a fresh machine they are not
+# in the environment until /etc/zsh/zshenv is installed and you log in again.
 folder=$1
-for f in $folder/*
+set -a
+source lib/zshenv
+set +a
+for f in "$folder"/*
 do
-	bash $f
+	"./$f"
 done

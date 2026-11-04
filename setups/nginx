@@ -1,5 +1,10 @@
 #!/bin/zsh
 # Serve margin at http://margin.local through nginx. The site config stays in
-# the dotfiles and is linked into nginx's sites-enabled.
+# the dotfiles and is linked into nginx's sites-enabled, which Arch's stock
+# nginx.conf neither creates nor includes.
+sudo mkdir -p /etc/nginx/sites-enabled
+if ! grep -q 'include /etc/nginx/sites-enabled/\*;' /etc/nginx/nginx.conf; then
+	sudo sed -i 's|^http {$|http {\n    include /etc/nginx/sites-enabled/*;|' /etc/nginx/nginx.conf
+fi
 sudo ln -sf "$(realpath nginx/margin.conf)" /etc/nginx/sites-enabled/margin.conf
 sudo nginx -t && sudo systemctl enable --now nginx && sudo systemctl reload nginx
