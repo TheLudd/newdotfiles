@@ -1,0 +1,17 @@
+#!/bin/bash
+# The hostname is read from /etc/hostname: the `hostname` command (inetutils)
+# is not on a fresh install.
+set -euo pipefail
+host=$(< /etc/hostname)
+[[ -n $host ]] || { echo "/etc/hostname is empty"; exit 1; }
+
+sudo tee /etc/hosts > /dev/null <<HOSTS
+# Static table lookup for hostnames.
+# See hosts(5) for details.
+127.0.0.1 localhost
+::1 localhost
+127.0.0.1 $host
+::1 $host
+127.0.0.1 dev.local
+127.0.0.1 margin.local
+HOSTS

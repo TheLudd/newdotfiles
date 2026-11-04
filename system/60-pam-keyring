@@ -1,0 +1,25 @@
+#!/bin/bash
+# Unlock gnome-keyring with the login password on tty logins (there is no
+# display manager: sx is started from the tty). Adds the auth line after the
+# last auth line and the session line after the last session line, once.
+# The keyring password has to match the login password; a keyring created
+# at login gets it.
+set -euo pipefail
+pam=/etc/pam.d/login
+grep -q pam_gnome_keyring "$pam" && exit 0
+
+tmp=$(mktemp)
+awk '
+	{ lines[NR] = $0 }
+	$1 == "auth" { last_auth = NR }
+	$1 == "session" { last_session = NR }
+	END {
+		for (i = 1; i <= NR; i++) {
+			print lines[i]
+			if (i == last_auth) print "auth       optional     pam_gnome_keyring.so"
+			if (i == last_session) print "session    optional     pam_gnome_keyring.so auto_start"
+		}
+	}
+' "$pam" > "$tmp"
+sudo install -m 644 "$tmp" "$pam"
+rm "$tmp"

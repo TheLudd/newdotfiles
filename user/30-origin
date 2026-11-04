@@ -1,0 +1,9 @@
+#!/bin/bash
+# This repo is cloned over https on a fresh machine; push to it over ssh once
+# the key is on GitHub (init user-login).
+set -euo pipefail
+url=$(git remote get-url origin)
+if [[ $url =~ ^https://github\.com/(.+)$ ]]; then
+	path=${BASH_REMATCH[1]}
+	git remote set-url origin "git@github.com:${path%.git}.git"
+fi

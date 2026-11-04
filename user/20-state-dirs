@@ -1,0 +1,4 @@
+#!/bin/bash
+# Folders that zsh and less write to but do not create.
+set -euo pipefail
+mkdir -p "$(dirname "$HISTFILE")" "$XDG_CACHE_HOME/less"

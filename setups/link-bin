@@ -1,3 +1,0 @@
-#!/bin/zsh
-bin="$(realpath "$(dirname "$0")/../bin")"
-ln -sf $bin $HOME/bin

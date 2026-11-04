@@ -1,0 +1,13 @@
+#!/bin/bash
+# System side of autorandr; each user's postswitch hooks are linked by
+# user/10-link-autorandr.
+set -euo pipefail
+
+# Re-detect the profile after resume; udev hotplug events are unreliable across suspend
+sudo systemctl enable autorandr.service
+
+# Hotplug events wait for the monitor link to settle before switching
+sudo ln -sf "$PWD/autorandr/autorandr-hotplug.service" /etc/systemd/system/autorandr-hotplug.service
+sudo ln -sf "$PWD/autorandr/hotplug.rules" /etc/udev/rules.d/40-monitor-hotplug.rules
+sudo systemctl daemon-reload
+sudo udevadm control --reload

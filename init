@@ -1,4 +1,27 @@
 #!/bin/bash
-git submodule update --init
-bash run-all installs
-bash run-all setups
+# Set up a machine in phases, each run by hand:
+#   init system         once per machine, as the first user (needs sudo)
+#   init user           once per user
+#   (log out and back in: zshenv, the docker group and the keyring apply then)
+#   init user-login     once per user
+#   init apps [name...] optional apps, e.g. init apps margin; no name lists them
+set -euo pipefail
+cd "$(dirname "$(realpath "$0")")"
+
+case ${1:-} in
+	system | user | user-login)
+		exec ./run-all "$1"
+		;;
+	apps)
+		shift
+		if (($# == 0)); then
+			echo "Apps: $(ls apps | tr '\n' ' ')"
+			exit 0
+		fi
+		exec ./run-all apps "$@"
+		;;
+	*)
+		sed -n '2,7s/^# //p' "$0"
+		exit 1
+		;;
+esac

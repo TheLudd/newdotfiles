@@ -1,37 +1,26 @@
 #!/bin/bash
+# Usage: add-user <username>
+# Create a user in wheel with zsh as shell and ask for its password. Every
+# wheel member has sudo without a password (/etc/sudoers.d/wheel). Run as
+# root: install-encrypted runs it in the new system, later use sudo.
+set -euo pipefail
+[ "$#" -eq 1 ] || { echo "Usage: $0 <username>"; exit 1; }
+user=$1
+home="/home/$user"
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <username> <password>"
-    exit 1
-fi
+pacman -Q sudo &>/dev/null || pacman -S --noconfirm sudo
 
-USERNAME=$1
-PASSWORD=$2
-HOMEDIR="/home/$USERNAME"
-
-# Check if the home directory exists
-if [ -d "$HOMEDIR" ]; then
-    echo "Home directory $HOMEDIR exists. Creating user without creating a new home directory."
-    useradd -d "$HOMEDIR" -s /bin/zsh -G wheel -M $USERNAME
+if id "$user" &>/dev/null; then
+	echo "User $user exists"
+elif [ -d "$home" ]; then
+	# A kept /home partition already holds this user's files
+	useradd -d "$home" -M -s /bin/zsh -G wheel "$user"
 else
-    echo "Home directory $HOMEDIR does not exist. Creating user with a new home directory."
-    useradd -m -s /bin/zsh -G wheel $USERNAME
+	useradd -m -s /bin/zsh -G wheel "$user"
 fi
 
-# Set the user's password
-echo "$USERNAME:$PASSWORD" | chpasswd
+until passwd "$user"; do :; done
 
-if ! pacman -Q sudo &> /dev/null; then
-    echo "sudo is not installed. Installing sudo."
-    pacman -S --noconfirm sudo
-else
-    echo "sudo is already installed."
-fi
-
-# Ensure the wheel group has sudo privileges
-sed -i '/^# %wheel ALL=(ALL) ALL$/s/^# //' /etc/sudoers
-
-# Configure sudoers to not require a password for the new user
-echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-echo "User $USERNAME created and granted sudo privileges."
+echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel
+chmod 440 /etc/sudoers.d/wheel
+visudo -cf /etc/sudoers.d/wheel

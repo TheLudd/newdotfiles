@@ -1,0 +1,9 @@
+#!/bin/bash
+# Link the postswitch hooks in autorandr/ into ~/.config/autorandr. The
+# profiles themselves are saved per machine with `autorandr --save`.
+set -euo pipefail
+find autorandr -type f -path '*postswitch*' | while read -r file; do
+	target="$XDG_CONFIG_HOME/$file"
+	mkdir -p "$(dirname "$target")"
+	ln -sfn "$PWD/$file" "$target"
+done

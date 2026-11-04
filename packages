@@ -21,6 +21,7 @@ gcc
 git
 git-delta
 github-cli
+gnome-keyring
 go
 hacksaw
 htop
@@ -58,6 +59,7 @@ rabbitmq
 reflector
 ripgrep
 rsync
+rustup
 rxvt-unicode
 shotgun
 slock
@@ -70,6 +72,7 @@ texinfo
 the_silver_searcher
 tree
 tree-sitter-cli
+ttf-dejavu-nerd
 ttf-liberation
 tzdata
 unzip

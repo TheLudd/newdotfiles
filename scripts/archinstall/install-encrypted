@@ -7,7 +7,8 @@
 #
 # One passphrase unlocks root at boot. Home and data unlock from keyfiles kept
 # on the encrypted root; the passphrase is also added to them for recovery.
-# The root account is locked: use sudo from your own user.
+# The root account is locked: it creates your user (scripts/archinstall/add-user)
+# and you use sudo from there.
 set -euo pipefail
 
 EFI_GIB=1
@@ -16,7 +17,8 @@ MAX_DEFAULT_ROOT_GIB=512
 SWAP_SIZE=8G
 KEYMAP=sv-latin1
 HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
-PACKAGES="$(cat "$(dirname "${BASH_SOURCE[0]}")/../../packages")"
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+PACKAGES="$(cat "$SCRIPT_DIR/../../packages")"
 
 die() { echo "$*" >&2; exit 1; }
 
@@ -102,6 +104,7 @@ print_plan() {
 		printf '  %6s GiB  /data  encrypted\n' "$(disk_gib "$DATA_DISK")"
 	fi
 	echo "Hostname: $NEW_HOSTNAME"
+	echo "User:     $NEW_USER (sudo, password asked at the end)"
 	echo
 }
 
@@ -199,6 +202,13 @@ configure_system() {
 	arch-chroot /mnt passwd -l root
 }
 
+create_user() {
+	echo "Creating $NEW_USER"
+	install -m 700 "$SCRIPT_DIR/add-user" /mnt/root/add-user
+	arch-chroot /mnt /root/add-user "$NEW_USER"
+	rm /mnt/root/add-user
+}
+
 main() {
 	local answer
 	mapfile -t DISKS < <(internal_disks)
@@ -206,6 +216,8 @@ main() {
 	choose_root_size "$SYSTEM_DISK"
 	read -rp "Hostname: " NEW_HOSTNAME
 	[ -n "$NEW_HOSTNAME" ] || die "Hostname is required"
+	read -rp "Username: " NEW_USER
+	[ -n "$NEW_USER" ] || die "Username is required"
 
 	print_plan
 	read -rp "Erase the disks above? Type 'erase' to continue: " answer
@@ -215,9 +227,10 @@ main() {
 	partition_and_mount
 	install_packages
 	configure_system
+	create_user
 
 	echo
-	echo "Installed. Create your users in 'arch-chroot /mnt', then reboot."
+	echo "Installed. After the reboot, clone the dotfiles and run 'init system'."
 }
 
 # Sourcing the file only loads the functions, so they can be tried out without installing

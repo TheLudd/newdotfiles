@@ -1,12 +1,49 @@
 #!/bin/bash
-# Run every script in a folder, e.g. run-all installs.
-# Exports the XDG paths from lib/zshenv first: on a fresh machine they are not
-# in the environment until /etc/zsh/zshenv is installed and you log in again.
-folder=$1
+# Usage: run-all <folder> [name...]
+# Runs every script in folder in name order, or only the named ones. A failing
+# script does not stop the others: a script that depends on an earlier one
+# checks for what it needs itself. Failures are listed at the end and make the
+# exit status non-zero, so after a fix the phase is simply run again.
+#
+# Exports the XDG paths (lib/zshenv) and the tool homes such as CARGO_HOME
+# (config/zsh/exports.zsh) first: on a fresh machine they are not in the
+# environment until zsh is set up and you log in again.
+set -uo pipefail
+cd "$(dirname "$(realpath "$0")")"
+
+folder=${1:?Usage: run-all <folder> [name...]}
+shift
+[[ -d $folder ]] || { echo "No folder $folder" >&2; exit 1; }
+
 set -a
 source lib/zshenv
+source config/zsh/exports.zsh
 set +a
-for f in "$folder"/*
-do
-	"./$f"
+PATH="$PWD/bin:$PATH"
+
+scripts=()
+if (($#)); then
+	for name in "$@"; do
+		if [[ ! -f $folder/$name ]]; then
+			echo "Unknown in $folder: $name. Valid: $(ls "$folder" | tr '\n' ' ')" >&2
+			exit 1
+		fi
+		scripts+=("$folder/$name")
+	done
+else
+	scripts=("$folder"/*)
+fi
+
+failed=()
+for script in "${scripts[@]}"; do
+	echo "==> $script"
+	"./$script" || failed+=("$script")
 done
+
+echo
+if ((${#failed[@]})); then
+	echo "Failed in $folder:"
+	printf '  %s\n' "${failed[@]}"
+	exit 1
+fi
+echo "Done: $folder"

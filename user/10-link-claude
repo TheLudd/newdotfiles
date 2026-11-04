@@ -1,13 +1,14 @@
-#!/bin/zsh
+#!/bin/bash
 # Symlink Claude Code config into ~/.config/claude.
 # Links each entry individually: that directory also holds sessions,
 # credentials and history that must never be removed.
-src="$(realpath "$(dirname "$0")/../claude")"
+set -euo pipefail
 dest="$HOME/.config/claude"
 mkdir -p "$dest"
-for entry in "$src"/*; do
+for entry in "$PWD"/claude/*; do
 	target="$dest/$(basename "$entry")"
-	echo ln -sfn "$entry" "$target"
+	[[ $(readlink "$target") == "$entry" ]] && continue
+	echo "link $target"
 	rm -rf "$target"
 	ln -sfn "$entry" "$target"
 done

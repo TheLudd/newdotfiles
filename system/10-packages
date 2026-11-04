@@ -1,0 +1,5 @@
+#!/bin/bash
+# Install the packages in `packages`, upgrading the system in the same run so
+# nothing is installed against an outdated package database.
+set -euo pipefail
+sudo pacman -Syu --needed --noconfirm - < packages

@@ -1,0 +1,11 @@
+#!/bin/bash
+# margin, the markdown reader/editor at http://margin.local. Clones
+# ~/code/margin if missing, installs ~/.local/bin/margin and restarts the user
+# service. The service is enabled for every user who links config/, and only
+# starts for users who have the binary.
+set -euo pipefail
+src="$HOME/code/margin"
+lib/clone "$src" https://github.com/TheLudd/margin.git git@github.com:TheLudd/margin.git
+make -C "$src" install
+systemctl --user daemon-reload
+systemctl --user restart margin.service

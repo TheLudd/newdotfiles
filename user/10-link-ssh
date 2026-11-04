@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+install -d -m 700 "$HOME/.ssh"
+ln -sfn "$PWD/lib/ssh-config" "$HOME/.ssh/config"

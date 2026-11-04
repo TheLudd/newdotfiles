@@ -61,7 +61,7 @@ main() {
 	confirm "Start the install?" || exit 0
 	"$REPO/scripts/archinstall/install-encrypted" || exit 1
 
-	if confirm "Open a shell in the new system to create users? (exit when done)"; then
+	if confirm "Open a shell in the new system? (exit when done)"; then
 		arch-chroot /mnt
 	fi
 	if confirm "Reboot into the new system?"; then

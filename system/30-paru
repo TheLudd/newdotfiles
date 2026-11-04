@@ -1,0 +1,10 @@
+#!/bin/bash
+# Build and install paru from the AUR (over https, no ssh key needed).
+set -euo pipefail
+command -v paru >/dev/null && exit 0
+command -v cargo >/dev/null || { echo "cargo is not available (system/20-rustup)"; exit 1; }
+
+src="$HOME/code/paru"
+lib/clone "$src" https://aur.archlinux.org/paru.git
+cd "$src"
+makepkg -si --needed --noconfirm

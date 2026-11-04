@@ -1,0 +1,5 @@
+#!/bin/bash
+# docker without sudo, and zsh as login shell. Both apply from the next login.
+set -euo pipefail
+id -nG "$USER" | grep -qw docker || sudo usermod -aG docker "$USER"
+[[ $(getent passwd "$USER" | cut -d: -f7) == /bin/zsh ]] || sudo usermod -s /bin/zsh "$USER"

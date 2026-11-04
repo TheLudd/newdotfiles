@@ -1,0 +1,9 @@
+#!/bin/bash
+# Create the ed25519 key used for GitHub; ssh-keygen asks for a passphrase.
+# The agent started by zsh picks it up on first use (AddKeysToAgent in
+# lib/ssh-config).
+set -euo pipefail
+key="$HOME/.ssh/id_ed25519"
+[[ -f $key ]] && exit 0
+install -d -m 700 "$HOME/.ssh"
+ssh-keygen -t ed25519 -f "$key" -C "$USER@$(uname -n)"

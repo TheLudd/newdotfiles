@@ -1,0 +1,4 @@
+#!/bin/bash
+# XDG paths and ZDOTDIR for every user's zsh; applies from the next login.
+set -euo pipefail
+sudo install -m 644 lib/zshenv /etc/zsh/zshenv

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Link each app folder in config/ into ~/.config, replacing what is there.
+set -euo pipefail
+mkdir -p "$HOME/.config"
+for path in config/*; do
+	destination="$HOME/.config/$(basename "$path")"
+	[[ $(readlink "$destination") == "$PWD/$path" ]] && continue
+	echo "link $destination"
+	rm -rf "$destination"
+	ln -sfn "$PWD/$path" "$destination"
+done

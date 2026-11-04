@@ -1,0 +1,7 @@
+#!/bin/bash
+# Give rustup a default toolchain: paru and truetm are built with cargo.
+# RUSTUP_HOME comes from config/zsh/exports.zsh (exported by run-all), so the
+# toolchain lands where the login shell looks for it.
+set -euo pipefail
+command -v rustup >/dev/null || { echo "rustup is not installed (system/10-packages)"; exit 1; }
+rustup default >/dev/null 2>&1 || rustup default stable

@@ -4,56 +4,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) maintained as git submodules in `sources/`.
+Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) and truetm live in their own repos, cloned into `~/code/<name>` and installed system-wide (see `repos`).
 
 ## Commands
 
-### Full installation from scratch
+### Set up a machine
+Four phases, each run by hand from the repo (cloned over https):
 ```bash
-bash init
+./init system        # once per machine, as the first user (sudo)
+./init user          # once per user
+                     # log out and back in
+./init user-login    # once per user: ssh key, gh login, key upload
+./init apps margin   # optional apps; `./init apps` lists them
 ```
-
-### Run installation scripts only
-```bash
-bash run-all installs
-```
-
-### Run setup/symlink scripts only
-```bash
-bash run-all setups
-```
+A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
 
 ### Recompile suckless tools after changes
 ```bash
-cd sources/dwm && sudo make clean install
-cd sources/st && sudo make clean install
+cd ~/code/dwm && make && sudo make install
+cd ~/code/st && make && sudo make install
 ```
 
 ### Install system packages
 ```bash
-sudo pacman -S - < packages
-paru -S - < paru-packages
+sudo pacman -S --needed - < packages
+xargs -a paru-packages paru -S --needed
 ```
 
 ## Architecture
 
 ### Directory Structure
 
-- **`init`** - Main entry point, initializes submodules and runs installs + setups
-- **`run-all`** - Executes all scripts in a given folder (e.g., `run-all installs`)
-- **`installs/`** - Installation scripts (paru, fonts, compile sources)
-- **`setups/`** - Post-install configuration (symlinks, locale, services, ssh)
-- **`sources/`** - Git submodules for suckless tools (dwm, st, dvtm, dmenu, dwmblocks)
+- **`init`** - Entry point: `init system | user | user-login | apps [name...]`
+- **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), or only the named ones. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
+- **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
+- **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`
+- **`user-login/`** - Once per user after the relogin: ed25519 key, `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
+- **`apps/`** - Optional per-user apps, one script per app (`margin`)
+- **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
+- **`lib/clone`** - Clone a repo if missing and set its origin
 - **`config/`** - Application configs, symlinked to `~/.config/`
-- **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `setups/claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
+- **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `user/10-link-claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
 - **`bin/`** - User scripts, symlinked to `~/bin/`
-- **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `setups/services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
+- **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
 - **`autorandr/`** - Monitor profiles with postswitch hooks, plus `hotplug.rules` and `autorandr-hotplug.service`: DRM hotplug events run autorandr through a unit that first sleeps 3s so a USB-C monitor's link renegotiation has finished before the mode is set. Resume still runs the package's `autorandr.service` directly.
-- **`scripts/archinstall/`** - Fresh Arch Linux installation scripts
+- **`scripts/archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user`, which also adds later users; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
 
 ### Configuration Management
 
-Uses direct symlinking via shell scripts (no stow/chezmoi). The `setups/config` script symlinks each app directory in `config/` to `~/.config/`.
+Uses direct symlinking via shell scripts (no stow/chezmoi). `user/10-link-config` symlinks each app directory in `config/` to `~/.config/`.
 
 ### Neovim Setup
 
@@ -77,10 +76,10 @@ Audio runs on PipeWire + WirePlumber. `bin/hp` / `bin/hs` switch the headset bet
 ### margin (markdown reader/editor)
 
 margin lives in its own repo at `~/code/margin`. It serves the markdown files in the folders listed in `~/.config/margin/config.json` (untracked, edited from margin's settings screen) at http://margin.local for reading and inline editing. Here it is wired up by:
-- `installs/margin`: runs `make install` in `~/code/margin`, installing to `~/.local/bin/margin`, and restarts the service
-- `config/systemd/user/margin.service`: a user service listening on 127.0.0.1:48217 (`-host margin.local` lets it accept that name), enabled through `default.target.wants`
-- `nginx/margin.conf` + `setups/nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
-- `setups/hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
+- `apps/margin` (`init apps margin`): clones `~/code/margin` if missing, runs `make install` there, installing to `~/.local/bin/margin`, and restarts the service
+- `config/systemd/user/margin.service`: a user service listening on 127.0.0.1:48217 (`-host margin.local` lets it accept that name), enabled through `default.target.wants` for every user and started only for users who have the binary (`ConditionPathExists`)
+- `nginx/margin.conf` + `system/60-nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
+- `system/60-hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
 
 ### Zsh Configuration
 
@@ -90,7 +89,7 @@ Modular setup in `config/zsh/`:
 
 ### Suckless Customization
 
-Custom patches applied to submodules in `sources/`. After modifying source:
+Custom patches live in the forks in `~/code/<name>`. After modifying source:
 1. Edit the C source or config.h
-2. Run `sudo make clean install` in the source directory
+2. Run `make && sudo make install` in the source directory
 3. Restart the application (for dwm: `Mod+Shift+Q` or use autorandr postswitch hook)

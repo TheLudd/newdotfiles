@@ -1,0 +1,18 @@
+#!/bin/bash
+# Log gh in and upload the ssh key with one login: admin:public_key is
+# requested up front, since without it `gh ssh-key add` fails and asks for
+# another login. Runs after the relogin so gh stores its token in the keyring.
+# The login shows a code to approve on github.com/login/device, e.g. on a phone.
+set -euo pipefail
+key="$HOME/.ssh/id_ed25519.pub"
+[[ -f $key ]] || { echo "$key is missing (user-login/10-ssh-key)"; exit 1; }
+
+if ! gh auth status -h github.com >/dev/null 2>&1; then
+	gh auth login -h github.com -p ssh -s admin:public_key -w --skip-ssh-key
+elif ! gh auth status -h github.com 2>&1 | grep -q admin:public_key; then
+	gh auth refresh -h github.com -s admin:public_key
+fi
+
+if ! gh api user/keys --jq '.[].key' | grep -qF "$(cut -d' ' -f2 "$key")"; then
+	gh ssh-key add "$key" -t "$USER@$(uname -n)"
+fi

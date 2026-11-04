@@ -1,5 +1,6 @@
 [Unit]
 Description=margin, markdown reader/editor (http://margin.local)
+ConditionPathExists=%h/.local/bin/margin
 
 [Service]
 ExecStart=%h/.local/bin/margin -host margin.local
