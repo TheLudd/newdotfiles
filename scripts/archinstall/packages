@@ -1,9 +1,0 @@
-#!/bin/bash
-# Enable parallel downloads in pacman
-sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
-
-# Get the directory two levels up from the script
-package_file="$(realpath "$(dirname "$0")/../../packages")"
-
-# Run pacman with the package file and no confirmation
-xargs -a "$package_file" sudo pacman -S --noconfirm

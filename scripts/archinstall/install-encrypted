@@ -1,0 +1,121 @@
+#!/bin/bash
+# Install Arch on a fully encrypted system disk plus an encrypted data disk.
+# Run from the Arch ISO as root, from a clone of this repo.
+#
+#   system disk: 1G EFI (/boot), LUKS root (/, with /swapfile), LUKS home (/home)
+#   data disk:   LUKS data (/data)
+#
+# One passphrase unlocks root at boot. Home and data unlock from keyfiles kept
+# on the encrypted root; the passphrase is also added to them for recovery.
+#
+# Usage: install-encrypted <system-disk> <data-disk>
+#   Pass disks as /dev/disk/by-id/... paths: /dev/nvme0n1 and /dev/nvme1n1
+#   can swap places between boots.
+set -euo pipefail
+
+ROOT_SIZE=512GiB
+SWAP_SIZE=8G
+KEYMAP=sv-latin1
+HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
+
+if [ "$#" -ne 2 ]; then
+	echo "Usage: $0 <system-disk> <data-disk>"
+	ls -l /dev/disk/by-id/ | grep -v -- -part
+	exit 1
+fi
+
+SYSTEM_DISK=$(realpath "$1")
+DATA_DISK=$(realpath "$2")
+PACKAGES="$(realpath "$(dirname "$0")/../../packages")"
+
+if [ "$SYSTEM_DISK" = "$DATA_DISK" ]; then
+	echo "System and data disk are the same device"
+	exit 1
+fi
+
+lsblk -o NAME,SIZE,MODEL,FSTYPE,MOUNTPOINTS "$SYSTEM_DISK" "$DATA_DISK"
+echo
+echo "System disk: $SYSTEM_DISK"
+echo "Data disk:   $DATA_DISK"
+read -rp "Erase BOTH disks? Type 'erase' to continue: " answer
+[ "$answer" = "erase" ] || exit 1
+
+# The passphrase is typed at boot with this keymap, so type it with the same one now
+loadkeys "$KEYMAP"
+read -rsp "Disk passphrase: " PASSPHRASE; echo
+read -rsp "Repeat passphrase: " repeat; echo
+[ "$PASSPHRASE" = "$repeat" ] || { echo "Passphrases differ"; exit 1; }
+
+case "$(grep -m1 vendor_id /proc/cpuinfo)" in
+	*AuthenticAMD*) VENDOR_PACKAGES="amd-ucode vulkan-radeon" ;;
+	*GenuineIntel*) VENDOR_PACKAGES="intel-ucode vulkan-intel intel-media-driver" ;;
+	*) VENDOR_PACKAGES="" ;;
+esac
+
+part() { echo "/dev/disk/by-partlabel/$1"; }
+
+luks_format_open() {
+	printf '%s' "$PASSPHRASE" | cryptsetup luksFormat -q --key-file=- "$1"
+	printf '%s' "$PASSPHRASE" | cryptsetup open --key-file=- "$1" "$2"
+	mkfs.ext4 -q "/dev/mapper/$2"
+}
+
+add_keyfile() {
+	local key="/mnt/etc/cryptsetup-keys.d/$2.key"
+	install -d -m 700 /mnt/etc/cryptsetup-keys.d
+	dd if=/dev/urandom of="$key" bs=512 count=8 status=none
+	chmod 400 "$key"
+	printf '%s' "$PASSPHRASE" | cryptsetup luksAddKey --key-file=- "$1" "$key"
+	echo "$2 UUID=$(blkid -s UUID -o value "$1") /etc/cryptsetup-keys.d/$2.key luks" >> /mnt/etc/crypttab
+}
+
+echo "Partitioning"
+wipefs -a "$SYSTEM_DISK" "$DATA_DISK"
+sfdisk -q "$SYSTEM_DISK" <<EOF
+label: gpt
+size=1GiB, type=U, name=arch-efi
+size=$ROOT_SIZE, type=L, name=arch-root
+type=L, name=arch-home
+EOF
+sfdisk -q "$DATA_DISK" <<EOF
+label: gpt
+type=L, name=arch-data
+EOF
+udevadm settle
+
+echo "Encrypting and formatting"
+mkfs.fat -F32 "$(part arch-efi)"
+luks_format_open "$(part arch-root)" root
+luks_format_open "$(part arch-home)" home
+luks_format_open "$(part arch-data)" data
+
+echo "Mounting"
+mount /dev/mapper/root /mnt
+mount --mkdir "$(part arch-efi)" /mnt/boot
+mount --mkdir /dev/mapper/home /mnt/home
+mount --mkdir /dev/mapper/data /mnt/data
+mkswap -q --size "$SWAP_SIZE" --file /mnt/swapfile
+swapon /mnt/swapfile
+
+echo "Installing packages"
+sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
+# shellcheck disable=SC2046,SC2086
+pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $VENDOR_PACKAGES $(cat "$PACKAGES")
+sed -i "/ParallelDownloads/ s/.*/ParallelDownloads = 7/" /mnt/etc/pacman.conf
+
+echo "Configuring boot"
+genfstab -U /mnt >> /mnt/etc/fstab
+add_keyfile "$(part arch-home)" home
+add_keyfile "$(part arch-data)" data
+echo "KEYMAP=$KEYMAP" > /mnt/etc/vconsole.conf
+sed -i "s/^HOOKS=.*/$HOOKS/" /mnt/etc/mkinitcpio.conf
+arch-chroot /mnt mkinitcpio -P
+
+ROOT_UUID=$(blkid -s UUID -o value "$(part arch-root)")
+sed -i "s|^GRUB_CMDLINE_LINUX=\".*\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$ROOT_UUID=root root=/dev/mapper/root\"|" /mnt/etc/default/grub
+arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot /mnt systemctl enable NetworkManager fstrim.timer
+
+echo
+echo "Installed. Next, in arch-chroot /mnt: passwd, set-hostname, add-user, locale."

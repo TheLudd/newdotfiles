@@ -31,10 +31,12 @@ libxinerama
 make
 man-db
 man-pages
+mesa
 mplayer
 neovim
 networkmanager
 network-manager-applet
+nginx
 nodejs
 noto-fonts-emoji
 openssh
@@ -46,6 +48,7 @@ pipewire
 pipewire-audio
 pipewire-pulse
 pkg-config
+pnpm
 python3
 python-neovim
 python-pip
@@ -75,7 +78,6 @@ wget
 xclip
 xdotool
 xf86-input-libinput
-xf86-video-nouveau
 xorg-server
 xorg-server-devel
 xorg-setxkbmap
