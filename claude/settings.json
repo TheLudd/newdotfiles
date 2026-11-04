@@ -99,5 +99,6 @@
   "tui": "fullscreen",
   "editorMode": "vim",
   "switchModelsOnFlag": false,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "theme": "dark"
 }
