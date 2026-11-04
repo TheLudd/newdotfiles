@@ -1,0 +1,11 @@
+[Unit]
+Description=Reset bluetooth headset audio left cut off by another device
+After=pipewire-pulse.service wireplumber.service
+
+[Service]
+ExecStart=%h/bin/bt-audio-watch
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

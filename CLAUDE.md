@@ -70,6 +70,10 @@ Located in `config/nvim/` with Lua configuration:
 
 `bin/dictation-stream` is a streaming speech-to-text daemon: NVIDIA Nemotron 3.5 streaming ASR run on the CPU through sherpa-onnx (installed in the pip venv at `~/.local/share/pip-venv`, see `pip-packages`), typing word by word into the focused window with xdotool. `bin/dictation-toggle` (dwm `Mod+V`) starts/stops it and `bin/dictation-status` feeds the dwmblocks indicator. The model lives in `~/.local/share/dictation/models` and is fetched by `dictation-stream install-model` from `bin/setup-extras`. `config/dictation/replacements.txt` holds "heard => wanted" fixes for words the model mishears; sherpa-onnx only offers greedy decoding for NeMo streaming models, so hotword boosting is not available.
 
+### Bluetooth headset audio
+
+Audio runs on PipeWire + WirePlumber. `bin/hp` / `bin/hs` switch the headset between A2DP and headset (mic) profile; they disable WirePlumber's `linking.pause-playback` around the switch, since the switch removes the sink and WirePlumber would otherwise pause media players over MPRIS. When a phone on the same multipoint headset takes it over, the browser's stream is left cut off from the sink: `bin/bt-audio-watch` (user service `bt-audio-watch.service`) listens to `pactl subscribe` and runs `bin/bt-audio-reset` (profile off and back) when a bluez sink has a playing stream but is not running, retrying with backoff while the phone holds the headset.
+
 ### margin (markdown reader/editor)
 
 margin lives in its own repo at `~/code/margin`. It serves the markdown files in the folders listed in `~/.config/margin/config.json` (untracked, edited from margin's settings screen) at http://margin.local for reading and inline editing. Here it is wired up by:

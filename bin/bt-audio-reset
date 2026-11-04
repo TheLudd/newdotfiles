@@ -1,0 +1,17 @@
+#!/bin/bash
+# Rebuilds a bluetooth headset's audio output by switching its card off and back
+# to the active profile. Reconnects streams left cut off after the headset was
+# taken over by another device (e.g. a phone call).
+# Usage: bt-audio-reset [bluez_card.XX_XX_XX_XX_XX_XX]
+card=${1:-$(pactl list short cards | awk '/bluez_card/ {print $2; exit}')}
+[ -n "$card" ] || exit 1
+
+profile=$(pactl -f json list cards | jq -r --arg c "$card" '.[] | select(.name == $c) | .active_profile')
+[ -n "$profile" ] && [ "$profile" != off ] || exit 1
+
+# a profile switch removes the sink; keep WirePlumber from pausing players on that
+wpctl settings linking.pause-playback false >/dev/null
+pactl set-card-profile "$card" off
+pactl set-card-profile "$card" "$profile"
+sleep 1
+wpctl settings linking.pause-playback true >/dev/null

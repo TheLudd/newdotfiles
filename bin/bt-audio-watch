@@ -1,0 +1,50 @@
+#!/bin/bash
+# Resets a bluetooth headset output that has a playing stream but is not running,
+# which is what is left after another device (phone) took the headset over.
+# Checks only after sink/stream/card changes, and retries with backoff while the
+# headset stays taken (e.g. during a call).
+settle=3
+max_backoff=60
+
+stuck_card() {
+  # prints the card of a bluez sink that has an uncorked stream but is not RUNNING
+  local sinks inputs
+  sinks=$(pactl -f json list sinks)
+  inputs=$(pactl -f json list sink-inputs)
+  jq -rn --argjson sinks "$sinks" --argjson inputs "$inputs" '
+    [$inputs[] | select(.corked == false) | .sink] as $playing
+    | $sinks[]
+    | select(.name | startswith("bluez_output."))
+    | select(.state != "RUNNING")
+    | select(.index as $i | $playing | index($i))
+    | "bluez_card." + (.name | split(".")[1])
+  ' | head -1
+}
+
+coproc events { pactl subscribe | grep --line-buffered -E "on (sink|sink-input|card) "; }
+
+deadline=0
+backoff=5
+while true; do
+  if (( deadline )); then
+    wait_for=$(( deadline - SECONDS ))
+    (( wait_for < 1 )) && wait_for=1
+    read -r -t "$wait_for" line <&"${events[0]}"
+  else
+    read -r line <&"${events[0]}" || exit 1
+  fi
+  [ -n "$line" ] && (( ! deadline )) && deadline=$(( SECONDS + settle ))
+  line=
+  (( deadline && SECONDS >= deadline )) || continue
+
+  card=$(stuck_card)
+  if [ -z "$card" ]; then
+    deadline=0
+    backoff=5
+  else
+    echo "resetting $card"
+    "$HOME/bin/bt-audio-reset" "$card"
+    deadline=$(( SECONDS + backoff ))
+    backoff=$(( backoff * 2 > max_backoff ? max_backoff : backoff * 2 ))
+  fi
+done
