@@ -8,9 +8,11 @@
 # One passphrase unlocks root at boot. Home and data unlock from keyfiles kept
 # on the encrypted root; the passphrase is also added to them for recovery.
 #
-# Usage: install-encrypted <system-disk> <data-disk>
-#   Pass disks as /dev/disk/by-id/... paths: /dev/nvme0n1 and /dev/nvme1n1
-#   can swap places between boots.
+# The root account is locked: use sudo from your own user.
+#
+# Usage: install-encrypted [<system-disk> <data-disk>]
+#   Without arguments it uses the two internal (non-USB) disks: the smaller
+#   as system disk, the larger as data disk.
 set -euo pipefail
 
 ROOT_SIZE=512GiB
@@ -18,14 +20,29 @@ SWAP_SIZE=8G
 KEYMAP=sv-latin1
 HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
 
-if [ "$#" -ne 2 ]; then
-	echo "Usage: $0 <system-disk> <data-disk>"
-	ls -l /dev/disk/by-id/ | grep -v -- -part
+# Internal disks, smallest first
+internal_disks() {
+	lsblk -dnpbo NAME,SIZE,TRAN,TYPE |
+		awk '$4 == "disk" && $3 != "usb" && $1 !~ /zram/ { print $2, $1 }' |
+		sort -n | cut -d' ' -f2
+}
+
+if [ "$#" -eq 2 ]; then
+	SYSTEM_DISK=$(realpath "$1")
+	DATA_DISK=$(realpath "$2")
+elif [ "$#" -eq 0 ]; then
+	mapfile -t disks < <(internal_disks)
+	if [ "${#disks[@]}" -ne 2 ]; then
+		echo "Expected 2 internal disks, found ${#disks[@]}: ${disks[*]}"
+		echo "Pass them explicitly: $0 <system-disk> <data-disk>"
+		exit 1
+	fi
+	SYSTEM_DISK=${disks[0]}
+	DATA_DISK=${disks[1]}
+else
+	echo "Usage: $0 [<system-disk> <data-disk>]"
 	exit 1
 fi
-
-SYSTEM_DISK=$(realpath "$1")
-DATA_DISK=$(realpath "$2")
 PACKAGES="$(realpath "$(dirname "$0")/../../packages")"
 
 if [ "$SYSTEM_DISK" = "$DATA_DISK" ]; then
@@ -39,6 +56,9 @@ echo "System disk: $SYSTEM_DISK"
 echo "Data disk:   $DATA_DISK"
 read -rp "Erase BOTH disks? Type 'erase' to continue: " answer
 [ "$answer" = "erase" ] || exit 1
+
+read -rp "Hostname: " NEW_HOSTNAME
+[ -n "$NEW_HOSTNAME" ] || { echo "Hostname is required"; exit 1; }
 
 # The passphrase is typed at boot with this keymap, so type it with the same one now
 loadkeys "$KEYMAP"
@@ -117,5 +137,8 @@ arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootlo
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 arch-chroot /mnt systemctl enable NetworkManager fstrim.timer
 
+echo "$NEW_HOSTNAME" > /mnt/etc/hostname
+arch-chroot /mnt passwd -l root
+
 echo
-echo "Installed. Next, in arch-chroot /mnt: passwd, set-hostname, add-user, locale."
+echo "Installed. Create your users in 'arch-chroot /mnt', then reboot."
