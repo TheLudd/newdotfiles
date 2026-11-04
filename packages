@@ -11,6 +11,7 @@ difftastic
 discord
 docker
 docker-buildx
+docker-compose
 dosfstools
 dunst
 fakeroot
