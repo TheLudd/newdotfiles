@@ -1,0 +1,73 @@
+#!/bin/bash
+# Guided install from the Arch live USB. The stick's "Install with dotfiles"
+# boot entry mounts the DOTFILES partition at /run/dotfiles and runs this on
+# tty1 (archiso's script= parameter). Answering no at any step leaves you at
+# the live shell.
+set -uo pipefail
+
+REPO=/run/dotfiles/newdotfiles
+KEYMAP=sv-latin1
+
+confirm() {
+	local answer
+	read -rp "$1 [Y/n] " answer
+	[[ -z "$answer" || "$answer" =~ ^[Yy] ]]
+}
+
+online() { ping -c1 -W3 archlinux.org &>/dev/null; }
+
+wait_for_network() {
+	local i
+	for i in {1..10}; do
+		online && return 0
+		sleep 2
+	done
+	return 1
+}
+
+connect_wifi() {
+	local device ssid passphrase
+	device=$(iw dev | awk '$1 == "Interface" { print $2; exit }')
+	[ -n "$device" ] || { echo "No wifi device found"; return 1; }
+	iwctl station "$device" scan
+	sleep 3
+	iwctl station "$device" get-networks
+	read -rp "Network name: " ssid
+	read -rsp "Password: " passphrase; echo
+	iwctl --passphrase "$passphrase" station "$device" connect "$ssid"
+	wait_for_network
+}
+
+setup_network() {
+	echo "Checking network..."
+	wait_for_network && { echo "Online"; return 0; }
+	echo "No network. Plug in a cable, or connect to wifi."
+	while ! online; do
+		confirm "Connect to wifi?" || return 1
+		connect_wifi || echo "Not connected"
+	done
+	echo "Online"
+}
+
+main() {
+	loadkeys "$KEYMAP"
+	echo "Keyboard: $KEYMAP"
+	[ -d "$REPO" ] || { echo "$REPO not found: is the DOTFILES partition mounted?"; exit 1; }
+
+	setup_network || exit 1
+	# The live system initialises the pacman keyring at boot; pacstrap needs it done
+	systemctl start pacman-init.service
+
+	confirm "Start the install?" || exit 0
+	"$REPO/scripts/archinstall/install-encrypted" || exit 1
+
+	if confirm "Open a shell in the new system to create users? (exit when done)"; then
+		arch-chroot /mnt
+	fi
+	if confirm "Reboot into the new system?"; then
+		umount -R /mnt
+		reboot
+	fi
+}
+
+main

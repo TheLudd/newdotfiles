@@ -1,0 +1,54 @@
+#!/bin/bash
+# Put this repo on an Arch install USB (written with create-usb) and add a
+# boot entry that runs the guided install (live-install) on boot.
+# Running it again updates the repo on the stick.
+#
+#   DOTFILES partition: ext4 in the free space after the ISO, holds a clone
+#   ARCHISO_EFI:        gets loader/entries/00-dotfiles-install.conf as default
+#
+# Usage: add-dotfiles-to-usb <usb-device>
+set -euo pipefail
+
+[ "$#" -eq 1 ] || { echo "Usage: $0 <usb-device>"; exit 1; }
+USB=$1
+REPO="$(realpath "$(dirname "$0")/../..")"
+MOUNT=/run/dotfiles
+ENTRY=00-dotfiles-install.conf
+
+[ "$(lsblk -dno TRAN "$USB")" = "usb" ] || { echo "$USB is not a USB disk"; exit 1; }
+
+dotfiles_part() { lsblk -lnpo NAME,LABEL "$USB" | awk '$2 == "DOTFILES" { print $1 }'; }
+
+if [ -z "$(dotfiles_part)" ]; then
+	echo "Adding DOTFILES partition"
+	echo 'type=83' | sudo sfdisk -q --append "$USB"
+	sudo partprobe "$USB"
+	udevadm settle
+	part=$(lsblk -lnpo NAME,TYPE "$USB" | awk '$2 == "part" { p = $1 } END { print p }')
+	sudo mkfs.ext4 -q -L DOTFILES "$part"
+	udevadm settle
+fi
+
+echo "Copying dotfiles"
+sudo mount --mkdir "$(dotfiles_part)" "$MOUNT"
+if [ -d "$MOUNT/newdotfiles" ]; then
+	sudo git -C "$MOUNT/newdotfiles" pull -q "$REPO" master
+else
+	sudo git clone -q "$REPO" "$MOUNT/newdotfiles"
+	sudo git -C "$MOUNT/newdotfiles" remote set-url origin https://github.com/TheLudd/newdotfiles.git
+fi
+sudo git -C "$MOUNT/newdotfiles" log --oneline -1
+sudo umount "$MOUNT"
+
+echo "Adding boot entry"
+efi=$(lsblk -lnpo NAME,LABEL "$USB" | awk '$2 == "ARCHISO_EFI" { print $1 }')
+sudo mount --mkdir "$efi" "$MOUNT"
+entries="$MOUNT/loader/entries"
+sudo sed \
+	-e 's/^title .*/title    Arch Linux install with dotfiles (guided)/' \
+	-e 's/^sort-key .*/sort-key 00/' \
+	-e "/^options/ s|\$| systemd.mount-extra=LABEL=DOTFILES:$MOUNT:ext4 script=$MOUNT/newdotfiles/scripts/archinstall/live-install|" \
+	"$entries/01-archiso-linux.conf" | sudo tee "$entries/$ENTRY" > /dev/null
+sudo sed -i "s/^default .*/default $ENTRY/" "$MOUNT/loader/loader.conf"
+cat "$entries/$ENTRY"
+sudo umount "$MOUNT"

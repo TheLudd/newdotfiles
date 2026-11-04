@@ -16,7 +16,7 @@ MAX_DEFAULT_ROOT_GIB=512
 SWAP_SIZE=8G
 KEYMAP=sv-latin1
 HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
-PACKAGES="$(realpath "$(dirname "${BASH_SOURCE[0]}")/../../packages")"
+PACKAGES="$(cat "$(dirname "${BASH_SOURCE[0]}")/../../packages")"
 
 die() { echo "$*" >&2; exit 1; }
 
@@ -175,7 +175,7 @@ install_packages() {
 	echo "Installing packages"
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
 	# shellcheck disable=SC2046
-	pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $(vendor_packages) $(cat "$PACKAGES")
+	pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $(vendor_packages) $PACKAGES
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /mnt/etc/pacman.conf
 }
 
