@@ -1,76 +1,125 @@
 #!/bin/bash
-# Install Arch on a fully encrypted system disk plus an encrypted data disk.
-# Run from the Arch ISO as root, from a clone of this repo.
+# Install Arch on encrypted disks. Run from the Arch ISO as root, from a clone
+# of this repo. It asks which disk is which and how large root should be:
 #
 #   system disk: 1G EFI (/boot), LUKS root (/, with /swapfile), LUKS home (/home)
-#   data disk:   LUKS data (/data)
+#   data disk:   LUKS data (/data), only when a second disk is chosen
 #
 # One passphrase unlocks root at boot. Home and data unlock from keyfiles kept
 # on the encrypted root; the passphrase is also added to them for recovery.
-#
 # The root account is locked: use sudo from your own user.
-#
-# Usage: install-encrypted [<system-disk> <data-disk>]
-#   Without arguments it uses the two internal (non-USB) disks: the smaller
-#   as system disk, the larger as data disk.
 set -euo pipefail
 
-ROOT_SIZE=512GiB
+EFI_GIB=1
+MIN_HOME_GIB=32
+MAX_DEFAULT_ROOT_GIB=512
 SWAP_SIZE=8G
 KEYMAP=sv-latin1
 HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
+PACKAGES="$(realpath "$(dirname "${BASH_SOURCE[0]}")/../../packages")"
 
-# Internal disks, smallest first
+die() { echo "$*" >&2; exit 1; }
+
+# Internal disks (no USB, zram or optical), smallest first
 internal_disks() {
 	lsblk -dnpbo NAME,SIZE,TRAN,TYPE |
 		awk '$4 == "disk" && $3 != "usb" && $1 !~ /zram/ { print $2, $1 }' |
 		sort -n | cut -d' ' -f2
 }
 
-if [ "$#" -eq 2 ]; then
-	SYSTEM_DISK=$(realpath "$1")
-	DATA_DISK=$(realpath "$2")
-elif [ "$#" -eq 0 ]; then
-	mapfile -t disks < <(internal_disks)
-	if [ "${#disks[@]}" -ne 2 ]; then
-		echo "Expected 2 internal disks, found ${#disks[@]}: ${disks[*]}"
-		echo "Pass them explicitly: $0 <system-disk> <data-disk>"
-		exit 1
+disk_gib() { echo $(( $(lsblk -dnbo SIZE "$1") / 1024 ** 3 )); }
+
+# Root gets 60% of the system disk, at most MAX_DEFAULT_ROOT_GIB
+default_root_gib() {
+	local gib=$(( $1 * 60 / 100 ))
+	echo $(( gib < MAX_DEFAULT_ROOT_GIB ? gib : MAX_DEFAULT_ROOT_GIB ))
+}
+
+# ask_number <prompt> <default> <min> <max>: asks until the answer is in range
+ask_number() {
+	local answer
+	while true; do
+		read -rp "$1 [$2]: " answer
+		answer=${answer:-$2}
+		if [[ "$answer" =~ ^[0-9]+$ ]] && (( answer >= $3 && answer <= $4 )); then
+			echo "$answer"
+			return
+		fi
+		echo "Enter a number from $3 to $4" >&2
+	done
+}
+
+list_disks() {
+	local i=1 disk
+	for disk in "${DISKS[@]}"; do
+		printf '  %d) %-16s %6s  %s\n' "$i" "$disk" \
+			"$(lsblk -dno SIZE "$disk" | tr -d ' ')" "$(lsblk -dno MODEL "$disk")"
+		i=$(( i + 1 ))
+	done
+}
+
+choose_disks() {
+	local count=${#DISKS[@]} system data default_data
+	(( count > 0 )) || die "No internal disks found"
+	echo "Disks:"
+	list_disks
+
+	system=1
+	if (( count > 1 )); then
+		system=$(ask_number "System disk (/boot, /, /home)" 1 1 "$count")
 	fi
-	SYSTEM_DISK=${disks[0]}
-	DATA_DISK=${disks[1]}
-else
-	echo "Usage: $0 [<system-disk> <data-disk>]"
-	exit 1
-fi
-PACKAGES="$(realpath "$(dirname "$0")/../../packages")"
+	SYSTEM_DISK=${DISKS[system - 1]}
 
-if [ "$SYSTEM_DISK" = "$DATA_DISK" ]; then
-	echo "System and data disk are the same device"
-	exit 1
-fi
+	DATA_DISK=""
+	if (( count > 1 )); then
+		default_data=$(( system == 1 ? 2 : 1 ))
+		while true; do
+			data=$(ask_number "Data disk (/data), 0 for none" "$default_data" 0 "$count")
+			(( data != system )) && break
+			echo "That is the system disk" >&2
+		done
+		if (( data > 0 )); then DATA_DISK=${DISKS[data - 1]}; fi
+	fi
+}
 
-lsblk -o NAME,SIZE,MODEL,FSTYPE,MOUNTPOINTS "$SYSTEM_DISK" "$DATA_DISK"
-echo
-echo "System disk: $SYSTEM_DISK"
-echo "Data disk:   $DATA_DISK"
-read -rp "Erase BOTH disks? Type 'erase' to continue: " answer
-[ "$answer" = "erase" ] || exit 1
+choose_root_size() {
+	local disk=$1 total
+	total=$(disk_gib "$disk")
+	echo "$disk is $total GiB. /home gets what is left after /boot and /."
+	ROOT_GIB=$(ask_number "Root size in GiB" "$(default_root_gib "$total")" \
+		32 $(( total - EFI_GIB - MIN_HOME_GIB )))
+	HOME_GIB=$(( total - EFI_GIB - ROOT_GIB ))
+}
 
-read -rp "Hostname: " NEW_HOSTNAME
-[ -n "$NEW_HOSTNAME" ] || { echo "Hostname is required"; exit 1; }
+print_plan() {
+	echo
+	echo "System disk $SYSTEM_DISK"
+	printf '  %6s GiB  /boot  EFI\n' "$EFI_GIB"
+	printf '  %6s GiB  /      encrypted, %s swap file\n' "$ROOT_GIB" "$SWAP_SIZE"
+	printf '  %6s GiB  /home  encrypted\n' "$HOME_GIB"
+	if [ -n "$DATA_DISK" ]; then
+		echo "Data disk $DATA_DISK"
+		printf '  %6s GiB  /data  encrypted\n' "$(disk_gib "$DATA_DISK")"
+	fi
+	echo "Hostname: $NEW_HOSTNAME"
+	echo
+}
 
-# The passphrase is typed at boot with this keymap, so type it with the same one now
-loadkeys "$KEYMAP"
-read -rsp "Disk passphrase: " PASSPHRASE; echo
-read -rsp "Repeat passphrase: " repeat; echo
-[ "$PASSPHRASE" = "$repeat" ] || { echo "Passphrases differ"; exit 1; }
+ask_passphrase() {
+	local repeat
+	# The passphrase is typed at boot with this keymap, so type it with the same one now
+	loadkeys "$KEYMAP"
+	read -rsp "Disk passphrase: " PASSPHRASE; echo
+	read -rsp "Repeat passphrase: " repeat; echo
+	[ "$PASSPHRASE" = "$repeat" ] || die "Passphrases differ"
+}
 
-case "$(grep -m1 vendor_id /proc/cpuinfo)" in
-	*AuthenticAMD*) VENDOR_PACKAGES="amd-ucode vulkan-radeon" ;;
-	*GenuineIntel*) VENDOR_PACKAGES="intel-ucode vulkan-intel intel-media-driver" ;;
-	*) VENDOR_PACKAGES="" ;;
-esac
+vendor_packages() {
+	case "$(grep -m1 vendor_id /proc/cpuinfo)" in
+		*AuthenticAMD*) echo "amd-ucode vulkan-radeon" ;;
+		*GenuineIntel*) echo "intel-ucode vulkan-intel intel-media-driver" ;;
+	esac
+}
 
 part() { echo "/dev/disk/by-partlabel/$1"; }
 
@@ -89,56 +138,89 @@ add_keyfile() {
 	echo "$2 UUID=$(blkid -s UUID -o value "$1") /etc/cryptsetup-keys.d/$2.key luks" >> /mnt/etc/crypttab
 }
 
-echo "Partitioning"
-wipefs -a "$SYSTEM_DISK" "$DATA_DISK"
-sfdisk -q "$SYSTEM_DISK" <<EOF
-label: gpt
-size=1GiB, type=U, name=arch-efi
-size=$ROOT_SIZE, type=L, name=arch-root
-type=L, name=arch-home
-EOF
-sfdisk -q "$DATA_DISK" <<EOF
-label: gpt
-type=L, name=arch-data
-EOF
-udevadm settle
+partition_and_mount() {
+	echo "Partitioning"
+	wipefs -a "$SYSTEM_DISK"
+	sfdisk -q "$SYSTEM_DISK" <<-EOF
+		label: gpt
+		size=${EFI_GIB}GiB, type=U, name=arch-efi
+		size=${ROOT_GIB}GiB, type=L, name=arch-root
+		type=L, name=arch-home
+	EOF
+	if [ -n "$DATA_DISK" ]; then
+		wipefs -a "$DATA_DISK"
+		sfdisk -q "$DATA_DISK" <<-EOF
+			label: gpt
+			type=L, name=arch-data
+		EOF
+	fi
+	udevadm settle
 
-echo "Encrypting and formatting"
-mkfs.fat -F32 "$(part arch-efi)"
-luks_format_open "$(part arch-root)" root
-luks_format_open "$(part arch-home)" home
-luks_format_open "$(part arch-data)" data
+	echo "Encrypting and formatting"
+	mkfs.fat -F32 "$(part arch-efi)"
+	luks_format_open "$(part arch-root)" root
+	luks_format_open "$(part arch-home)" home
+	[ -z "$DATA_DISK" ] || luks_format_open "$(part arch-data)" data
 
-echo "Mounting"
-mount /dev/mapper/root /mnt
-mount --mkdir "$(part arch-efi)" /mnt/boot
-mount --mkdir /dev/mapper/home /mnt/home
-mount --mkdir /dev/mapper/data /mnt/data
-mkswap -q --size "$SWAP_SIZE" --file /mnt/swapfile
-swapon /mnt/swapfile
+	echo "Mounting"
+	mount /dev/mapper/root /mnt
+	mount --mkdir "$(part arch-efi)" /mnt/boot
+	mount --mkdir /dev/mapper/home /mnt/home
+	[ -z "$DATA_DISK" ] || mount --mkdir /dev/mapper/data /mnt/data
+	mkswap -q --size "$SWAP_SIZE" --file /mnt/swapfile
+	swapon /mnt/swapfile
+}
 
-echo "Installing packages"
-sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
-# shellcheck disable=SC2046,SC2086
-pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $VENDOR_PACKAGES $(cat "$PACKAGES")
-sed -i "/ParallelDownloads/ s/.*/ParallelDownloads = 7/" /mnt/etc/pacman.conf
+install_packages() {
+	echo "Installing packages"
+	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
+	# shellcheck disable=SC2046
+	pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $(vendor_packages) $(cat "$PACKAGES")
+	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /mnt/etc/pacman.conf
+}
 
-echo "Configuring boot"
-genfstab -U /mnt >> /mnt/etc/fstab
-add_keyfile "$(part arch-home)" home
-add_keyfile "$(part arch-data)" data
-echo "KEYMAP=$KEYMAP" > /mnt/etc/vconsole.conf
-sed -i "s/^HOOKS=.*/$HOOKS/" /mnt/etc/mkinitcpio.conf
-arch-chroot /mnt mkinitcpio -P
+configure_system() {
+	local root_uuid
+	echo "Configuring boot"
+	genfstab -U /mnt >> /mnt/etc/fstab
+	add_keyfile "$(part arch-home)" home
+	[ -z "$DATA_DISK" ] || add_keyfile "$(part arch-data)" data
+	echo "KEYMAP=$KEYMAP" > /mnt/etc/vconsole.conf
+	sed -i "s/^HOOKS=.*/$HOOKS/" /mnt/etc/mkinitcpio.conf
+	arch-chroot /mnt mkinitcpio -P
 
-ROOT_UUID=$(blkid -s UUID -o value "$(part arch-root)")
-sed -i "s|^GRUB_CMDLINE_LINUX=\".*\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$ROOT_UUID=root root=/dev/mapper/root\"|" /mnt/etc/default/grub
-arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-arch-chroot /mnt systemctl enable NetworkManager fstrim.timer
+	root_uuid=$(blkid -s UUID -o value "$(part arch-root)")
+	sed -i "s|^GRUB_CMDLINE_LINUX=\".*\"|GRUB_CMDLINE_LINUX=\"rd.luks.name=$root_uuid=root root=/dev/mapper/root\"|" /mnt/etc/default/grub
+	arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+	arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+	arch-chroot /mnt systemctl enable NetworkManager fstrim.timer
 
-echo "$NEW_HOSTNAME" > /mnt/etc/hostname
-arch-chroot /mnt passwd -l root
+	echo "$NEW_HOSTNAME" > /mnt/etc/hostname
+	arch-chroot /mnt passwd -l root
+}
 
-echo
-echo "Installed. Create your users in 'arch-chroot /mnt', then reboot."
+main() {
+	local answer
+	mapfile -t DISKS < <(internal_disks)
+	choose_disks
+	choose_root_size "$SYSTEM_DISK"
+	read -rp "Hostname: " NEW_HOSTNAME
+	[ -n "$NEW_HOSTNAME" ] || die "Hostname is required"
+
+	print_plan
+	read -rp "Erase the disks above? Type 'erase' to continue: " answer
+	[ "$answer" = "erase" ] || exit 1
+	ask_passphrase
+
+	partition_and_mount
+	install_packages
+	configure_system
+
+	echo
+	echo "Installed. Create your users in 'arch-chroot /mnt', then reboot."
+}
+
+# Sourcing the file only loads the functions, so they can be tried out without installing
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	main
+fi
