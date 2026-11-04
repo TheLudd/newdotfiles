@@ -1,7 +1,3 @@
 #!/bin/bash
 card=$(pactl list short cards | awk '/bluez_card/ {print $2; exit}')
-# a profile switch removes the sink; keep WirePlumber from pausing players on that
-wpctl settings linking.pause-playback false >/dev/null
-pactl set-card-profile "$card" a2dp-sink 2>/dev/null || pactl set-card-profile "$card" a2dp_sink
-sleep 1
-wpctl settings linking.pause-playback true >/dev/null
+"$HOME/bin/bt-set-profile" "$card" a2dp-sink

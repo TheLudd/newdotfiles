@@ -1,0 +1,15 @@
+#!/bin/bash
+# Sets a bluetooth card's profiles in order without WirePlumber pausing media players.
+# A profile switch removes the sink, and WirePlumber's linking.pause-playback pauses
+# players (over MPRIS) whose sink is removed.
+# Usage: bt-set-profile <card> <profile>...
+card=$1
+shift
+[ -n "$card" ] && (( $# )) || { echo "usage: bt-set-profile <card> <profile>..." >&2; exit 1; }
+
+wpctl settings linking.pause-playback false >/dev/null
+trap 'sleep 1; wpctl settings linking.pause-playback true >/dev/null' EXIT
+
+for profile in "$@"; do
+  pactl set-card-profile "$card" "$profile" || exit 1
+done
