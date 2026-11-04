@@ -3,6 +3,16 @@
 # (download-pacman-upgrades.timer: weekly download of pending upgrades so
 # pup only has to install them).
 set -euo pipefail
+
+# The old setup linked these package units into /etc/systemd/system, which
+# makes systemctl fail on them ("Too many levels of symbolic links").
+# Enabling creates the links systemd needs.
+for unit in NetworkManager.service bluetooth.service; do
+	if [[ $(readlink "/etc/systemd/system/$unit") == "/usr/lib/systemd/system/$unit" ]]; then
+		sudo rm "/etc/systemd/system/$unit"
+	fi
+done
+
 for unit in download-pacman-upgrades.service download-pacman-upgrades.timer; do
 	sudo ln -sf "$PWD/systemd/$unit" "/etc/systemd/system/$unit"
 done

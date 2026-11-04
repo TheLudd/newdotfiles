@@ -1,13 +1,24 @@
 #!/bin/bash
 # Log gh in and upload the ssh key with one login: admin:public_key is
 # requested up front, since without it `gh ssh-key add` fails and asks for
-# another login. Runs after the relogin so gh stores its token in the keyring.
-# The login shows a code to approve on github.com/login/device, e.g. on a phone.
+# another login. Runs after the relogin so gh stores its token in the keyring,
+# which PAM creates and unlocks at login (system/60-pam-keyring). The login
+# opens the browser, or shows a code to approve on github.com/login/device.
 set -euo pipefail
 key="$HOME/.ssh/id_ed25519.pub"
 [[ -f $key ]] || { echo "$key is missing (user-login/10-ssh-key)"; exit 1; }
 
-if ! gh auth status -h github.com >/dev/null 2>&1; then
+logged_in() { gh auth status -h github.com >/dev/null 2>&1; }
+token_in_keyring() { gh auth status -h github.com 2>&1 | grep -q '(keyring)'; }
+keyring_ready() { [[ -f $XDG_DATA_HOME/keyrings/login.keyring ]]; }
+
+# A login made before the keyring existed keeps its token in hosts.yml as
+# plain text; logging in again moves it into the keyring.
+if logged_in && ! token_in_keyring && keyring_ready; then
+	gh auth logout -h github.com
+fi
+
+if ! logged_in; then
 	gh auth login -h github.com -p ssh -s admin:public_key -w --skip-ssh-key
 elif ! gh auth status -h github.com 2>&1 | grep -q admin:public_key; then
 	gh auth refresh -h github.com -s admin:public_key
