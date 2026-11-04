@@ -24,6 +24,9 @@ git-delta
 github-cli
 gnome-keyring
 go
+gst-plugin-pipewire
+gst-plugins-base
+gst-plugins-good
 hacksaw
 htop
 inotify-tools
