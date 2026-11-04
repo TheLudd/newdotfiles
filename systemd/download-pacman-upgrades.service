@@ -1,0 +1,11 @@
+[Unit]
+Description=Download pending pacman upgrades to the cache
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/nm-online -q -t 600
+ExecStart=/usr/bin/checkupdates -d
+# checkupdates exits 2 when there is nothing to upgrade
+SuccessExitStatus=2
+Restart=on-failure
+RestartSec=15min
