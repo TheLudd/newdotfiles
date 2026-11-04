@@ -1,2 +1,29 @@
 #!/bin/bash
-paru -S --needed --skipreview --noconfirm google-chrome; sudo systemctl restart launcher.kolide-k2.service
+# Updates google-chrome, then restarts kolide and chrome with its tabs restored.
+# Runs without a terminal: sudo must work without a password, otherwise it notifies and stops.
+
+stop () {
+	notify-send "cup" "$1"
+	exit 0
+}
+
+fail () {
+	notify-send --urgency=critical "cup failed" "$1"
+	exit 1
+}
+
+sudo -n true 2>/dev/null || stop "sudo needs a password"
+
+before=$(pacman -Q google-chrome 2>/dev/null)
+paru -S --needed --skipreview --noconfirm --sudoflags -n google-chrome || fail "paru could not update google-chrome"
+[ "$(pacman -Q google-chrome)" = "$before" ] && stop "no update available"
+
+pkill -TERM -x chrome
+while pgrep -x chrome >/dev/null; do sleep 0.2; done
+
+sudo -n systemctl restart launcher.kolide-k2.service || restartFailed=1
+
+setsid -f google-chrome-stable --restore-last-session >/dev/null 2>&1
+
+[ -n "$restartFailed" ] && fail "could not restart launcher.kolide-k2.service"
+exit 0
