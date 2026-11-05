@@ -97,8 +97,8 @@
   },
   "effortLevel": "high",
   "tui": "fullscreen",
+  "theme": "dark",
   "editorMode": "vim",
   "switchModelsOnFlag": false,
-  "skipAutoPermissionPrompt": true,
-  "theme": "dark"
+  "skipAutoPermissionPrompt": true
 }
