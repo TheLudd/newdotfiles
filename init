@@ -1,14 +1,22 @@
 #!/bin/bash
-# Set up a machine in phases, each run by hand:
-#   init system         once per machine, as the first user (needs sudo)
-#   init user           once per user
-#   (log out and back in: zshenv, the docker group and the keyring apply then)
-#   init user-login     once per user
+# Set up this machine for the current user:
+#   init                system (once per machine) and user; then log out and
+#                       back in, and the next shell offers init user-login
+#   init system         rerun the machine-wide scripts (needs sudo)
+#   init user           rerun the per-user scripts
+#   init user-login     gh login and ssh key upload (needs the login keyring)
 #   init apps [name...] optional apps, e.g. init apps margin; no name lists them
 set -euo pipefail
 cd "$(dirname "$(realpath "$0")")"
 
+# Written by run-all when the system phase finished without failures
+system_done=/var/lib/newdotfiles/system-done
+
 case ${1:-} in
+	"")
+		[[ -f $system_done ]] || ./run-all system || exit 1
+		exec ./run-all user
+		;;
 	system | user | user-login)
 		exec ./run-all "$1"
 		;;
@@ -21,7 +29,7 @@ case ${1:-} in
 		exec ./run-all apps "$@"
 		;;
 	*)
-		sed -n '2,7s/^# //p' "$0"
+		sed -n '2,8s/^# //p' "$0"
 		exit 1
 		;;
 esac

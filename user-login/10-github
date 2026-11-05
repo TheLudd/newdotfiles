@@ -6,7 +6,7 @@
 # opens the browser, or shows a code to approve on github.com/login/device.
 set -euo pipefail
 key="$HOME/.ssh/id_ed25519.pub"
-[[ -f $key ]] || { echo "$key is missing (user-login/10-ssh-key)"; exit 1; }
+[[ -f $key ]] || { echo "$key is missing (user/40-ssh-key)"; exit 1; }
 
 logged_in() { gh auth status -h github.com >/dev/null 2>&1; }
 token_in_keyring() { gh auth status -h github.com 2>&1 | grep -q '(keyring)'; }
@@ -25,5 +25,8 @@ elif ! gh auth status -h github.com 2>&1 | grep -q admin:public_key; then
 fi
 
 if ! gh api user/keys --jq '.[].key' | grep -qF "$(cut -d' ' -f2 "$key")"; then
-	gh ssh-key add "$key" -t "$USER@$(uname -n)"
+	gh ssh-key add "$key" -t "$USER@$(< /etc/hostname)"
 fi
+
+# Setup is complete: stop config/zsh/pending-setup.zsh from offering it
+rm -f "$XDG_STATE_HOME/init/pending-user-login"

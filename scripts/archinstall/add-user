@@ -1,14 +1,21 @@
 #!/bin/bash
-# Usage: add-user <username>
-# Create a user in wheel with zsh as shell and ask for its password. Every
-# wheel member has sudo without a password (/etc/sudoers.d/wheel). Run as
-# root: install-encrypted runs it in the new system, later use sudo.
+# Usage: add-user <username> [repo]
+# Create a user in wheel with zsh as shell, ask for its password, clone the
+# dotfiles into ~/newdotfiles and run init as the user. Every wheel member has
+# sudo without a password (/etc/sudoers.d/wheel). Run as root: install-encrypted
+# runs it in the new system, later use sudo.
+#
+# repo is where to clone from (default GitHub); install-encrypted passes the
+# copy from the USB stick. origin always points at GitHub.
 set -euo pipefail
-[ "$#" -eq 1 ] || { echo "Usage: $0 <username>"; exit 1; }
+[ "$#" -ge 1 ] || { echo "Usage: $0 <username> [repo]"; exit 1; }
+GITHUB=https://github.com/TheLudd/newdotfiles.git
 user=$1
+source=${2:-$GITHUB}
 home="/home/$user"
+repo="$home/newdotfiles"
 
-pacman -Q sudo &>/dev/null || pacman -S --noconfirm sudo
+pacman -Q sudo git &>/dev/null || pacman -S --needed --noconfirm sudo git
 
 if id "$user" &>/dev/null; then
 	echo "User $user exists"
@@ -24,3 +31,17 @@ until passwd "$user"; do :; done
 echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel
 chmod 440 /etc/sudoers.d/wheel
 visudo -cf /etc/sudoers.d/wheel
+
+if [ ! -d "$repo" ]; then
+	git clone -q "$source" "$repo"
+	git -C "$repo" remote set-url origin "$GITHUB"
+	chown -R "$user:$user" "$repo"
+fi
+
+# Not a login shell: a kept home's .zlogin would start X. run-all sets up the
+# rest of the environment from HOME and USER.
+if ! runuser -u "$user" -- env -i HOME="$home" USER="$user" LOGNAME="$user" \
+	PATH=/usr/local/bin:/usr/bin TERM="${TERM:-linux}" "$repo/init"; then
+	echo "Setup of $user is incomplete: log in as $user, fix and run ~/newdotfiles/init"
+	exit 1
+fi

@@ -46,4 +46,6 @@ if ((${#failed[@]})); then
 	printf '  %s\n' "${failed[@]}"
 	exit 1
 fi
+# init skips the system phase once this exists
+[[ $folder == system && $# == 0 ]] && sudo install -D -m 644 /dev/null /var/lib/newdotfiles/system-done
 echo "Done: $folder"

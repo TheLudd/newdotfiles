@@ -10,3 +10,5 @@ source $ZDOTDIR/plugins.zsh
 # Source custom aliases and colors
 source $ZDOTDIR/aliases.bash
 source $ZDOTDIR/colors.bash
+
+source $ZDOTDIR/pending-setup.zsh

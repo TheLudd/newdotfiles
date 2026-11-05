@@ -6,4 +6,4 @@ set -euo pipefail
 key="$HOME/.ssh/id_ed25519"
 [[ -f $key ]] && exit 0
 install -d -m 700 "$HOME/.ssh"
-ssh-keygen -t ed25519 -f "$key" -C "$USER@$(uname -n)"
+ssh-keygen -t ed25519 -f "$key" -C "$USER@$(< /etc/hostname)"

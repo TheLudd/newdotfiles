@@ -1,0 +1,13 @@
+#!/bin/bash
+# The gh login needs the keyring, which exists only after a login. When it is
+# still missing, leave a marker with this repo's path: the next interactive
+# zsh offers to run `init user-login` (config/zsh/pending-setup.zsh).
+set -euo pipefail
+marker="$XDG_STATE_HOME/init/pending-user-login"
+if lib/github-done; then
+	rm -f "$marker"
+else
+	mkdir -p "$(dirname "$marker")"
+	echo "$PWD" > "$marker"
+	echo "Log out and back in: the next shell offers to finish the setup"
+fi

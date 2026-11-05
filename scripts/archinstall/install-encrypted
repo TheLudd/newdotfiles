@@ -7,8 +7,9 @@
 #
 # One passphrase unlocks root at boot. Home and data unlock from keyfiles kept
 # on the encrypted root; the passphrase is also added to them for recovery.
-# The root account is locked: it creates your user (scripts/archinstall/add-user)
-# and you use sudo from there.
+# The root account is locked: it creates your user (scripts/archinstall/add-user),
+# which also clones the dotfiles and runs init as the user, and you use sudo
+# from there.
 set -euo pipefail
 
 EFI_GIB=1
@@ -202,11 +203,14 @@ configure_system() {
 	arch-chroot /mnt passwd -l root
 }
 
+# add-user clones the dotfiles from a copy of this repo, since the chroot
+# cannot see the USB stick. A failing init does not fail the install.
 create_user() {
 	echo "Creating $NEW_USER"
-	install -m 700 "$SCRIPT_DIR/add-user" /mnt/root/add-user
-	arch-chroot /mnt /root/add-user "$NEW_USER"
-	rm /mnt/root/add-user
+	git clone -q "$SCRIPT_DIR/../.." /mnt/root/newdotfiles
+	arch-chroot /mnt /root/newdotfiles/scripts/archinstall/add-user "$NEW_USER" /root/newdotfiles ||
+		INIT_FAILED=1
+	rm -rf /mnt/root/newdotfiles
 }
 
 main() {
@@ -230,7 +234,11 @@ main() {
 	create_user
 
 	echo
-	echo "Installed. After the reboot, clone the dotfiles and run 'init system'."
+	if [ -n "${INIT_FAILED:-}" ]; then
+		echo "Installed. Setup failed above: after the reboot, log in and run ~/newdotfiles/init."
+	else
+		echo "Installed. After the reboot, log in: the shell offers to finish the setup (gh login)."
+	fi
 }
 
 # Sourcing the file only loads the functions, so they can be tried out without installing

@@ -10,4 +10,7 @@ sudo systemctl enable autorandr.service
 sudo ln -sf "$PWD/autorandr/autorandr-hotplug.service" /etc/systemd/system/autorandr-hotplug.service
 sudo ln -sf "$PWD/autorandr/hotplug.rules" /etc/udev/rules.d/40-monitor-hotplug.rules
 sudo systemctl daemon-reload
-sudo udevadm control --reload
+# No udevd runs in the installer's chroot; udev reads the rules when it starts
+if [[ -S /run/udev/control ]]; then
+	sudo udevadm control --reload
+fi

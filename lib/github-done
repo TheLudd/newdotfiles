@@ -1,0 +1,8 @@
+#!/bin/bash
+# Exits 0 when gh keeps its token in the keyring and this machine's ssh key is
+# on GitHub: what user-login/10-github sets up.
+set -euo pipefail
+key="$HOME/.ssh/id_ed25519.pub"
+[[ -f $key ]] || exit 1
+gh auth status -h github.com 2>&1 | grep -q '(keyring)' || exit 1
+gh api user/keys --jq '.[].key' 2>/dev/null | grep -qF "$(cut -d' ' -f2 "$key")"

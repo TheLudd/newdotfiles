@@ -9,15 +9,14 @@ Arch Linux dotfiles repository using dwm window manager. Custom forks of suckles
 ## Commands
 
 ### Set up a machine
-Four phases, each run by hand from the repo (cloned over https):
+`scripts/archinstall/add-user <name>` creates a user, clones this repo into `~/newdotfiles` and runs `init` as that user; the guided Arch install runs it for the first user inside the chroot. After that, logging in offers the last phase.
 ```bash
-./init system        # once per machine, as the first user (sudo)
-./init user          # once per user
-                     # log out and back in
-./init user-login    # once per user: ssh key, gh login, key upload
+./init               # system (until it has finished once on this machine) + user
+                     # log out and back in: the next shell offers `init user-login`
+./init system        # rerun one phase: system | user | user-login
 ./init apps margin   # optional apps; `./init apps` lists them
 ```
-A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
+`user-login` (gh login with the token in gnome-keyring, ssh key upload) needs the keyring that PAM creates at login, so it runs after the relogin: `user/90-pending-login` leaves a marker when it is not done yet, and `config/zsh/pending-setup.zsh` offers it at the tty login and in every terminal until `user-login/10-github` removes the marker. A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
 
 ### Recompile suckless tools after changes
 ```bash
@@ -35,11 +34,11 @@ xargs -a paru-packages paru -S --needed
 
 ### Directory Structure
 
-- **`init`** - Entry point: `init system | user | user-login | apps [name...]`
+- **`init`** - Entry point: `init [system | user | user-login | apps [name...]]`. Without a phase it runs `system` unless `/var/lib/newdotfiles/system-done` exists (written by `run-all` when the whole system phase succeeds), then `user`
 - **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), or only the named ones. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
 - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
-- **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`
-- **`user-login/`** - Once per user after the relogin: ed25519 key, `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
+- **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, ed25519 key, the marker for `user-login`
+- **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
 - **`apps/`** - Optional per-user apps, one script per app (`margin`)
 - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
 - **`lib/clone`** - Clone a repo if missing and set its origin
@@ -48,7 +47,7 @@ xargs -a paru-packages paru -S --needed
 - **`bin/`** - User scripts, symlinked to `~/bin/`
 - **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
 - **`autorandr/`** - Monitor profiles with postswitch hooks, plus `hotplug.rules` and `autorandr-hotplug.service`: DRM hotplug events run autorandr through a unit that first sleeps 3s so a USB-C monitor's link renegotiation has finished before the mode is set. Resume still runs the package's `autorandr.service` directly.
-- **`scripts/archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user`, which also adds later users; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
+- **`scripts/archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user` (from a copy of the repo on the stick, since the chroot cannot see it), which also adds later users and runs `init` for them; in the chroot `systemctl` only enables units and the udev reload is skipped; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
 
 ### Configuration Management
 
