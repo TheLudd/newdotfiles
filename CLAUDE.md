@@ -14,6 +14,7 @@ Arch Linux dotfiles repository using dwm window manager. Custom forks of suckles
 ./init               # system (until it has finished once on this machine) + user
                      # log out and back in: the next shell offers `init user-login`
 ./init system        # rerun one phase: system | user | user-login
+./init user 30-node  # rerun only the named scripts of a phase
 ./init apps margin   # optional apps; `./init apps` lists them
 ```
 `user-login` (gh login with the token in gnome-keyring, ssh key upload) needs the keyring that PAM creates at login, so it runs after the relogin: `user/90-pending-login` leaves a marker when it is not done yet, and `config/zsh/pending-setup.zsh` offers it at the tty login and in every terminal until `user-login/10-github` removes the marker. A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.

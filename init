@@ -2,10 +2,10 @@
 # Set up this machine for the current user:
 #   init                system (once per machine) and user; then log out and
 #                       back in, and the next shell offers init user-login
-#   init system         rerun the machine-wide scripts (needs sudo)
-#   init user           rerun the per-user scripts
-#   init user-login     gh login and ssh key upload (needs the login keyring)
-#   init apps [name...] optional apps, e.g. init apps margin; no name lists them
+#   init system [name...]     rerun the machine-wide scripts, or only the named ones (needs sudo)
+#   init user [name...]       rerun the per-user scripts, or only the named ones
+#   init user-login [name...] gh login and ssh key upload (needs the login keyring)
+#   init apps [name...]       optional apps, e.g. init apps margin; no name lists them
 set -euo pipefail
 cd "$(dirname "$(realpath "$0")")"
 
@@ -18,7 +18,7 @@ case ${1:-} in
 		exec ./run-all user
 		;;
 	system | user | user-login)
-		exec ./run-all "$1"
+		exec ./run-all "$@"
 		;;
 	apps)
 		shift
