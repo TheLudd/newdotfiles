@@ -2,13 +2,13 @@
 infoFile="${XDG_RUNTIME_DIR:-/run/user/$UID}/sound-info"
 if [ -f "$infoFile" ];
 then
-  sinkDevice=$(cat $infoFile | ag 'sinkDevice' | awk '{print $2}')
-  sourceDevice=$(cat $infoFile | ag 'sourceDevice' | awk '{print $2}')
-  sourceType=$(cat $infoFile | ag 'sourceType' | awk '{print $2}')
-  sinkType=$(cat $infoFile | ag 'sinkType' | awk '{print $2}')
-  sinkVolume=$(cat $infoFile | ag 'sinkVolume' | awk '{print $2}')
-  sinkMuted=$(cat $infoFile | ag 'sinkMuted' | awk '{print $2}')
-  cardProfile=$(cat $infoFile | ag 'cardProfile' | awk '{print $2}')
+  sinkDevice=$(cat $infoFile | grep 'sinkDevice' | awk '{print $2}')
+  sourceDevice=$(cat $infoFile | grep 'sourceDevice' | awk '{print $2}')
+  sourceType=$(cat $infoFile | grep 'sourceType' | awk '{print $2}')
+  sinkType=$(cat $infoFile | grep 'sinkType' | awk '{print $2}')
+  sinkVolume=$(cat $infoFile | grep 'sinkVolume' | awk '{print $2}')
+  sinkMuted=$(cat $infoFile | grep 'sinkMuted' | awk '{print $2}')
+  cardProfile=$(cat $infoFile | grep 'cardProfile' | awk '{print $2}')
   if [ "$sinkMuted" == "yes" ]; then
     speakerIcon="🔇"
     headphoneIcon="🔇"

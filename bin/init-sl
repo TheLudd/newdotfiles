@@ -12,7 +12,7 @@ rm -f .gitignore
 
 make
 
-git status --porcelain | awk '{print $2}' | ag -v 'config.h|.gitignore' | tee .gitignore
+git status --porcelain | awk '{print $2}' | grep -vE 'config.h|.gitignore' | tee .gitignore
 
 git add .gitignore
 

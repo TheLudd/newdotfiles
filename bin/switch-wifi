@@ -8,12 +8,12 @@ fi
 
 if	[ -n "$selection" ]
 then
-	ssid=`nmcli c show $selection | ag '.ssid:' -Q | sed 's/^.*:\s\+//'`
-	pwd=`nmcli c show $selection --show-secrets | ag '.psk:' -Q | awk '{print $2}'`
-	scan=`nmcli device wifi list --rescan no | ag "${ssid}"`
+	ssid=`nmcli c show $selection | grep -F '.ssid:' | sed 's/^.*:\s\+//'`
+	pwd=`nmcli c show $selection --show-secrets | grep -F '.psk:' | awk '{print $2}'`
+	scan=`nmcli device wifi list --rescan no | grep -F "${ssid}"`
 	if [ -z "$scan" ]
 	then
-		scan=`nmcli device wifi list --rescan yes | ag "${ssid}"`
+		scan=`nmcli device wifi list --rescan yes | grep -F "${ssid}"`
 	fi
 
 	if [ -n "$scan" ]

@@ -7,13 +7,13 @@ IFS='.' read -r sourceType sourceId sourceProfile <<< "$activeSource"
 
 if [[ "$sinkType" == bluez_sink || "$sinkType" == bluez_output ]]; then
   sinkIdColon=$(echo $sinkId | sed 's/_/:/g')
-  sinkDevice=$(echo "info $sinkIdColon" | bluetoothctl 2>/dev/null | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
+  sinkDevice=$(echo "info $sinkIdColon" | bluetoothctl 2>/dev/null | grep -F 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
   cardProfile=$(pactl -f json list cards | jq -r --arg c "bluez_card.$sinkId" '.[] | select(.name == $c) | .active_profile')
 fi
 
 if [[ "$sourceType" == bluez_source || "$sourceType" == bluez_input ]]; then
   sourceIdColon=$(echo $sourceId | sed 's/_/:/g')
-  sourceDevice=$(echo "info $sourceIdColon" | bluetoothctl 2>/dev/null | ag -Q 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
+  sourceDevice=$(echo "info $sourceIdColon" | bluetoothctl 2>/dev/null | grep -F 'Alias: ' | sed 's/Alias: //g' | sed 's/^[ \t]*//')
 else
   sourceDevice=$sourceId
 fi
