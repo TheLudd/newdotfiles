@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# valkey-cli - valkey-cli from the valkey docker image, so no server is installed on the host
+# Usage: valkey-cli [valkey-cli options]   (also linked as redis-cli, used by vim-dadbod)
+# Host networking lets it reach containers published on localhost.
+
+tty=()
+[ -t 0 ] && [ -t 1 ] && tty=(-t)
+
+exec docker run --rm -i "${tty[@]}" --network host valkey/valkey:9 valkey-cli "$@"

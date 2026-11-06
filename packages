@@ -60,7 +60,6 @@ pkg-config
 pnpm
 python3
 python-neovim
-rabbitmq
 reflector
 ripgrep
 rsync
@@ -80,7 +79,6 @@ ttf-liberation
 tzdata
 unzip
 usbutils
-valkey
 vlc
 wget
 xclip
