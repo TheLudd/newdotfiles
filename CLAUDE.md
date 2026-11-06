@@ -45,7 +45,7 @@ pkg-sync remove [pkg...] # remove the extra ones; one another package needs is m
 - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
 - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
 - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
-- **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids); used by the installer, `system/10-packages` (which also regenerates the GRUB config when it installs microcode) and `pkg-sync`
+- **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids); used by the installer, `system/10-packages` and `pkg-sync`
 - **`apps/`** - Optional per-user apps, one script per app (`margin`)
 - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
 - **`lib/clone`** - Clone a repo if missing and set its origin

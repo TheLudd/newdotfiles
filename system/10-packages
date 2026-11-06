@@ -1,14 +1,8 @@
 #!/bin/bash
 # Install the packages in `packages` and the ones this machine's hardware needs
 # (lib/hardware-packages), upgrading the system in the same run so nothing is
-# installed against an outdated package database.
+# installed against an outdated package database. Microcode needs no GRUB step:
+# the mkinitcpio `microcode` hook packs it into the initramfs, which pacman
+# rebuilds when firmware is installed.
 set -euo pipefail
-hardware="$(lib/hardware-packages)"
-# GRUB only loads the microcode it found when its config was generated
-new_ucode="$(pacman -T $(grep ucode <<<"$hardware") || true)"
-
-{ cat packages; echo "$hardware"; } | sudo pacman -Syu --needed --noconfirm -
-
-if [ -n "$new_ucode" ]; then
-	sudo grub-mkconfig -o /boot/grub/grub.cfg
-fi
+{ cat packages; lib/hardware-packages; } | sudo pacman -Syu --needed --noconfirm -
