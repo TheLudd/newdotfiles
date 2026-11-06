@@ -1,7 +1,7 @@
 #!/bin/bash
 # pkg-sync - compare the installed packages with the package files and clean up drift
 # Usage: pkg-sync                  list missing and extra packages
-#        pkg-sync install          install the missing ones
+#        pkg-sync install          upgrade the system and install the missing ones
 #        pkg-sync remove [pkg...]  remove the extra ones, or only the named ones
 #
 # Wanted: packages, paru-packages, kept-packages and lib/hardware-packages.
@@ -51,7 +51,7 @@ install() {
 	local repo aur
 	mapfile -t repo < <(missing_repo)
 	mapfile -t aur < <(missing_aur)
-	[ ${#repo[@]} -gt 0 ] && sudo pacman -S --needed "${repo[@]}"
+	[ ${#repo[@]} -gt 0 ] && sudo pacman -Syu --needed "${repo[@]}"
 	[ ${#aur[@]} -gt 0 ] && paru -S --needed "${aur[@]}"
 	true
 }
