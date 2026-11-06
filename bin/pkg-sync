@@ -6,7 +6,9 @@
 #
 # Wanted: packages, paru-packages, kept-packages and lib/hardware-packages.
 # Extra: installed explicitly (pacman -Qe) and not wanted. On remove, an extra
-# package that another package still needs is marked as a dependency instead.
+# package that another package still needs is marked as a dependency instead,
+# and wanted packages installed as dependencies are marked explicit first so
+# pacman does not remove them along with the package that pulled them in.
 set -euo pipefail
 dir="$(dirname "$(readlink -f "$0")")/.."
 
@@ -56,10 +58,20 @@ install() {
 	true
 }
 
+# Wanted packages installed as a dependency would go with the package that pulled
+# them in (pacman -Rns); marking them explicit keeps them
+keep_wanted() {
+	local deps
+	mapfile -t deps < <(comm -12 <(pacman -Qqd | sort) <(wanted | sort -u))
+	[ ${#deps[@]} -gt 0 ] && sudo pacman -D --asexplicit "${deps[@]}" >/dev/null
+	true
+}
+
 remove() {
 	local targets=("$@") needed=() unneeded=() p
 	[ ${#targets[@]} -eq 0 ] && mapfile -t targets < <(extra)
 	[ ${#targets[@]} -eq 0 ] && { echo "Nothing to remove."; return; }
+	keep_wanted
 	for p in "${targets[@]}"; do
 		if [ "$(pacman -Qi "$p" | sed -n 's/^Required By *: //p')" = None ]; then
 			unneeded+=("$p")
