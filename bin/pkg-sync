@@ -1,0 +1,83 @@
+#!/bin/bash
+# pkg-sync - compare the installed packages with the package files and clean up drift
+# Usage: pkg-sync                  list missing and extra packages
+#        pkg-sync install          install the missing ones
+#        pkg-sync remove [pkg...]  remove the extra ones, or only the named ones
+#
+# Wanted: packages, paru-packages, kept-packages and lib/hardware-packages.
+# Extra: installed explicitly (pacman -Qe) and not wanted. On remove, an extra
+# package that another package still needs is marked as a dependency instead.
+set -euo pipefail
+dir="$(dirname "$(readlink -f "$0")")/.."
+
+names() { grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$dir/$1"; }
+repo_wanted() { names packages; "$dir/lib/hardware-packages"; }
+aur_wanted() { names paru-packages; }
+
+# Names pacman reports as not installed; names provided by another package count as installed
+missing_repo() { pacman -T $(repo_wanted) || true; }
+missing_aur() { pacman -T $(aur_wanted) || true; }
+
+# Real package names, so a provided name like python3 matches python
+wanted() {
+	pacman -Sp -dd --print-format %n $(repo_wanted)
+	aur_wanted
+	names kept-packages
+}
+
+extra() { comm -23 <(pacman -Qqe | sort) <(wanted | sort -u); }
+
+show() {
+	local title="$1"; shift
+	[ $# -eq 0 ] && return
+	echo "$title"
+	printf '%s\n' "$@" | column -c "${COLUMNS:-100}" | sed 's/^/  /'
+}
+
+status() {
+	local repo aur extras
+	mapfile -t repo < <(missing_repo)
+	mapfile -t aur < <(missing_aur)
+	mapfile -t extras < <(extra)
+	if [ $((${#repo[@]} + ${#aur[@]} + ${#extras[@]})) -eq 0 ]; then
+		echo "In sync."
+		return
+	fi
+	show "Missing (pkg-sync install):" "${repo[@]}" "${aur[@]}"
+	show "Extra (pis / parus to keep, pkg-sync remove to drop):" "${extras[@]}"
+}
+
+install() {
+	local repo aur
+	mapfile -t repo < <(missing_repo)
+	mapfile -t aur < <(missing_aur)
+	[ ${#repo[@]} -gt 0 ] && sudo pacman -S --needed "${repo[@]}"
+	[ ${#aur[@]} -gt 0 ] && paru -S --needed "${aur[@]}"
+	true
+}
+
+remove() {
+	local targets=("$@") needed=() unneeded=() p
+	[ ${#targets[@]} -eq 0 ] && mapfile -t targets < <(extra)
+	[ ${#targets[@]} -eq 0 ] && { echo "Nothing to remove."; return; }
+	for p in "${targets[@]}"; do
+		if [ "$(pacman -Qi "$p" | sed -n 's/^Required By *: //p')" = None ]; then
+			unneeded+=("$p")
+		else
+			needed+=("$p")
+		fi
+	done
+	if [ ${#needed[@]} -gt 0 ]; then
+		show "Needed by other packages, marked as dependencies:" "${needed[@]}"
+		sudo pacman -D --asdeps "${needed[@]}" >/dev/null
+	fi
+	[ ${#unneeded[@]} -gt 0 ] && sudo pacman -Rns "${unneeded[@]}"
+	true
+}
+
+case "${1:-}" in
+	"") status ;;
+	install) install ;;
+	remove) shift; remove "$@" ;;
+	*) sed -n 's/^# \{0,1\}//; 2,5p' "$0"; exit 1 ;;
+esac

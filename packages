@@ -3,6 +3,7 @@ archlinux-wallpaper
 autoconf
 automake
 autorandr
+base-devel
 bat
 bc
 blueman
@@ -70,7 +71,6 @@ slock
 sof-firmware
 speedcrunch
 sudo
-terraform
 texinfo
 tree
 tree-sitter-cli

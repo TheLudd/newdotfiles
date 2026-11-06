@@ -24,11 +24,14 @@ cd ~/code/dwm && make && sudo make install
 cd ~/code/st && make && sudo make install
 ```
 
-### Install system packages
+### Packages
 ```bash
-sudo pacman -S --needed - < packages
-xargs -a paru-packages paru -S --needed
+pis <pkg...>             # pacman install and add to `packages` (`parus` for AUR → `paru-packages`)
+pkg-sync                 # list missing packages and extra ones (installed explicitly, not in the files)
+pkg-sync install         # install the missing ones
+pkg-sync remove [pkg...] # remove the extra ones; one another package needs is marked as a dependency
 ```
+`pacman -S` / `paru -S` without recording is for trying things out; `pkg-sync` cleans that drift up later.
 
 ## Architecture
 
@@ -39,6 +42,9 @@ xargs -a paru-packages paru -S --needed
 - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
 - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, ed25519 key, the marker for `user-login`
 - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
+- **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
+- **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
+- **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids); used by the installer, `system/10-packages` (which also regenerates the GRUB config when it installs microcode) and `pkg-sync`
 - **`apps/`** - Optional per-user apps, one script per app (`margin`)
 - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
 - **`lib/clone`** - Clone a repo if missing and set its origin

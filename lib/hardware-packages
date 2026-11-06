@@ -1,0 +1,18 @@
+#!/bin/bash
+# Prints the packages this machine's hardware needs, one per line: microcode for
+# the CPU, Vulkan and video drivers for each GPU vendor found.
+# Read by scripts/archinstall/install-encrypted, system/10-packages and bin/pkg-sync.
+
+case "$(grep -m1 vendor_id /proc/cpuinfo)" in
+	*AuthenticAMD*) echo amd-ucode ;;
+	*GenuineIntel*) echo intel-ucode ;;
+esac
+
+# PCI vendor ids of the display devices
+for vendor in $(cat /sys/class/drm/card*/device/vendor 2>/dev/null | sort -u); do
+	case "$vendor" in
+		0x8086) printf '%s\n' vulkan-intel intel-media-driver ;;
+		0x1002) printf '%s\n' vulkan-radeon ;;
+		0x10de) printf '%s\n' nvidia-open-lts nvidia-utils ;;
+	esac
+done

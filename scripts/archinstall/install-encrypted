@@ -118,13 +118,6 @@ ask_passphrase() {
 	[ "$PASSPHRASE" = "$repeat" ] || die "Passphrases differ"
 }
 
-vendor_packages() {
-	case "$(grep -m1 vendor_id /proc/cpuinfo)" in
-		*AuthenticAMD*) echo "amd-ucode vulkan-radeon" ;;
-		*GenuineIntel*) echo "intel-ucode vulkan-intel intel-media-driver" ;;
-	esac
-}
-
 part() { echo "/dev/disk/by-partlabel/$1"; }
 
 luks_format_open() {
@@ -179,7 +172,7 @@ install_packages() {
 	echo "Installing packages"
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
 	# shellcheck disable=SC2046
-	pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $(vendor_packages) $PACKAGES
+	pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $("$SCRIPT_DIR/../../lib/hardware-packages") $PACKAGES
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /mnt/etc/pacman.conf
 }
 

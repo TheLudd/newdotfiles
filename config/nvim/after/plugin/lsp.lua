@@ -86,7 +86,7 @@ vim.lsp.config('amend_lsp', {
 })
 
 -- Installed by mason and enabled; typescript servers are set up in tsserver.lua.
-local servers = { 'biome', 'eslint', 'hls', 'jsonls', 'lua_ls', 'rust_analyzer', 'terraformls' }
+local servers = { 'biome', 'eslint', 'hls', 'jsonls', 'lua_ls', 'rust_analyzer' }
 
 mason.setup()
 require('mason-lspconfig').setup({

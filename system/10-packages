@@ -1,5 +1,14 @@
 #!/bin/bash
-# Install the packages in `packages`, upgrading the system in the same run so
-# nothing is installed against an outdated package database.
+# Install the packages in `packages` and the ones this machine's hardware needs
+# (lib/hardware-packages), upgrading the system in the same run so nothing is
+# installed against an outdated package database.
 set -euo pipefail
-sudo pacman -Syu --needed --noconfirm - < packages
+hardware="$(lib/hardware-packages)"
+# GRUB only loads the microcode it found when its config was generated
+new_ucode="$(pacman -T $(grep ucode <<<"$hardware") || true)"
+
+{ cat packages; echo "$hardware"; } | sudo pacman -Syu --needed --noconfirm -
+
+if [ -n "$new_ucode" ]; then
+	sudo grub-mkconfig -o /boot/grub/grub.cfg
+fi
