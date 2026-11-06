@@ -39,13 +39,14 @@ make
 man-db
 man-pages
 mesa
-mplayer
+mpv
 neovim
 networkmanager
 network-manager-applet
 nginx
 nodejs
 noto-fonts-emoji
+nsxiv
 openssh
 pacman-contrib
 patch
@@ -70,7 +71,6 @@ slock
 sof-firmware
 speedcrunch
 sudo
-sxiv
 terraform
 texinfo
 the_silver_searcher
