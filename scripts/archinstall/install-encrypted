@@ -105,6 +105,7 @@ print_plan() {
 		printf '  %6s GiB  /data  encrypted\n' "$(disk_gib "$DATA_DISK")"
 	fi
 	echo "Hostname: $NEW_HOSTNAME"
+	echo "Kernel:   $KERNEL"
 	echo "User:     $NEW_USER (sudo, password asked at the end)"
 	echo
 }
@@ -172,7 +173,7 @@ install_packages() {
 	echo "Installing packages"
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
 	# shellcheck disable=SC2046
-	pacstrap -K /mnt base linux-lts linux-firmware grub efibootmgr $("$SCRIPT_DIR/../../lib/hardware-packages") $PACKAGES
+	pacstrap -K /mnt base "$KERNEL" linux-firmware grub efibootmgr $("$SCRIPT_DIR/../../lib/hardware-packages") $PACKAGES
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /mnt/etc/pacman.conf
 }
 
@@ -193,6 +194,9 @@ configure_system() {
 	arch-chroot /mnt systemctl enable NetworkManager fstrim.timer
 
 	echo "$NEW_HOSTNAME" > /mnt/etc/hostname
+	# lib/kernel-package reads the choice, so init and pkg-sync keep this kernel
+	mkdir -p /mnt/etc/newdotfiles
+	echo "$KERNEL" > /mnt/etc/newdotfiles/kernel
 	arch-chroot /mnt passwd -l root
 }
 
@@ -215,6 +219,7 @@ main() {
 	[ -n "$NEW_HOSTNAME" ] || die "Hostname is required"
 	read -rp "Username: " NEW_USER
 	[ -n "$NEW_USER" ] || die "Username is required"
+	KERNEL=$("$SCRIPT_DIR/../../lib/choose-kernel")
 
 	print_plan
 	read -rp "Erase the disks above? Type 'erase' to continue: " answer

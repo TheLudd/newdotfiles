@@ -1,0 +1,4 @@
+#!/bin/bash
+# pacman hook that regenerates grub.cfg when a kernel is installed or removed.
+set -euo pipefail
+sudo install -Dm 644 pacman-hooks/90-grub.hook /etc/pacman.d/hooks/90-grub.hook

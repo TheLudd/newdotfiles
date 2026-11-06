@@ -1,0 +1,25 @@
+#!/bin/bash
+# Asks which kernel to use and prints it. The menu goes to stderr, so the
+# choice can be captured: kernel=$(lib/choose-kernel). The default is this
+# machine's current kernel (lib/kernel-package).
+# Used by scripts/archinstall/install-encrypted and bin/switch-kernel.
+set -euo pipefail
+dir="$(dirname "$(readlink -f "$0")")"
+kernels=(linux-lts linux)
+current=$("$dir/kernel-package")
+default=1
+
+echo "Kernels:" >&2
+for i in "${!kernels[@]}"; do
+	printf '  %d) %s\n' $(( i + 1 )) "${kernels[i]}" >&2
+	[ "${kernels[i]}" = "$current" ] && default=$(( i + 1 ))
+done
+while true; do
+	read -rp "Kernel [$default]: " answer
+	answer=${answer:-$default}
+	if [[ "$answer" =~ ^[0-9]+$ ]] && (( answer >= 1 && answer <= ${#kernels[@]} )); then
+		echo "${kernels[answer - 1]}"
+		exit
+	fi
+	echo "Enter a number from 1 to ${#kernels[@]}" >&2
+done

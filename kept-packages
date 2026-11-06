@@ -3,7 +3,6 @@
 
 # installed by scripts/archinstall/install-encrypted (pacstrap)
 base
-linux-lts
 linux-firmware
 grub
 efibootmgr

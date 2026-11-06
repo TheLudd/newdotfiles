@@ -1,0 +1,21 @@
+#!/bin/bash
+# switch-kernel - change this machine's kernel, chosen from a menu (lib/choose-kernel)
+#
+# Records the choice in /etc/newdotfiles/kernel (read by lib/kernel-package)
+# and installs the kernel; the pacman hook from system/60-grub regenerates
+# grub.cfg. The old kernel stays until after the reboot, since the running one
+# needs its modules: pkg-sync then lists it as extra.
+set -euo pipefail
+dir="$(dirname "$(readlink -f "$0")")/.."
+
+old=$("$dir/lib/kernel-package")
+new=$("$dir/lib/choose-kernel")
+
+[ -f /etc/pacman.d/hooks/90-grub.hook ] || (cd "$dir" && system/60-grub)
+sudo mkdir -p /etc/newdotfiles
+echo "$new" | sudo tee /etc/newdotfiles/kernel >/dev/null
+sudo pacman -Syu --needed "$new"
+
+if [ "$new" != "$old" ] && pacman -Q "$old" >/dev/null 2>&1; then
+	echo "Reboot into $new, then remove $old: pkg-sync remove $old"
+fi

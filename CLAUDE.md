@@ -31,6 +31,7 @@ pis <pkg...>             # pacman install and add to `packages` (`parus` for AUR
 pkg-sync                 # list missing and extra packages (installed explicitly, not in the files); silent when in sync
 pkg-sync install         # install the missing ones
 pkg-sync remove [pkg...] # remove the extra ones; one another package needs is marked as a dependency
+switch-kernel            # pick, record and install this machine's kernel; after the reboot pkg-sync lists the old one as extra
 ```
 `pacman -S` / `paru -S` without recording is for trying things out; `pkg-sync` cleans that drift up later.
 
@@ -45,6 +46,7 @@ pkg-sync remove [pkg...] # remove the extra ones; one another package needs is m
 - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
 - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
 - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
+- **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `pacman-hooks/90-grub.hook` (installed by `system/60-grub`) regenerates grub.cfg when a kernel is installed or removed
 - **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids); used by the installer, `system/10-packages` and `pkg-sync`
 - **`apps/`** - Optional per-user apps, one script per app (`margin`)
 - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
