@@ -1,0 +1,10 @@
+#!/bin/sh
+# Refresh the dotfiles block in dwmblocks (signal 4, bin/check-dotfiles-repo)
+# whenever a branch, HEAD or remote-tracking ref changes: commit, amend, rebase,
+# reset, switching branches, merge, fetch and push.
+# The block runs git status, so it is signalled a second later, after the git
+# command that fired this has finished.
+[ "$1" = committed ] || exit 0
+grep -q -e ' HEAD$' -e ' refs/' || exit 0
+(sleep 1; pkill -RTMIN+4 dwmblocks) </dev/null >/dev/null 2>&1 &
+exit 0

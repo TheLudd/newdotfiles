@@ -1,0 +1,5 @@
+#!/bin/bash
+# Use this repo's hooks in githooks/ (the dwmblocks refresh); git does not track
+# a clone's hooks itself, so core.hooksPath points at them.
+set -euo pipefail
+git config core.hooksPath githooks
