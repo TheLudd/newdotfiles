@@ -28,7 +28,7 @@ cd ~/code/st && make && sudo make install
 ### Packages
 ```bash
 pis <pkg...>             # pacman install and add to `packages` (`parus` for AUR → `paru-packages`)
-pkg-sync                 # list missing packages and extra ones (installed explicitly, not in the files)
+pkg-sync                 # list missing and extra packages (installed explicitly, not in the files); silent when in sync
 pkg-sync install         # install the missing ones
 pkg-sync remove [pkg...] # remove the extra ones; one another package needs is marked as a dependency
 ```

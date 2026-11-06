@@ -1,6 +1,6 @@
 #!/bin/bash
 # pkg-sync - compare the installed packages with the package files and clean up drift
-# Usage: pkg-sync                  list missing and extra packages
+# Usage: pkg-sync                  list missing and extra packages, nothing when in sync
 #        pkg-sync install          upgrade the system and install the missing ones
 #        pkg-sync remove [pkg...]  remove the extra ones, or only the named ones
 #
@@ -31,7 +31,7 @@ extra() { comm -23 <(pacman -Qqe | sort) <(wanted | sort -u); }
 
 show() {
 	local title="$1"; shift
-	[ $# -eq 0 ] && return
+	[ $# -eq 0 ] && return 0
 	echo "$title"
 	printf '%s\n' "$@" | column -c "${COLUMNS:-100}" | sed 's/^/  /'
 }
@@ -41,12 +41,10 @@ status() {
 	mapfile -t repo < <(missing_repo)
 	mapfile -t aur < <(missing_aur)
 	mapfile -t extras < <(extra)
-	if [ $((${#repo[@]} + ${#aur[@]} + ${#extras[@]})) -eq 0 ]; then
-		echo "In sync."
-		return
-	fi
 	show "Missing (pkg-sync install):" "${repo[@]}" "${aur[@]}"
 	show "Extra (pis / parus to keep, pkg-sync remove to drop):" "${extras[@]}"
+	# Like diff: non-zero when there is drift
+	[ $((${#repo[@]} + ${#aur[@]} + ${#extras[@]})) -eq 0 ]
 }
 
 install() {
