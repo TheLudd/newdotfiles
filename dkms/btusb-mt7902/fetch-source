@@ -1,0 +1,24 @@
+#!/bin/bash
+# fetch-source <kernelver> - download btusb.c and the headers it includes for
+# that kernel (uname -r form) from the stable tree and add the MT7902 id
+# 0489:e156 to its quirks table. Upstream has the id in bluetooth-next; a
+# kernel that already has it gets its btusb.c unchanged.
+set -euo pipefail
+version=${1%%-*}     # 7.2.14-arch1-1 -> 7.2.14
+version=${version%.0} # first releases are tagged without .0: v7.3
+url=https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/drivers/bluetooth
+
+fetch() { curl -fsSL --retry 3 -o "$1" "$url/$1?h=v$version"; }
+
+fetch btusb.c
+for header in $(sed -n 's/^#include "\(.*\)"$/\1/p' btusb.c); do
+	fetch "$header"
+done
+
+grep -q '0x0489, 0xe156' btusb.c && exit 0
+# Before the first MediaTek device entry, which is in the quirks table
+sed -i '0,/{ USB_DEVICE(.*\.driver_info = BTUSB_MEDIATEK/{//i\
+	{ USB_DEVICE(0x0489, 0xe156), .driver_info = BTUSB_MEDIATEK |\
+						     BTUSB_WIDEBAND_SPEECH },
+}' btusb.c
+grep -q '0x0489, 0xe156' btusb.c || { echo "no MediaTek entry in btusb.c to add 0489:e156 to" >&2; exit 1; }

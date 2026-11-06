@@ -1,0 +1,26 @@
+#!/bin/bash
+# On machines with the Foxconn MediaTek MT7902 Bluetooth chip (0489:e156),
+# build btusb with its id through DKMS (dkms/btusb-mt7902). The stock btusb
+# binds it as a generic controller, never loads its firmware and the reset
+# times out ("hci0: Opcode 0x0c03 failed: -110"). The DKMS pacman hook
+# rebuilds it when a kernel is installed.
+set -euo pipefail
+lib/usb-present 0489:e156 || exit 0
+command -v dkms >/dev/null || { echo "dkms is not installed (system/10-packages)"; exit 1; }
+name=btusb-mt7902 version=1
+
+# Register a fresh copy, so a changed source is rebuilt
+sudo dkms remove "$name/$version" --all >/dev/null 2>&1 || true
+sudo rm -rf "/usr/src/$name-$version"
+sudo cp -r "dkms/$name" "/usr/src/$name-$version"
+sudo dkms add "$name/$version"
+shopt -s nullglob
+for build in /usr/lib/modules/*/build; do
+	sudo dkms install "$name/$version" -k "$(basename "$(dirname "$build")")"
+done
+
+# Load it now, unless in the installer's chroot, where the live ISO's kernel runs
+if ! sudo systemd-detect-virt -q --chroot && [[ $(modinfo -n btusb) == */updates/* ]]; then
+	sudo modprobe -r btusb
+	sudo modprobe btusb
+fi

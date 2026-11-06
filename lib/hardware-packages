@@ -1,7 +1,13 @@
 #!/bin/bash
-# Prints the packages this machine's hardware needs, one per line: microcode for
-# the CPU, Vulkan and video drivers for each GPU vendor found.
-# Read by scripts/archinstall/install-encrypted, system/10-packages and bin/pkg-sync.
+# hardware-packages [kernel] - print the packages this machine's hardware needs,
+# one per line: microcode for the CPU, Vulkan and video drivers for each GPU
+# vendor found, dkms and the kernel's headers for drivers built with DKMS
+# (dkms/). The kernel defaults to lib/kernel-package; the installer passes its
+# choice, since /etc/newdotfiles/kernel is written later.
+# Read by scripts/archinstall/install-encrypted, system/10-packages,
+# bin/switch-kernel and bin/pkg-sync.
+dir="$(dirname "$(readlink -f "$0")")"
+kernel=${1:-$("$dir/kernel-package")}
 
 case "$(grep -m1 vendor_id /proc/cpuinfo)" in
 	*AuthenticAMD*) echo amd-ucode ;;
@@ -16,3 +22,8 @@ for vendor in $(cat /sys/class/drm/card*/device/vendor 2>/dev/null | sort -u); d
 		0x10de) printf '%s\n' nvidia-open-lts nvidia-utils ;;
 	esac
 done
+
+# MediaTek MT7902 Bluetooth (system/60-btusb-mt7902)
+if "$dir/usb-present" 0489:e156; then
+	printf '%s\n' dkms "$kernel-headers"
+fi

@@ -173,7 +173,7 @@ install_packages() {
 	echo "Installing packages"
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
 	# shellcheck disable=SC2046
-	pacstrap -K /mnt base "$KERNEL" linux-firmware grub efibootmgr $("$SCRIPT_DIR/../../lib/hardware-packages") $PACKAGES
+	pacstrap -K /mnt base "$KERNEL" linux-firmware grub efibootmgr $("$SCRIPT_DIR/../../lib/hardware-packages" "$KERNEL") $PACKAGES
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /mnt/etc/pacman.conf
 }
 

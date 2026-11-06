@@ -23,6 +23,8 @@ cleanup() {
 	local old
 	mapfile -t old < <(pending) || true
 	[ ${#old[@]} -gt 0 ] || { echo "Nothing to remove."; return; }
+	# Their headers, installed for DKMS (lib/hardware-packages)
+	mapfile -t -O ${#old[@]} old < <(printf '%s-headers\n' "${old[@]}" | xargs pacman -Qq 2>/dev/null) || true
 	# The pacman hook regenerates grub.cfg
 	sudo pacman -Rns --noconfirm "${old[@]}"
 	sudo rm -f "$marker"
@@ -32,7 +34,9 @@ switch() {
 	local new old answer
 	new=$("$dir/lib/choose-kernel")
 	echo "$new" | sudo install -Dm 644 /dev/stdin /etc/newdotfiles/kernel
-	sudo pacman -Syu --needed "$new"
+	# With the hardware packages, which include the new kernel's headers for DKMS
+	# shellcheck disable=SC2046
+	sudo pacman -Syu --needed "$new" $("$dir/lib/hardware-packages")
 	(cd "$dir" && system/60-grub)
 	# The pacman hook runs only when a kernel is installed or removed
 	sudo update-grub >/dev/null 2>&1
