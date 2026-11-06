@@ -59,7 +59,6 @@ pkg-config
 pnpm
 python3
 python-neovim
-python-pip
 rabbitmq
 reflector
 ripgrep
@@ -73,7 +72,6 @@ speedcrunch
 sudo
 terraform
 texinfo
-the_silver_searcher
 tree
 tree-sitter-cli
 ttf-dejavu-nerd
