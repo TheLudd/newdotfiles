@@ -1,0 +1,12 @@
+#!/bin/bash
+# Regenerates grub.cfg with this machine's kernel (/etc/newdotfiles/kernel, or
+# linux-lts) as the default entry, while other installed kernels stay in the
+# submenu. Installed to /usr/local/bin by system/60-grub and run as root by
+# pacman-hooks/99-grub.hook.
+set -euo pipefail
+kernel=$(cat /etc/newdotfiles/kernel 2>/dev/null || echo linux-lts)
+image=/boot/vmlinuz-$kernel
+
+sed -i '/^#\?GRUB_TOP_LEVEL=/d' /etc/default/grub
+[ -f "$image" ] && echo "GRUB_TOP_LEVEL=\"$image\"" >> /etc/default/grub
+grub-mkconfig -o /boot/grub/grub.cfg

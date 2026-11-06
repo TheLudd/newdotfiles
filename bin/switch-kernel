@@ -1,21 +1,62 @@
 #!/bin/bash
-# switch-kernel - change this machine's kernel, chosen from a menu (lib/choose-kernel)
+# switch-kernel - switch this machine to a kernel chosen from a menu (lib/kernels)
+# Usage: switch-kernel            pick, install and make it GRUB's default
+#        switch-kernel --pending  print the kernels left to remove, fail when none
+#        switch-kernel --cleanup  remove them
 #
-# Records the choice in /etc/newdotfiles/kernel (read by lib/kernel-package)
-# and installs the kernel; the pacman hook from system/60-grub regenerates
-# grub.cfg. The old kernel stays until after the reboot, since the running one
-# needs its modules: pkg-sync then lists it as extra.
+# The choice goes to /etc/newdotfiles/kernel (read by lib/kernel-package and
+# lib/update-grub). The other kernels stay as GRUB fallbacks until the chosen
+# one has booted: they are listed in a marker, and the first shell running the
+# chosen kernel offers to remove them (config/zsh/pending-setup.zsh).
 set -euo pipefail
 dir="$(dirname "$(readlink -f "$0")")/.."
+marker=/var/lib/newdotfiles/pending-kernel-cleanup
 
-old=$("$dir/lib/kernel-package")
-new=$("$dir/lib/choose-kernel")
+chosen() { cat /etc/newdotfiles/kernel 2>/dev/null || echo linux-lts; }
+running_chosen() { grep -q "BOOT_IMAGE=/vmlinuz-$(chosen) " /proc/cmdline; }
+# Installed kernels from lib/kernels other than the chosen one
+others() { grep -vx "$(chosen)" "$dir/lib/kernels" | xargs pacman -Qq 2>/dev/null || true; }
 
-[ -f /etc/pacman.d/hooks/90-grub.hook ] || (cd "$dir" && system/60-grub)
-sudo mkdir -p /etc/newdotfiles
-echo "$new" | sudo tee /etc/newdotfiles/kernel >/dev/null
-sudo pacman -Syu --needed "$new"
+pending() { [ -s "$marker" ] && running_chosen && cat "$marker"; }
 
-if [ "$new" != "$old" ] && pacman -Q "$old" >/dev/null 2>&1; then
-	echo "Reboot into $new, then remove $old: pkg-sync remove $old"
-fi
+cleanup() {
+	local old
+	mapfile -t old < <(pending) || true
+	[ ${#old[@]} -gt 0 ] || { echo "Nothing to remove."; return; }
+	# The pacman hook regenerates grub.cfg
+	sudo pacman -Rns --noconfirm "${old[@]}"
+	sudo rm -f "$marker"
+}
+
+switch() {
+	local new old answer
+	new=$("$dir/lib/choose-kernel")
+	echo "$new" | sudo install -Dm 644 /dev/stdin /etc/newdotfiles/kernel
+	sudo pacman -Syu --needed "$new"
+	(cd "$dir" && system/60-grub)
+	# The pacman hook runs only when a kernel is installed or removed
+	sudo update-grub >/dev/null 2>&1
+
+	mapfile -t old < <(others)
+	if [ ${#old[@]} -eq 0 ]; then
+		sudo rm -f "$marker"
+		return
+	fi
+	printf '%s\n' "${old[@]}" | sudo install -Dm 644 /dev/stdin "$marker"
+	if running_chosen; then
+		read -rp "Running $new. Remove ${old[*]}? [y/N] " answer
+		[[ "$answer" =~ ^[Yy] ]] && cleanup
+		return 0
+	fi
+	echo "${old[*]} stays as the fallback in GRUB's advanced options until $new has booted."
+	read -rp "Reboot into $new now? [Y/n] " answer
+	[[ "${answer:-y}" =~ ^[Yy] ]] && systemctl reboot
+	true
+}
+
+case "${1:-}" in
+	"") switch ;;
+	--pending) pending ;;
+	--cleanup) cleanup ;;
+	*) sed -n 's/^# \{0,1\}//; 2,5p' "$0"; exit 1 ;;
+esac

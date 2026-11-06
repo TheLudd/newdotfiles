@@ -1,0 +1,13 @@
+# Regenerate grub.cfg (lib/update-grub) when a kernel is installed or removed,
+# so switching kernels needs no manual grub-mkconfig. Named 99 to run after
+# 90-mkinitcpio-install.hook, which copies vmlinuz to /boot.
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Remove
+Target = usr/lib/modules/*/vmlinuz
+
+[Action]
+Description = Updating grub.cfg
+When = PostTransaction
+Exec = /usr/local/bin/update-grub

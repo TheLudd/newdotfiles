@@ -8,3 +8,13 @@
 	echo
 	"$(<$marker)/init" user-login
 }
+
+# Offer to remove the old kernels once the kernel bin/switch-kernel switched to
+# has booted. Asks in every shell until they are removed.
+() {
+	local old
+	old=$(switch-kernel --pending 2>/dev/null) || return
+	read -q "?Booted $(</etc/newdotfiles/kernel). Remove ${old//$'\n'/ }? [y/N] " || { echo; return }
+	echo
+	switch-kernel --cleanup
+}

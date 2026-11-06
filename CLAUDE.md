@@ -31,7 +31,7 @@ pis <pkg...>             # pacman install and add to `packages` (`parus` for AUR
 pkg-sync                 # list missing and extra packages (installed explicitly, not in the files); silent when in sync
 pkg-sync install         # install the missing ones
 pkg-sync remove [pkg...] # remove the extra ones; one another package needs is marked as a dependency
-switch-kernel            # pick, record and install this machine's kernel; after the reboot pkg-sync lists the old one as extra
+switch-kernel            # pick a kernel; installs it, sets GRUB's default and offers a reboot; the old one goes once the new one has booted
 ```
 `pacman -S` / `paru -S` without recording is for trying things out; `pkg-sync` cleans that drift up later.
 
@@ -46,7 +46,7 @@ switch-kernel            # pick, record and install this machine's kernel; after
 - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
 - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
 - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
-- **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `pacman-hooks/90-grub.hook` (installed by `system/60-grub`) regenerates grub.cfg when a kernel is installed or removed
+- **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from `lib/kernels` through the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `pacman-hooks/99-grub.hook` (installed by `system/60-grub`) runs `lib/update-grub` when a kernel is installed or removed, which regenerates grub.cfg with the machine's kernel as the default entry. `switch-kernel` keeps the other kernels as GRUB fallbacks and lists them in `/var/lib/newdotfiles/pending-kernel-cleanup`; the first shell running the chosen kernel offers to remove them (`config/zsh/pending-setup.zsh`)
 - **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids); used by the installer, `system/10-packages` and `pkg-sync`
 - **`apps/`** - Optional per-user apps, one script per app (`margin`)
 - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
