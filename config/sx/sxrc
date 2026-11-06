@@ -42,6 +42,7 @@ feh --no-fehbg --bg-fill /usr/share/backgrounds/archlinux/simple.png &
 
 dunst &
 nm-applet &
+blueman-applet &
 
 blockkill="-1"
 while [ $blockkill -ne "129" ]

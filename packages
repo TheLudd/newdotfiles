@@ -5,6 +5,7 @@ automake
 autorandr
 bat
 bc
+blueman
 bluez
 bluez-utils
 cmake
