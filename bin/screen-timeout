@@ -1,0 +1,23 @@
+#!/bin/sh
+# Sets X's blanking for the power state: never on external power (or without a
+# battery), after 10 minutes on battery. DPMS stays off so USB-C monitor hubs
+# stay awake.
+battery_timeout=600
+
+on_external_power() {
+  ls /sys/class/power_supply/*/type >/dev/null 2>&1 || return 0
+  grep -qx Battery /sys/class/power_supply/*/type || return 0
+  for supply in /sys/class/power_supply/*; do
+    case $(cat "$supply/type") in
+      Mains|USB) [ "$(cat "$supply/online" 2>/dev/null)" = 1 ] && return 0 ;;
+    esac
+  done
+  return 1
+}
+
+xset -dpms
+if on_external_power; then
+  xset s off
+else
+  xset s "$battery_timeout" "$battery_timeout"
+fi

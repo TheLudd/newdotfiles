@@ -34,8 +34,8 @@ fi
 
 autorandr --detected | xargs autorandr --load
 
-# disable DPMS to keep monitor hubs awake
-xset -dpms
+# screen blanking follows the power state (never on external power)
+screen-timeout-watch &
 
 picom -f &
 feh --no-fehbg --bg-fill /usr/share/backgrounds/archlinux/simple.png &

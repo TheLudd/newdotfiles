@@ -1,0 +1,6 @@
+#!/bin/sh
+# Locks the screen with slock and blanks it after 1 minute idle while locked,
+# then restores the normal blanking from screen-timeout.
+xset s 60 60
+slock
+screen-timeout

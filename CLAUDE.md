@@ -83,6 +83,10 @@ Located in `config/nvim/` with Lua configuration:
 
 The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btusb's id table in stock kernels (the id is in bluetooth-next), so btusb binds it as a generic controller, never loads its firmware and the reset times out (`hci0: Opcode 0x0c03 failed: -110`). `system/60-btusb-mt7902` registers `dkms/btusb-mt7902` on machines with the chip: its `fetch-source` downloads btusb.c for the kernel being built from the stable tree and adds the id. A kernel that already has the id gets an unchanged btusb, and the DKMS module can then go.
 
+### Screen blanking and lock
+
+DPMS stays off so USB-C monitor hubs stay awake; the screen is only blanked by the X screensaver. `bin/screen-timeout` sets it from the power state: never on external power (or without a battery), after 10 minutes on battery. `bin/screen-timeout-watch`, started from `config/sx/sxrc`, reruns it on every `power_supply` udev event. `bin/lock` (dwm `Mod+Q`) blanks after 1 minute while slock is up and restores the power policy on unlock.
+
 ### Bluetooth headset audio
 
 Audio runs on PipeWire + WirePlumber. `bin/hp` / `bin/hs` switch the headset between A2DP and headset (mic) profile; they disable WirePlumber's `linking.pause-playback` around the switch, since the switch removes the sink and WirePlumber would otherwise pause media players over MPRIS. When a phone on the same multipoint headset takes it over, the browser's stream is left cut off from the sink: `bin/bt-audio-watch` (user service `bt-audio-watch.service`) listens to `pactl subscribe` and runs `bin/bt-audio-reset` (profile off and back) when a bluez sink has a playing stream but is not running, retrying with backoff while the phone holds the headset.
