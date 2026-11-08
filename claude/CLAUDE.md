@@ -11,3 +11,5 @@ Filenames: always lower case and dash-separated words.
 When I ask you to explan stuff, I prefer step by step explanations or code/config examples as opposed to just text blocks.
 
 The verb says whether a thing exists: present tense only for what is in the code, "will" for what is decided but not built, "would" for suggestions. Code carries no tense; the sentence introducing it does ("we would add this function:"). No status labels such as Today/Proposed or Current/Needed.
+
+If you are done with a task, commit it. If you did a fix for a previous commit, do a fixup.
