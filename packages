@@ -26,7 +26,9 @@ git-delta
 github-cli
 gnome-keyring
 go
+gst-libav
 gst-plugin-pipewire
+gst-plugins-bad
 gst-plugins-base
 gst-plugins-good
 hacksaw
