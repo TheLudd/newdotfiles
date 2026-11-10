@@ -43,6 +43,8 @@ feh --no-fehbg --bg-fill /usr/share/backgrounds/archlinux/simple.png &
 dunst &
 nm-applet &
 blueman-applet &
+# relays StatusNotifier tray icons (Serein) into the dwm XEmbed systray
+snixembed &
 
 blockkill="-1"
 while [ $blockkill -ne "129" ]
