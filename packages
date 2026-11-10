@@ -31,6 +31,7 @@ gst-plugin-pipewire
 gst-plugins-bad
 gst-plugins-base
 gst-plugins-good
+gst-plugin-va
 hacksaw
 htop
 inetutils
@@ -38,6 +39,7 @@ inotify-tools
 jq
 kbd
 less
+libva-utils
 libxft
 libxinerama
 make
