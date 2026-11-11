@@ -9,6 +9,7 @@ bc
 blueman
 bluez
 bluez-utils
+clang
 cmake
 difftastic
 discord
