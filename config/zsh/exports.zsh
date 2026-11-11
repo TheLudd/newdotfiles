@@ -1,5 +1,6 @@
 # Editor
 export EDITOR='nvim'
+export SUDO_EDITOR='nvim'
 
 # XDG Base Directory Specification compliance
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
