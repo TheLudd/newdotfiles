@@ -4,6 +4,8 @@
 set -euo pipefail
 
 # Re-detect the profile after resume; udev hotplug events are unreliable across suspend
+sudo mkdir -p /etc/systemd/system/autorandr.service.d
+sudo ln -sf "$PWD/autorandr/autorandr-service-override.conf" /etc/systemd/system/autorandr.service.d/override.conf
 sudo systemctl enable autorandr.service
 
 # Hotplug events wait for the monitor link to settle before switching

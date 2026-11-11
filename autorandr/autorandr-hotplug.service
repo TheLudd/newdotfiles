@@ -4,11 +4,13 @@
 # renegotiation leaves the panel black. Waiting first lets the link settle, and
 # any further events that arrive while this unit runs are merged into the
 # running job. Resume still goes through autorandr.service without the delay.
+# Without a saved profile that matches, `horizontal` (built into autorandr)
+# turns on every connected screen at its preferred mode.
 [Unit]
 Description=autorandr after a monitor hotplug event, once the link has settled
 
 [Service]
 Type=oneshot
 ExecStartPre=/usr/bin/sleep 3
-ExecStart=/usr/bin/autorandr --batch --change --default default
+ExecStart=/usr/bin/autorandr --batch --change --default horizontal
 KillMode=process

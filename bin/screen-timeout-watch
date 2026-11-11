@@ -1,8 +1,15 @@
 #!/bin/sh
 # Reapplies screen-timeout whenever a charger is plugged in or pulled.
+# udevadm never notices that X is gone, so the pipeline is stopped with this
+# script: it runs in the background, since a trap only runs once a foreground
+# pipeline has finished, and `wait` returns as soon as a signal arrives.
+trap 'pkill -P $$' EXIT
+trap 'exit' INT TERM HUP
+
 screen-timeout
 udevadm monitor --udev --subsystem-match=power_supply | while read -r line; do
   case $line in
     "UDEV  ["*) screen-timeout ;;
   esac
-done
+done &
+wait

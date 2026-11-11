@@ -71,3 +71,8 @@ do
 done
 
 kill -SIGHUP $(pidof dwmblocks)
+
+# Stop what was started above; anything that does not talk to X (the
+# screen-timeout watcher) would otherwise outlive the session and still claim
+# this display with a stale cookie
+pkill -P $$

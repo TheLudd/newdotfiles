@@ -1,2 +1,6 @@
 #!/bin/bash
-kill -15 $(pidof dwm)
+# Restarts dwm (sxrc starts it again) so it picks up a new monitor layout.
+# Not after the `horizontal` fallback: on machines without saved profiles it
+# only turns a returning screen back on, which dwm handles as it is.
+[[ ${AUTORANDR_CURRENT_PROFILE:-} == horizontal ]] && exit 0
+pkill -u "$USER" -x dwm || true
