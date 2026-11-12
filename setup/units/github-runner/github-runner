@@ -43,8 +43,6 @@ add() {
 			version=$1 url=$2 host=$3
 			curl -fsSL "https://github.com/actions/runner/releases/download/v$version/actions-runner-linux-x64-$version.tar.gz" | tar -xz
 			ACTIONS_RUNNER_INPUT_TOKEN=$token ./config.sh --unattended --replace --url "$url" --name "$host" --labels arch
-			# PATH of the jobs: the service has no login shell
-			echo "$HOME/.local/share/pnpm/bin:/usr/local/bin:/usr/bin" > .path
 		SCRIPT
 	fi
 	sudo systemctl enable --now "github-runner@$name.service"

@@ -14,6 +14,9 @@ ExecStart=/bin/bash -c 'export XDG_RUNTIME_DIR=/run/user/$$UID; exec ./run.sh'
 # pnpm keeps its versions and its store under PNPM_HOME; actions/setup-node
 # keeps node versions in the tool cache. Both are shared by all runners.
 Environment=PNPM_HOME=/var/lib/gh-runner/.local/share/pnpm
+# PATH of the jobs, with pnpm first. The runner's own .path file is only read
+# by its svc.sh service, which this unit replaces
+Environment=PATH=/var/lib/gh-runner/.local/share/pnpm/bin:/usr/local/bin:/usr/bin
 Environment=AGENT_TOOLSDIRECTORY=/var/lib/gh-runner/tool-cache
 Restart=always
 RestartSec=10
