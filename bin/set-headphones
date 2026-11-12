@@ -12,13 +12,5 @@ device=$(echo $device_comma | sed 's/:/_/g')
 bluetoothctl connect $device_comma
 sleep 3
 
-card=$(pactl list short cards | awk -v c="bluez_card.$device" '$2 == c {print $2; exit}')
-"$HOME/bin/bt-set-profile" "$card" headset-head-unit
-sleep 1
-
 sink=$(pactl list short sinks | awk -v d="$device" '$2 ~ "^bluez_(sink|output)\\." d "\\." {print $2; exit}')
 pactl set-default-sink "$sink"
-sleep 1
-
-source=$(pactl list short sources | awk -v d="$device_comma" '$2 == "bluez_input." d {print $2; exit}')
-pactl set-default-source "$source"
