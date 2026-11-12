@@ -1,6 +1,6 @@
 #!/bin/bash
 # GitHub Actions runners (units/github-runner/github-runner): the gh-runner
-# user that jobs run as, its pnpm, the node cache shared by its runners, the
+# system user that jobs run as, its pnpm, the node cache shared by its runners, the
 # github-runner command and the service template. Runners themselves are
 # added per repository with `github-runner add OWNER/REPO`.
 # gh-runner is not in wheel or docker, so a job cannot become root, and homes
@@ -9,7 +9,16 @@ set -euo pipefail
 user=gh-runner
 unit=units/github-runner
 
-id "$user" >/dev/null 2>&1 || sudo useradd -m -s /bin/bash "$user"
+# A system account: no login, state in /var/lib like other services
+id "$user" >/dev/null 2>&1 ||
+	sudo useradd --system --create-home --home-dir "/var/lib/$user" --shell /usr/bin/nologin "$user"
+# Rootless podman needs a range of ids for the user, which useradd only gives
+# regular users: take the 65536 after the highest range in use
+if ! grep -q "^$user:" /etc/subuid 2>/dev/null; then
+	start=$(cat /etc/subuid /etc/subgid 2>/dev/null |
+		awk -F: '{ end = $2 + $3; if (end > max) max = end } END { print (max ? max : 100000) }')
+	sudo usermod --add-subuids "$start-$((start + 65535))" --add-subgids "$start-$((start + 65535))" "$user"
+fi
 # gh-runner cannot read this repo: its scripts arrive on stdin
 as_runner() { sudo -u "$user" -H bash -c 'cd && exec bash -s'; }
 as_runner < lib/install-pnpm

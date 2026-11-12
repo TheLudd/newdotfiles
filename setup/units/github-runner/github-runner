@@ -11,7 +11,7 @@
 # Needs the caller's gh login (admin rights on the repo) and sudo.
 set -euo pipefail
 user=gh-runner
-home=/home/$user
+home=/var/lib/$user
 
 # TheLudd/gaius -> theludd-gaius
 instance() { tr '[:upper:]/' '[:lower:]-' <<< "$1"; }

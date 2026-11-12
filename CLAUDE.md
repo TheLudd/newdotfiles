@@ -111,7 +111,7 @@ margin lives in its own repo at `~/code/margin`. It serves the markdown files in
 
 ### GitHub Actions runners
 
-The `github-runner` unit (role `server`) lets a machine run GitHub Actions jobs for private repositories. Its `system` step creates the `gh-runner` user (not in `wheel` or `docker`; homes are 700), installs pnpm in its home and installs the `github-runner` command and the `github-runner@.service` template.
+The `github-runner` unit (role `server`) lets a machine run GitHub Actions jobs for private repositories. Its `system` step creates the `gh-runner` system user (no login, home `/var/lib/gh-runner`, mode 700, not in `wheel` or `docker`) with an id range for rootless podman, installs pnpm in its home and installs the `github-runner` command and the `github-runner@.service` template.
 ```bash
 github-runner add OWNER/REPO     # download a runner, register it to the repo, start it; refuses public repos
 github-runner remove OWNER/REPO  # stop, unregister, delete its folder
