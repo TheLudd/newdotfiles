@@ -1,0 +1,13 @@
+#!/bin/bash
+# Install a standalone pnpm (updated with `pnpm self-update`) into PNPM_HOME,
+# by default ~/.local/share/pnpm, unless it is there. Reads no other file, so
+# it can be piped into another user's bash: sudo -u <user> -H bash -s < lib/install-pnpm
+set -euo pipefail
+export PNPM_HOME=${PNPM_HOME:-$HOME/.local/share/pnpm}
+[ -x "$PNPM_HOME/bin/pnpm" ] && exit 0
+# pnpm refuses to install itself while its bin directory is not on PATH
+export PATH="$PNPM_HOME/bin:$PATH"
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+curl -fsSL https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linux-x64.tar.gz | tar -xz -C "$tmp"
+"$tmp/pnpm" self-update

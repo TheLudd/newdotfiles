@@ -1,0 +1,20 @@
+#!/bin/bash
+# GitHub Actions runners (units/github-runner/github-runner): the gh-runner
+# user that jobs run as, its pnpm, the node cache shared by its runners, the
+# github-runner command and the service template. Runners themselves are
+# added per repository with `github-runner add OWNER/REPO`.
+# gh-runner is not in wheel or docker, so a job cannot become root, and homes
+# are 700, so it cannot read other users' files.
+set -euo pipefail
+user=gh-runner
+unit=units/github-runner
+
+id "$user" >/dev/null 2>&1 || sudo useradd -m -s /bin/bash "$user"
+# gh-runner cannot read this repo: its scripts arrive on stdin
+as_runner() { sudo -u "$user" -H bash -c 'cd && exec bash -s'; }
+as_runner < lib/install-pnpm
+as_runner <<< 'mkdir -p ~/runners ~/tool-cache'
+
+sudo install -m 755 "$unit/github-runner" /usr/local/bin/github-runner
+sudo install -m 644 "$unit/github-runner@.service" /etc/systemd/system/github-runner@.service
+sudo systemctl daemon-reload

@@ -16,7 +16,9 @@ Arch Linux dotfiles repository using dwm window manager. Custom forks of suckles
 ./init system        # rerun one phase: system | user | user-login
 ./init user 30-node  # rerun only the named scripts of a phase
 ./init apps margin   # optional apps; `./init apps` lists them
+./init system github-runner  # rerun one unit's part of a phase
 ```
+A machine's roles are the names in `/etc/newdotfiles/roles`, one per line (`server`). After changing that file, `./init system` and `./init user` set up what the new roles ask for.
 `user-login` (gh login with the token in gnome-keyring, ssh key upload) needs the keyring that PAM creates at login, so it runs after the relogin: `setup/user/90-pending-login` leaves a marker when it is not done yet, and `config/zsh/pending-setup.zsh` offers it at the tty login and in every terminal until `setup/user-login/10-github` removes the marker. A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
 
 ### Recompile suckless tools after changes
@@ -41,10 +43,12 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 
 - **`init`** - Entry point: `init [system | user | user-login | apps [name...]]`. Without a phase it runs `system` unless `/var/lib/newdotfiles/system-done` exists (written by `run-all` when the whole system phase succeeds), then `user`
 - **`setup/`** - Everything that sets a machine or a user up. The phase names and paths in this file (`system/10-packages`, `lib/clone`, `packages`) are relative to it
-  - **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), or only the named ones. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts run with `setup/` as the working directory and reach the rest of the repo through `$DOTFILES`. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
+  - **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), then that phase of each of the machine's units, or only the named scripts or units. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts run with `setup/` as the working directory and reach the rest of the repo through `$DOTFILES`. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
   - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
   - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, the marker for `user-login`
   - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
+  - **`roles/`** - One file per role, naming the units a machine with that role gets (`server`: machines that host services). What every machine gets is in the phase folders and package files
+  - **`units/`** - One folder per unit, a self-contained piece of setup. Each part is optional: `packages` and `paru-packages`, and the executables `system`, `user` and `user-login`, run in the phase of that name. `lib/roles` prints the machine's roles, `lib/units` the units they name, `lib/wanted-packages repo|aur` the packages of the base files and those units (plus kernel and hardware packages for `repo`); `system/10-packages`, `system/40-aur-packages` and `pkg-sync` read the last
   - **`apps/`** - Optional per-user apps, one script per app (`margin`)
   - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
   - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
@@ -53,6 +57,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
   - **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from `lib/kernels` through the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `files/pacman-hooks/99-grub.hook` (installed by `system/60-grub`) runs `lib/update-grub` when a kernel is installed or removed, which regenerates grub.cfg with the machine's kernel as the default entry. `switch-kernel` keeps the other kernels as GRUB fallbacks and lists them in `/var/lib/newdotfiles/pending-kernel-cleanup`; the first shell running the chosen kernel offers to remove them (`config/zsh/pending-setup.zsh`)
   - **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids), plus `dkms` and the kernel's headers when a chip needs a DKMS driver (`lib/usb-present`); used by the installer (which passes its kernel choice), `system/10-packages`, `switch-kernel` and `pkg-sync`
   - **`lib/clone`** - Clone a repo if missing and set its origin
+  - **`lib/install-pnpm`** - Install a standalone pnpm into `PNPM_HOME`; reads no other file, so it can be piped into another user's bash
   - **`files/`** - What the system phase installs outside the home:
     - **`dkms/`** - Drivers built with DKMS, registered by a `system/` script on machines with the chip; the DKMS pacman hook rebuilds them for each installed kernel
     - **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
@@ -103,6 +108,19 @@ margin lives in its own repo at `~/code/margin`. It serves the markdown files in
 - `config/systemd/user/margin.service`: a user service listening on 127.0.0.1:48217 (`-host margin.local` lets it accept that name), enabled through `default.target.wants` for every user and started only for users who have the binary (`ConditionPathExists`)
 - `setup/files/nginx/margin.conf` + `setup/system/60-nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
 - `setup/system/60-hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
+
+### GitHub Actions runners
+
+The `github-runner` unit (role `server`) lets a machine run GitHub Actions jobs for private repositories. Its `system` step creates the `gh-runner` user (not in `wheel` or `docker`; homes are 700), installs pnpm in its home and installs the `github-runner` command and the `github-runner@.service` template.
+```bash
+github-runner add OWNER/REPO     # download a runner, register it to the repo, start it; refuses public repos
+github-runner remove OWNER/REPO  # stop, unregister, delete its folder
+github-runner list
+```
+- A runner serves one repository: `~gh-runner/runners/<owner>-<repo>`, service `github-runner@<owner>-<repo>`, labels `self-hosted`, `linux`, `arch`. Which repositories a machine serves is not in this repo
+- Jobs run directly on the machine as `gh-runner`, at `Nice=10` / `CPUWeight=20`
+- All runners share the node versions that `actions/setup-node` downloads (`AGENT_TOOLSDIRECTORY=~gh-runner/tool-cache`) and pnpm with its versions and store (`PNPM_HOME`; pnpm switches to the project's `packageManager` version itself). Checkouts stay between runs, so `actions/checkout` only fetches
+- Workflows use `runs-on: [self-hosted, arch]`, `actions/setup-node` with `node-version-file: package.json` and no `cache:`, and plain `pnpm install --frozen-lockfile`; `pnpm/action-setup` is not needed
 
 ### Zsh Configuration
 

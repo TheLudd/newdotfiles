@@ -1,0 +1,26 @@
+#!/bin/bash
+# wanted-packages repo|aur - print the packages this machine should have, one
+# per line: `packages` (or `paru-packages`) plus the same file of each of the
+# machine's units (lib/units). For repo also the kernel (lib/kernel-package)
+# and what the hardware needs (lib/hardware-packages).
+# Read by system/10-packages, system/40-aur-packages and bin/pkg-sync.
+set -euo pipefail
+dir="$(dirname "$(readlink -f "$0")")/.."
+
+case ${1:-} in
+	repo) file=packages ;;
+	aur) file=paru-packages ;;
+	*) echo "Usage: wanted-packages repo|aur" >&2; exit 1 ;;
+esac
+
+names() { if [ -f "$1" ]; then grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$1" || true; fi; }
+
+names "$dir/$file"
+units=$("$dir/lib/units")
+for unit in $units; do
+	names "$dir/units/$unit/$file"
+done
+if [ "$1" = repo ]; then
+	"$dir/lib/kernel-package"
+	"$dir/lib/hardware-packages"
+fi

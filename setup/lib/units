@@ -1,0 +1,14 @@
+#!/bin/bash
+# Prints the units this machine's roles (lib/roles) ask for, one per line, in
+# the order the roles list them; a unit in several roles is printed once.
+# A role is a file in roles/ naming units; a unit is a folder in units/.
+set -euo pipefail
+dir="$(dirname "$(readlink -f "$0")")/.."
+
+for role in $("$dir/lib/roles"); do
+	[ -f "$dir/roles/$role" ] || { echo "Unknown role $role. Valid: $(ls "$dir/roles" | tr '\n' ' ')" >&2; exit 1; }
+	for unit in $(grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$dir/roles/$role"); do
+		[ -d "$dir/units/$unit" ] || { echo "Role $role names unknown unit $unit" >&2; exit 1; }
+		echo "$unit"
+	done
+done | awk '!seen[$0]++'

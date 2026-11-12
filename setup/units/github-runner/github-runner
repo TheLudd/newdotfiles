@@ -1,0 +1,81 @@
+#!/bin/bash
+# github-runner - GitHub Actions runners on this machine, one per repository
+# Usage: github-runner add OWNER/REPO     download a runner, register it to the repo and start it
+#        github-runner remove OWNER/REPO  stop it, unregister it and delete its folder
+#        github-runner list               the runners and whether they are running
+#
+# Each runner lives in ~gh-runner/runners/<owner>-<repo> and runs as
+# github-runner@<owner>-<repo>.service. Jobs run as gh-runner, directly on this
+# machine, with the label `arch`. Never add a public repository: pull requests
+# from forks would run their code here.
+# Needs the caller's gh login (admin rights on the repo) and sudo.
+set -euo pipefail
+user=gh-runner
+home=/home/$user
+
+# TheLudd/gaius -> theludd-gaius
+instance() { tr '[:upper:]/' '[:lower:]-' <<< "$1"; }
+
+# Runs the script on stdin as gh-runner in the runner's folder, with the
+# token as $token. The token travels on stdin, so it is in no process list.
+in_runner() {
+	local dir=$1 token=$2
+	shift 2
+	{ printf 'token=%q\ncd %q\n' "$token" "$dir"; cat; } | sudo -u "$user" -H bash -s -- "$@"
+}
+
+token() { gh api -X POST "repos/$1/actions/runners/$2-token" --jq .token; }
+
+add() {
+	local repo=$1 name dir version
+	name=$(instance "$repo")
+	dir=$home/runners/$name
+	if [ "$(gh api "repos/$repo" --jq .visibility)" = public ]; then
+		echo "$repo is public: pull requests from forks would run code on this machine" >&2
+		exit 1
+	fi
+	if ! sudo test -f "$dir/.runner"; then
+		version=$(gh api repos/actions/runner/releases/latest --jq .tag_name)
+		version=${version#v}
+		sudo -u "$user" mkdir -p "$dir"
+		in_runner "$dir" "$(token "$repo" registration)" "$version" "https://github.com/$repo" "$(< /etc/hostname)" <<-'SCRIPT'
+			set -euo pipefail
+			version=$1 url=$2 host=$3
+			curl -fsSL "https://github.com/actions/runner/releases/download/v$version/actions-runner-linux-x64-$version.tar.gz" | tar -xz
+			ACTIONS_RUNNER_INPUT_TOKEN=$token ./config.sh --unattended --replace --url "$url" --name "$host" --labels arch
+			# PATH of the jobs: the service has no login shell
+			echo "$HOME/.local/share/pnpm/bin:/usr/local/bin:/usr/bin" > .path
+		SCRIPT
+	fi
+	sudo systemctl enable --now "github-runner@$name.service"
+}
+
+remove() {
+	local repo=$1 name dir
+	name=$(instance "$repo")
+	dir=$home/runners/$name
+	sudo test -d "$dir" || { echo "No runner for $repo" >&2; exit 1; }
+	sudo systemctl disable --now "github-runner@$name.service"
+	if sudo test -f "$dir/.runner"; then
+		in_runner "$dir" "$(token "$repo" remove)" <<-'SCRIPT'
+			ACTIONS_RUNNER_INPUT_TOKEN=$token ./config.sh remove
+		SCRIPT
+	fi
+	sudo rm -rf "$dir"
+}
+
+list() {
+	local name
+	for name in $(sudo ls "$home/runners"); do
+		printf '%-40s %s\n' "$name" "$(systemctl is-active "github-runner@$name.service" || true)"
+	done
+}
+
+case "${1:-}" in
+	add | remove)
+		[[ ${2:-} == */* ]] || { echo "Usage: github-runner $1 OWNER/REPO" >&2; exit 1; }
+		"$1" "$2"
+		;;
+	list) list ;;
+	*) sed -n 's/^# \{0,1\}//; 2,5p' "$0"; exit 1 ;;
+esac

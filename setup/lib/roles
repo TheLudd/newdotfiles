@@ -1,0 +1,8 @@
+#!/bin/bash
+# Prints this machine's roles, one per line: the names in /etc/newdotfiles/roles,
+# each a file in roles/. A machine without that file has no role and gets only
+# what every machine gets.
+set -euo pipefail
+file=/etc/newdotfiles/roles
+[ -f "$file" ] || exit 0
+grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$file" || true

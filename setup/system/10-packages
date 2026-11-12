@@ -1,8 +1,8 @@
 #!/bin/bash
-# Install the packages in `packages`, this machine's kernel (lib/kernel-package)
-# and the ones its hardware needs (lib/hardware-packages), upgrading the system in the same run so nothing is
+# Install the packages in `packages`, those of this machine's units, its kernel
+# and the ones its hardware needs (lib/wanted-packages), upgrading the system in the same run so nothing is
 # installed against an outdated package database. Microcode needs no GRUB step:
 # the mkinitcpio `microcode` hook packs it into the initramfs, which pacman
 # rebuilds when firmware is installed.
 set -euo pipefail
-{ cat packages; lib/kernel-package; lib/hardware-packages; } | sudo pacman -Syu --needed --noconfirm -
+lib/wanted-packages repo | sudo pacman -Syu --needed --noconfirm -

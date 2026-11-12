@@ -1,0 +1,23 @@
+# One GitHub Actions runner, registered to one repository by
+# `github-runner add`; the instance name is its folder in ~gh-runner/runners.
+[Unit]
+Description=GitHub Actions runner for %i
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=gh-runner
+WorkingDirectory=/home/gh-runner/runners/%i
+ExecStart=/home/gh-runner/runners/%i/run.sh
+# pnpm keeps its versions and its store under PNPM_HOME; actions/setup-node
+# keeps node versions in the tool cache. Both are shared by all runners.
+Environment=PNPM_HOME=/home/gh-runner/.local/share/pnpm
+Environment=AGENT_TOOLSDIRECTORY=/home/gh-runner/tool-cache
+Restart=always
+RestartSec=10
+# Jobs give way to interactive work; on an idle machine they get every core
+Nice=10
+CPUWeight=20
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,8 @@
 #!/bin/bash
-# Usage: run-all <folder> [name...]
-# Runs every script in folder in name order, or only the named ones. A failing
+# Usage: run-all <phase> [name...]
+# Runs every script in the phase folder in name order, then that phase of each
+# of this machine's units (units/<unit>/<phase>, lib/units). With names, only
+# those: a script in the folder, or a unit. A failing
 # script does not stop the others: a script that depends on an earlier one
 # checks for what it needs itself. Failures are listed at the end and make the
 # exit status non-zero, so after a fix the phase is simply run again.
@@ -29,14 +31,21 @@ PATH="$DOTFILES/bin:$PATH"
 scripts=()
 if (($#)); then
 	for name in "$@"; do
-		if [[ ! -f $folder/$name ]]; then
+		if [[ -f $folder/$name ]]; then
+			scripts+=("$folder/$name")
+		elif [[ -f units/$name/$folder ]]; then
+			scripts+=("units/$name/$folder")
+		else
 			echo "Unknown in $folder: $name. Valid: $(ls "$folder" | tr '\n' ' ')" >&2
 			exit 1
 		fi
-		scripts+=("$folder/$name")
 	done
 else
 	scripts=("$folder"/*)
+	units=$(lib/units) || exit 1
+	for unit in $units; do
+		[[ -f units/$unit/$folder ]] && scripts+=("units/$unit/$folder")
+	done
 fi
 
 failed=()
