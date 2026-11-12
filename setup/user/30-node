@@ -1,17 +1,11 @@
 #!/bin/bash
-# Install pnpm (a standalone binary, updated with `pnpm self-update`), n through
+# Install pnpm (lib/install-pnpm), n through
 # pnpm and node LTS through n, all in the user's home: PNPM_HOME and N_PREFIX
 # come from config/zsh/exports.zsh. Node versions are switched with `n <version>`.
 set -euo pipefail
 # pnpm refuses global installs while its bin directory is not on PATH
 export PATH="$PNPM_HOME/bin:$N_PREFIX/bin:$PATH"
 
-if [ ! -x "$PNPM_HOME/bin/pnpm" ]; then
-	tmp="$(mktemp -d)"
-	trap 'rm -rf "$tmp"' EXIT
-	curl -fsSL https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linux-x64.tar.gz | tar -xz -C "$tmp"
-	"$tmp/pnpm" self-update
-fi
-
+lib/install-pnpm
 [ -x "$PNPM_HOME/bin/n" ] || pnpm add -g n
 [ -x "$N_PREFIX/bin/node" ] || n lts
