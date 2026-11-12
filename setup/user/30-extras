@@ -1,4 +1,4 @@
 #!/bin/bash
 # Things that are not packages: the pip venv and the dictation model.
 set -euo pipefail
-bin/setup-extras
+"$DOTFILES/bin/setup-extras"

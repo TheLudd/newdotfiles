@@ -2,10 +2,10 @@
 # Link each app folder in config/ into ~/.config, replacing what is there.
 set -euo pipefail
 mkdir -p "$HOME/.config"
-for path in config/*; do
+for path in "$DOTFILES"/config/*; do
 	destination="$HOME/.config/$(basename "$path")"
-	[[ $(readlink "$destination") == "$PWD/$path" ]] && continue
+	[[ $(readlink "$destination") == "$path" ]] && continue
 	echo "link $destination"
 	rm -rf "$destination"
-	ln -sfn "$PWD/$path" "$destination"
+	ln -sfn "$path" "$destination"
 done

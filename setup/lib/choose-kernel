@@ -3,7 +3,7 @@
 # choice can be captured: kernel=$(lib/choose-kernel). The default is this
 # machine's current kernel (lib/kernel-package).
 # The kernels offered are listed in lib/kernels.
-# Used by scripts/archinstall/install-encrypted and bin/switch-kernel.
+# Used by archinstall/install-encrypted and bin/switch-kernel.
 set -euo pipefail
 dir="$(dirname "$(readlink -f "$0")")"
 mapfile -t kernels < "$dir/kernels"

@@ -4,14 +4,14 @@
 #        pkg-sync install          upgrade the system and install the missing ones
 #        pkg-sync remove [pkg...]  remove the extra ones, or only the named ones
 #
-# Wanted: packages, paru-packages, kept-packages, lib/kernel-package and
+# Wanted (in setup/): packages, paru-packages, kept-packages, lib/kernel-package and
 # lib/hardware-packages.
 # Extra: installed explicitly (pacman -Qe) and not wanted. On remove, an extra
 # package that another package still needs is marked as a dependency instead,
 # and wanted packages installed as dependencies are marked explicit first so
 # pacman does not remove them along with the package that pulled them in.
 set -euo pipefail
-dir="$(dirname "$(readlink -f "$0")")/.."
+dir="$(dirname "$(readlink -f "$0")")/../setup"
 
 names() { grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$dir/$1"; }
 repo_wanted() { names packages; "$dir/lib/kernel-package"; "$dir/lib/hardware-packages"; }

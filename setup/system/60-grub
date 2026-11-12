@@ -4,4 +4,4 @@
 set -euo pipefail
 sudo rm -f /etc/pacman.d/hooks/90-grub.hook
 sudo install -m 755 lib/update-grub /usr/local/bin/update-grub
-sudo install -Dm 644 pacman-hooks/99-grub.hook /etc/pacman.d/hooks/99-grub.hook
+sudo install -Dm 644 files/pacman-hooks/99-grub.hook /etc/pacman.d/hooks/99-grub.hook

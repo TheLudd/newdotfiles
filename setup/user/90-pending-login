@@ -8,6 +8,6 @@ if lib/github-done; then
 	rm -f "$marker"
 else
 	mkdir -p "$(dirname "$marker")"
-	echo "$PWD" > "$marker"
+	echo "$DOTFILES" > "$marker"
 	echo "Log out and back in: the next shell offers to finish the setup"
 fi

@@ -5,12 +5,12 @@ set -euo pipefail
 
 # Re-detect the profile after resume; udev hotplug events are unreliable across suspend
 sudo mkdir -p /etc/systemd/system/autorandr.service.d
-sudo ln -sf "$PWD/autorandr/autorandr-service-override.conf" /etc/systemd/system/autorandr.service.d/override.conf
+sudo ln -sf "$DOTFILES/autorandr/autorandr-service-override.conf" /etc/systemd/system/autorandr.service.d/override.conf
 sudo systemctl enable autorandr.service
 
 # Hotplug events wait for the monitor link to settle before switching
-sudo ln -sf "$PWD/autorandr/autorandr-hotplug.service" /etc/systemd/system/autorandr-hotplug.service
-sudo ln -sf "$PWD/autorandr/hotplug.rules" /etc/udev/rules.d/40-monitor-hotplug.rules
+sudo ln -sf "$DOTFILES/autorandr/autorandr-hotplug.service" /etc/systemd/system/autorandr-hotplug.service
+sudo ln -sf "$DOTFILES/autorandr/hotplug.rules" /etc/udev/rules.d/40-monitor-hotplug.rules
 sudo systemctl daemon-reload
 # No udevd runs in the installer's chroot; udev reads the rules when it starts
 if [[ -S /run/udev/control ]]; then

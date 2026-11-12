@@ -14,19 +14,19 @@ system_done=/var/lib/newdotfiles/system-done
 
 case ${1:-} in
 	"")
-		[[ -f $system_done ]] || ./run-all system || exit 1
-		exec ./run-all user
+		[[ -f $system_done ]] || ./setup/run-all system || exit 1
+		exec ./setup/run-all user
 		;;
 	system | user | user-login)
-		exec ./run-all "$@"
+		exec ./setup/run-all "$@"
 		;;
 	apps)
 		shift
 		if (($# == 0)); then
-			echo "Apps: $(ls apps | tr '\n' ' ')"
+			echo "Apps: $(ls setup/apps | tr '\n' ' ')"
 			exit 0
 		fi
-		exec ./run-all apps "$@"
+		exec ./setup/run-all apps "$@"
 		;;
 	*)
 		sed -n '2,8s/^# //p' "$0"

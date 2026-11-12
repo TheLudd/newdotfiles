@@ -1,5 +1,5 @@
 #!/bin/bash
-listFile=~/newdotfiles/packages
+listFile=~/newdotfiles/setup/packages
 sudo pacman -S $@
 
 if [ $? -eq 0 ]; then

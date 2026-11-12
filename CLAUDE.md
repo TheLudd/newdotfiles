@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) and truetm live in their own repos, cloned into `~/code/<name>` and installed system-wide (see `repos`).
+Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) and truetm live in their own repos, cloned into `~/code/<name>` and installed system-wide (see `setup/repos`).
 
 ## Commands
 
 ### Set up a machine
-`scripts/archinstall/add-user <name>` creates a user, clones this repo into `~/newdotfiles` and runs `init` as that user; the guided Arch install runs it for the first user inside the chroot. After that, logging in offers the last phase.
+`archinstall/add-user <name>` creates a user, clones this repo into `~/newdotfiles` and runs `init` as that user; the guided Arch install runs it for the first user inside the chroot. After that, logging in offers the last phase.
 ```bash
 ./init               # system (until it has finished once on this machine) + user
                      # log out and back in: the next shell offers `init user-login`
@@ -17,7 +17,7 @@ Arch Linux dotfiles repository using dwm window manager. Custom forks of suckles
 ./init user 30-node  # rerun only the named scripts of a phase
 ./init apps margin   # optional apps; `./init apps` lists them
 ```
-`user-login` (gh login with the token in gnome-keyring, ssh key upload) needs the keyring that PAM creates at login, so it runs after the relogin: `user/90-pending-login` leaves a marker when it is not done yet, and `config/zsh/pending-setup.zsh` offers it at the tty login and in every terminal until `user-login/10-github` removes the marker. A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
+`user-login` (gh login with the token in gnome-keyring, ssh key upload) needs the keyring that PAM creates at login, so it runs after the relogin: `setup/user/90-pending-login` leaves a marker when it is not done yet, and `config/zsh/pending-setup.zsh` offers it at the tty login and in every terminal until `setup/user-login/10-github` removes the marker. A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
 
 ### Recompile suckless tools after changes
 ```bash
@@ -27,7 +27,7 @@ cd ~/code/st && make && sudo make install
 
 ### Packages
 ```bash
-pis <pkg...>             # pacman install and add to `packages` (`parus` for AUR → `paru-packages`)
+pis <pkg...>             # pacman install and add to `setup/packages` (`parus` for AUR → `setup/paru-packages`)
 pkg-sync                 # list missing and extra packages (installed explicitly, not in the files); silent when in sync
 pkg-sync install         # install the missing ones
 pkg-sync remove [pkg...] # remove the extra ones; one another package needs is marked as a dependency
@@ -40,29 +40,34 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 ### Directory Structure
 
 - **`init`** - Entry point: `init [system | user | user-login | apps [name...]]`. Without a phase it runs `system` unless `/var/lib/newdotfiles/system-done` exists (written by `run-all` when the whole system phase succeeds), then `user`
-- **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), or only the named ones. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
-- **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
-- **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, the marker for `user-login`
-- **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
-- **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
-- **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
-- **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from `lib/kernels` through the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `pacman-hooks/99-grub.hook` (installed by `system/60-grub`) runs `lib/update-grub` when a kernel is installed or removed, which regenerates grub.cfg with the machine's kernel as the default entry. `switch-kernel` keeps the other kernels as GRUB fallbacks and lists them in `/var/lib/newdotfiles/pending-kernel-cleanup`; the first shell running the chosen kernel offers to remove them (`config/zsh/pending-setup.zsh`)
-- **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids), plus `dkms` and the kernel's headers when a chip needs a DKMS driver (`lib/usb-present`); used by the installer (which passes its kernel choice), `system/10-packages`, `switch-kernel` and `pkg-sync`
-- **`dkms/`** - Drivers built with DKMS, registered by a `system/` script on machines with the chip; the DKMS pacman hook rebuilds them for each installed kernel
-- **`apps/`** - Optional per-user apps, one script per app (`margin`)
-- **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
-- **`lib/clone`** - Clone a repo if missing and set its origin
+- **`setup/`** - Everything that sets a machine or a user up. The phase names and paths in this file (`system/10-packages`, `lib/clone`, `packages`) are relative to it
+  - **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), or only the named ones. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts run with `setup/` as the working directory and reach the rest of the repo through `$DOTFILES`. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
+  - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
+  - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, the marker for `user-login`
+  - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
+  - **`apps/`** - Optional per-user apps, one script per app (`margin`)
+  - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
+  - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
+  - **`pip-packages`** - Packages for the pip venv, installed by `bin/setup-extras`
+  - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
+  - **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from `lib/kernels` through the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `files/pacman-hooks/99-grub.hook` (installed by `system/60-grub`) runs `lib/update-grub` when a kernel is installed or removed, which regenerates grub.cfg with the machine's kernel as the default entry. `switch-kernel` keeps the other kernels as GRUB fallbacks and lists them in `/var/lib/newdotfiles/pending-kernel-cleanup`; the first shell running the chosen kernel offers to remove them (`config/zsh/pending-setup.zsh`)
+  - **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids), plus `dkms` and the kernel's headers when a chip needs a DKMS driver (`lib/usb-present`); used by the installer (which passes its kernel choice), `system/10-packages`, `switch-kernel` and `pkg-sync`
+  - **`lib/clone`** - Clone a repo if missing and set its origin
+  - **`files/`** - What the system phase installs outside the home:
+    - **`dkms/`** - Drivers built with DKMS, registered by a `system/` script on machines with the chip; the DKMS pacman hook rebuilds them for each installed kernel
+    - **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
+    - **`nginx/`** - nginx sites, linked into `/etc/nginx/sites-enabled` by `system/60-nginx`
+    - **`pacman-hooks/`** - pacman hooks, installed by `system/60-grub`
+- **`archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user` (from a copy of the repo on the stick, since the chroot cannot see it), which also adds later users and runs `init` for them; in the chroot `systemctl` only enables units and the udev reload is skipped; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
 - **`config/`** - Application configs, symlinked to `~/.config/`
 - **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `user/10-link-claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
 - **`bin/`** - User scripts, symlinked to `~/bin/`
 - **`githooks/`** - This repo's git hooks (`core.hooksPath`, set by `user/30-git-hooks`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the dotfiles block (`bin/check-dotfiles-repo`) updates on commit, push and branch switches
-- **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
 - **`autorandr/`** - Monitor profiles with postswitch hooks, plus `hotplug.rules` and `autorandr-hotplug.service`: DRM hotplug events run autorandr through a unit that first sleeps 3s so a USB-C monitor's link renegotiation has finished before the mode is set. Resume still runs the package's `autorandr.service` directly.
-- **`scripts/archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user` (from a copy of the repo on the stick, since the chroot cannot see it), which also adds later users and runs `init` for them; in the chroot `systemctl` only enables units and the udev reload is skipped; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
 
 ### Configuration Management
 
-Uses direct symlinking via shell scripts (no stow/chezmoi). `user/10-link-config` symlinks each app directory in `config/` to `~/.config/`.
+Uses direct symlinking via shell scripts (no stow/chezmoi). `setup/user/10-link-config` symlinks each app directory in `config/` to `~/.config/`.
 
 ### Neovim Setup
 
@@ -77,11 +82,11 @@ Located in `config/nvim/` with Lua configuration:
 
 ### Dictation
 
-`bin/dictation-stream` is a streaming speech-to-text daemon: NVIDIA Nemotron 3.5 streaming ASR run on the CPU through sherpa-onnx (installed in the pip venv at `~/.local/share/pip-venv`, see `pip-packages`), typing word by word into the focused window with xdotool. `bin/dictation-toggle` (dwm `Mod+V`) starts/stops it and `bin/dictation-status` feeds the dwmblocks indicator. The model lives in `~/.local/share/dictation/models` and is fetched by `dictation-stream install-model` from `bin/setup-extras`. `config/dictation/replacements.txt` holds "heard => wanted" fixes for words the model mishears; sherpa-onnx only offers greedy decoding for NeMo streaming models, so hotword boosting is not available.
+`bin/dictation-stream` is a streaming speech-to-text daemon: NVIDIA Nemotron 3.5 streaming ASR run on the CPU through sherpa-onnx (installed in the pip venv at `~/.local/share/pip-venv`, see `setup/pip-packages`), typing word by word into the focused window with xdotool. `bin/dictation-toggle` (dwm `Mod+V`) starts/stops it and `bin/dictation-status` feeds the dwmblocks indicator. The model lives in `~/.local/share/dictation/models` and is fetched by `dictation-stream install-model` from `bin/setup-extras`. `config/dictation/replacements.txt` holds "heard => wanted" fixes for words the model mishears; sherpa-onnx only offers greedy decoding for NeMo streaming models, so hotword boosting is not available.
 
 ### Bluetooth chip
 
-The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btusb's id table in stock kernels (the id is in bluetooth-next), so btusb binds it as a generic controller, never loads its firmware and the reset times out (`hci0: Opcode 0x0c03 failed: -110`). `system/60-btusb-mt7902` registers `dkms/btusb-mt7902` on machines with the chip: its `fetch-source` downloads btusb.c for the kernel being built from the stable tree and adds the id. A kernel that already has the id gets an unchanged btusb, and the DKMS module can then go.
+The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btusb's id table in stock kernels (the id is in bluetooth-next), so btusb binds it as a generic controller, never loads its firmware and the reset times out (`hci0: Opcode 0x0c03 failed: -110`). `setup/system/60-btusb-mt7902` registers `setup/files/dkms/btusb-mt7902` on machines with the chip: its `fetch-source` downloads btusb.c for the kernel being built from the stable tree and adds the id. A kernel that already has the id gets an unchanged btusb, and the DKMS module can then go.
 
 ### Screen blanking and lock
 
@@ -94,10 +99,10 @@ Audio runs on PipeWire + WirePlumber. `bin/hp` / `bin/hs` switch the headset bet
 ### margin (markdown reader/editor)
 
 margin lives in its own repo at `~/code/margin`. It serves the markdown files in the folders listed in `~/.config/margin/config.json` (untracked, edited from margin's settings screen) at http://margin.local for reading and inline editing. Here it is wired up by:
-- `apps/margin` (`init apps margin`): clones `~/code/margin` if missing, runs `make install` there, installing to `~/.local/bin/margin`, and restarts the service
+- `setup/apps/margin` (`init apps margin`): clones `~/code/margin` if missing, runs `make install` there, installing to `~/.local/bin/margin`, and restarts the service
 - `config/systemd/user/margin.service`: a user service listening on 127.0.0.1:48217 (`-host margin.local` lets it accept that name), enabled through `default.target.wants` for every user and started only for users who have the binary (`ConditionPathExists`)
-- `nginx/margin.conf` + `system/60-nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
-- `system/60-hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
+- `setup/files/nginx/margin.conf` + `setup/system/60-nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
+- `setup/system/60-hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
 
 ### Zsh Configuration
 

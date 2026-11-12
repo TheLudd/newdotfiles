@@ -1,3 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-ln -sfn "$PWD/bin" "$HOME/bin"

@@ -1,6 +1,6 @@
-# Offer to finish the setup (gh login, ssh key upload) when user/90-pending-login
+# Offer to finish the setup (gh login, ssh key upload) when setup/user/90-pending-login
 # left a marker holding the dotfiles repo's path. Runs at the tty login before
-# X starts, and in every terminal until user-login/10-github removes it.
+# X starts, and in every terminal until setup/user-login/10-github removes it.
 () {
 	local marker=$XDG_STATE_HOME/init/pending-user-login
 	[[ -f $marker ]] || return

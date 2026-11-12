@@ -5,7 +5,7 @@
 set -euo pipefail
 dest="$HOME/.config/claude"
 mkdir -p "$dest"
-for entry in "$PWD"/claude/*; do
+for entry in "$DOTFILES"/claude/*; do
 	target="$dest/$(basename "$entry")"
 	[[ $(readlink "$target") == "$entry" ]] && continue
 	echo "link $target"

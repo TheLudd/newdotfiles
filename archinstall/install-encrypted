@@ -7,7 +7,7 @@
 #
 # One passphrase unlocks root at boot. Home and data unlock from keyfiles kept
 # on the encrypted root; the passphrase is also added to them for recovery.
-# The root account is locked: it creates your user (scripts/archinstall/add-user),
+# The root account is locked: it creates your user (archinstall/add-user),
 # which also clones the dotfiles and runs init as the user, and you use sudo
 # from there.
 set -euo pipefail
@@ -19,7 +19,7 @@ SWAP_SIZE=8G
 KEYMAP=sv-latin1
 HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-PACKAGES="$(cat "$SCRIPT_DIR/../../packages")"
+PACKAGES="$(cat "$SCRIPT_DIR/../setup/packages")"
 
 die() { echo "$*" >&2; exit 1; }
 
@@ -173,7 +173,7 @@ install_packages() {
 	echo "Installing packages"
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /etc/pacman.conf
 	# shellcheck disable=SC2046
-	pacstrap -K /mnt base "$KERNEL" linux-firmware grub efibootmgr $("$SCRIPT_DIR/../../lib/hardware-packages" "$KERNEL") $PACKAGES
+	pacstrap -K /mnt base "$KERNEL" linux-firmware grub efibootmgr $("$SCRIPT_DIR/../setup/lib/hardware-packages" "$KERNEL") $PACKAGES
 	sed -i '/ParallelDownloads/ s/.*/ParallelDownloads = 7/' /mnt/etc/pacman.conf
 }
 
@@ -194,7 +194,7 @@ configure_system() {
 	arch-chroot /mnt systemctl enable NetworkManager fstrim.timer
 
 	echo "$NEW_HOSTNAME" > /mnt/etc/hostname
-	# lib/kernel-package reads the choice, so init and pkg-sync keep this kernel
+	# setup/lib/kernel-package reads the choice, so init and pkg-sync keep this kernel
 	mkdir -p /mnt/etc/newdotfiles
 	echo "$KERNEL" > /mnt/etc/newdotfiles/kernel
 	arch-chroot /mnt passwd -l root
@@ -204,8 +204,8 @@ configure_system() {
 # cannot see the USB stick. A failing init does not fail the install.
 create_user() {
 	echo "Creating $NEW_USER"
-	git clone -q "$SCRIPT_DIR/../.." /mnt/root/newdotfiles
-	arch-chroot /mnt /root/newdotfiles/scripts/archinstall/add-user "$NEW_USER" /root/newdotfiles ||
+	git clone -q "$SCRIPT_DIR/.." /mnt/root/newdotfiles
+	arch-chroot /mnt /root/newdotfiles/archinstall/add-user "$NEW_USER" /root/newdotfiles ||
 		INIT_FAILED=1
 	rm -rf /mnt/root/newdotfiles
 }
@@ -219,7 +219,7 @@ main() {
 	[ -n "$NEW_HOSTNAME" ] || die "Hostname is required"
 	read -rp "Username: " NEW_USER
 	[ -n "$NEW_USER" ] || die "Username is required"
-	KERNEL=$("$SCRIPT_DIR/../../lib/choose-kernel")
+	KERNEL=$("$SCRIPT_DIR/../setup/lib/choose-kernel")
 
 	print_plan
 	read -rp "Erase the disks above? Type 'erase' to continue: " answer

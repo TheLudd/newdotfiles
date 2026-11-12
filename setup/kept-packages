@@ -1,7 +1,7 @@
 # Packages installed by other means than packages / paru-packages that stay.
 # bin/pkg-sync neither installs them nor lists them as extra.
 
-# installed by scripts/archinstall/install-encrypted (pacstrap)
+# installed by archinstall/install-encrypted (pacstrap)
 base
 linux-firmware
 grub

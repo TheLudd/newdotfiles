@@ -3,7 +3,7 @@
 # Usage: pip-restore
 
 VENV_DIR="$HOME/.local/share/pip-venv"
-LIST_FILE="$HOME/newdotfiles/pip-packages"
+LIST_FILE="$HOME/newdotfiles/setup/pip-packages"
 
 if [ ! -f "$LIST_FILE" ]; then
     echo "No pip-packages file found"

@@ -1,20 +1,20 @@
 #!/bin/bash
-# switch-kernel - switch this machine to a kernel chosen from a menu (lib/kernels)
+# switch-kernel - switch this machine to a kernel chosen from a menu (setup/lib/kernels)
 # Usage: switch-kernel            pick, install and make it GRUB's default
 #        switch-kernel --pending  print the kernels left to remove, fail when none
 #        switch-kernel --cleanup  remove them
 #
-# The choice goes to /etc/newdotfiles/kernel (read by lib/kernel-package and
-# lib/update-grub). The other kernels stay as GRUB fallbacks until the chosen
+# The choice goes to /etc/newdotfiles/kernel (read by setup/lib/kernel-package and
+# setup/lib/update-grub). The other kernels stay as GRUB fallbacks until the chosen
 # one has booted: they are listed in a marker, and the first shell running the
 # chosen kernel offers to remove them (config/zsh/pending-setup.zsh).
 set -euo pipefail
-dir="$(dirname "$(readlink -f "$0")")/.."
+dir="$(dirname "$(readlink -f "$0")")/../setup"
 marker=/var/lib/newdotfiles/pending-kernel-cleanup
 
 chosen() { cat /etc/newdotfiles/kernel 2>/dev/null || echo linux-lts; }
 running_chosen() { grep -q "BOOT_IMAGE=/vmlinuz-$(chosen) " /proc/cmdline; }
-# Installed kernels from lib/kernels other than the chosen one
+# Installed kernels from setup/lib/kernels other than the chosen one
 others() { grep -vx "$(chosen)" "$dir/lib/kernels" | xargs pacman -Qq 2>/dev/null || true; }
 
 pending() { [ -s "$marker" ] && running_chosen && cat "$marker"; }
@@ -23,7 +23,7 @@ cleanup() {
 	local old
 	mapfile -t old < <(pending) || true
 	[ ${#old[@]} -gt 0 ] || { echo "Nothing to remove."; return; }
-	# Their headers, installed for DKMS (lib/hardware-packages)
+	# Their headers, installed for DKMS (setup/lib/hardware-packages)
 	mapfile -t -O ${#old[@]} old < <(printf '%s-headers\n' "${old[@]}" | xargs pacman -Qq 2>/dev/null) || true
 	# The pacman hook regenerates grub.cfg
 	sudo pacman -Rns --noconfirm "${old[@]}"

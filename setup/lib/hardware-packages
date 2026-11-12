@@ -2,9 +2,9 @@
 # hardware-packages [kernel] - print the packages this machine's hardware needs,
 # one per line: microcode for the CPU, Vulkan and video drivers for each GPU
 # vendor found, dkms and the kernel's headers for drivers built with DKMS
-# (dkms/). The kernel defaults to lib/kernel-package; the installer passes its
+# (files/dkms/). The kernel defaults to lib/kernel-package; the installer passes its
 # choice, since /etc/newdotfiles/kernel is written later.
-# Read by scripts/archinstall/install-encrypted, system/10-packages,
+# Read by archinstall/install-encrypted, system/10-packages,
 # bin/switch-kernel and bin/pkg-sync.
 dir="$(dirname "$(readlink -f "$0")")"
 kernel=${1:-$("$dir/kernel-package")}

@@ -4,7 +4,7 @@
 # Usage: pipis <package> [package...]
 
 VENV_DIR="$HOME/.local/share/pip-venv"
-LIST_FILE="$HOME/newdotfiles/pip-packages"
+LIST_FILE="$HOME/newdotfiles/setup/pip-packages"
 
 # Create venv if it doesn't exist
 if [ ! -d "$VENV_DIR" ]; then

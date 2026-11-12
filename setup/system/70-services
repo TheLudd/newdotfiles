@@ -1,5 +1,5 @@
 #!/bin/bash
-# Enable the system services, and link and enable the units in systemd/
+# Enable the system services, and link and enable the units in files/systemd/
 # (download-pacman-upgrades.timer: weekly download of pending upgrades so
 # pup only has to install them).
 set -euo pipefail
@@ -14,7 +14,7 @@ for unit in NetworkManager.service bluetooth.service; do
 done
 
 for unit in download-pacman-upgrades.service download-pacman-upgrades.timer; do
-	sudo ln -sf "$PWD/systemd/$unit" "/etc/systemd/system/$unit"
+	sudo ln -sf "$PWD/files/systemd/$unit" "/etc/systemd/system/$unit"
 done
 sudo systemctl daemon-reload
 sudo systemctl enable --now \

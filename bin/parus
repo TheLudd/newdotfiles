@@ -1,5 +1,5 @@
 #!/bin/bash
-listFile=~/newdotfiles/paru-packages
+listFile=~/newdotfiles/setup/paru-packages
 paru -S $@
 
 if [ $? -eq 0 ]; then

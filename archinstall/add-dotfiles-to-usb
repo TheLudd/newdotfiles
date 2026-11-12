@@ -11,7 +11,7 @@ set -euo pipefail
 
 [ "$#" -eq 1 ] || { echo "Usage: $0 <usb-device>"; exit 1; }
 USB=$1
-REPO="$(realpath "$(dirname "$0")/../..")"
+REPO="$(realpath "$(dirname "$0")/..")"
 MOUNT=/run/dotfiles
 ENTRY=00-dotfiles-install.conf
 
@@ -47,7 +47,7 @@ entries="$MOUNT/loader/entries"
 sudo sed \
 	-e 's/^title .*/title    Arch Linux install with dotfiles (guided)/' \
 	-e 's/^sort-key .*/sort-key 00/' \
-	-e "/^options/ s|\$| systemd.mount-extra=LABEL=DOTFILES:$MOUNT:ext4 script=$MOUNT/newdotfiles/scripts/archinstall/live-install|" \
+	-e "/^options/ s|\$| systemd.mount-extra=LABEL=DOTFILES:$MOUNT:ext4 script=$MOUNT/newdotfiles/archinstall/live-install|" \
 	"$entries/01-archiso-linux.conf" | sudo tee "$entries/$ENTRY" > /dev/null
 sudo sed -i "s/^default .*/default $ENTRY/" "$MOUNT/loader/loader.conf"
 cat "$entries/$ENTRY"

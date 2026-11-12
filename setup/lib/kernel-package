@@ -1,6 +1,6 @@
 #!/bin/bash
 # Prints this machine's kernel package: the one named in /etc/newdotfiles/kernel
-# (written by scripts/archinstall/install-encrypted), or linux-lts.
+# (written by archinstall/install-encrypted), or linux-lts.
 # Read by system/10-packages and bin/pkg-sync.
 file=/etc/newdotfiles/kernel
 if [ -s "$file" ]; then cat "$file"; else echo linux-lts; fi

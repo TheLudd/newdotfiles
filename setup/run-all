@@ -8,6 +8,10 @@
 # Exports the XDG paths (lib/zshenv) and the tool homes such as CARGO_HOME
 # (config/zsh/exports.zsh) first: on a fresh machine they are not in the
 # environment until zsh is set up and you log in again.
+#
+# Scripts run with setup/ as the working directory, so they reach lib/, the
+# package lists and files/ by relative path, and the rest of the repo (config/,
+# bin/, autorandr/...) through $DOTFILES.
 set -uo pipefail
 cd "$(dirname "$(realpath "$0")")"
 
@@ -16,10 +20,11 @@ shift
 [[ -d $folder ]] || { echo "No folder $folder" >&2; exit 1; }
 
 set -a
+DOTFILES=$(dirname "$PWD")
 source lib/zshenv
-source config/zsh/exports.zsh
+source "$DOTFILES/config/zsh/exports.zsh"
 set +a
-PATH="$PWD/bin:$PATH"
+PATH="$DOTFILES/bin:$PATH"
 
 scripts=()
 if (($#)); then
