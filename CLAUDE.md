@@ -18,7 +18,7 @@ Arch Linux dotfiles repository using dwm window manager. Custom forks of suckles
 ./init apps margin   # optional apps; `./init apps` lists them
 ./init system github-runner  # rerun one unit's part of a phase
 ```
-A machine's roles are the names in `/etc/newdotfiles/roles`, one per line (`server`). After changing that file, `./init system` and `./init user` set up what the new roles ask for.
+A machine's roles are the names in `/etc/newdotfiles/roles`, one per line (`workstation`, `server`). After changing that file, `./init system` and `./init user` set up what the new roles ask for.
 `user-login` (gh login with the token in gnome-keyring, ssh key upload) needs the keyring that PAM creates at login, so it runs after the relogin: `setup/user/90-pending-login` leaves a marker when it is not done yet, and `config/zsh/pending-setup.zsh` offers it at the tty login and in every terminal until `setup/user-login/10-github` removes the marker. A failing script does not stop the rest of its phase; failures are listed at the end. Every script can be rerun, so after a fix the phase is run again.
 
 ### Recompile suckless tools after changes
@@ -47,7 +47,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
   - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
   - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, the marker for `user-login`
   - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
-  - **`roles/`** - One file per role, naming the units a machine with that role gets (`server`: machines that host services). What every machine gets is in the phase folders and package files
+  - **`roles/`** - One file per role, naming the units a machine with that role gets (`workstation`: machines to work at; `server`: machines that host services). A machine can have several roles, and a unit named by several of them is set up once. What every machine gets is in the phase folders and package files
   - **`units/`** - One folder per unit, a self-contained piece of setup. Each part is optional: `packages` and `paru-packages`, and the executables `system`, `user` and `user-login`, run in the phase of that name. `lib/roles` prints the machine's roles, `lib/units` the units they name, `lib/wanted-packages repo|aur` the packages of the base files and those units (plus kernel and hardware packages for `repo`); `system/10-packages`, `system/40-aur-packages` and `pkg-sync` read the last
   - **`apps/`** - Optional per-user apps, one script per app (`margin`)
   - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
@@ -120,7 +120,12 @@ github-runner list
 - A runner serves one repository: `~gh-runner/runners/<owner>-<repo>`, service `github-runner@<owner>-<repo>`, labels `self-hosted`, `linux`, `arch`. Which repositories a machine serves is not in this repo
 - Jobs run directly on the machine as `gh-runner`, at `Nice=10` / `CPUWeight=20`
 - All runners share the node versions that `actions/setup-node` downloads (`AGENT_TOOLSDIRECTORY=~gh-runner/tool-cache`) and pnpm with its versions and store (`PNPM_HOME`; pnpm switches to the project's `packageManager` version itself). Checkouts stay between runs, so `actions/checkout` only fetches
+- Jobs start the services they need with `podman compose -f <file> up -d` (the `podman` unit): the first job starts the containers, later jobs find them running. `gh-runner` lingers and the service sets `XDG_RUNTIME_DIR`, which rootless podman needs. Images' health checks are not applied, so a job waits for a service itself
 - Workflows use `runs-on: [self-hosted, arch]`, `actions/setup-node` with `node-version-file: package.json` and no `cache:`, and plain `pnpm install --frozen-lockfile`; `pnpm/action-setup` is not needed
+
+### Containers
+
+docker (root daemon, `docker` group) is on every machine. The `podman` unit (roles `workstation` and `server`) adds podman beside it: containers run as the user who starts them, without a daemon, each user with their own images and containers. Its `system` step makes image names without a registry resolve to Docker Hub and makes `podman compose` run `podman-compose`, so compose files written for docker work unchanged.
 
 ### Zsh Configuration
 

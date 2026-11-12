@@ -8,7 +8,9 @@ Wants=network-online.target
 [Service]
 User=gh-runner
 WorkingDirectory=/home/gh-runner/runners/%i
-ExecStart=/home/gh-runner/runners/%i/run.sh
+# Rootless podman keeps its runtime state in the user's runtime directory,
+# which exists because gh-runner lingers (units/github-runner/system)
+ExecStart=/bin/bash -c 'export XDG_RUNTIME_DIR=/run/user/$$UID; exec ./run.sh'
 # pnpm keeps its versions and its store under PNPM_HOME; actions/setup-node
 # keeps node versions in the tool cache. Both are shared by all runners.
 Environment=PNPM_HOME=/home/gh-runner/.local/share/pnpm

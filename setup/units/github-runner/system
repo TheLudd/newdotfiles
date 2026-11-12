@@ -14,6 +14,9 @@ id "$user" >/dev/null 2>&1 || sudo useradd -m -s /bin/bash "$user"
 as_runner() { sudo -u "$user" -H bash -c 'cd && exec bash -s'; }
 as_runner < lib/install-pnpm
 as_runner <<< 'mkdir -p ~/runners ~/tool-cache'
+# Keeps /run/user/<uid> for gh-runner without a login: its jobs start
+# containers with podman (units/podman)
+sudo loginctl enable-linger "$user"
 
 sudo install -m 755 "$unit/github-runner" /usr/local/bin/github-runner
 sudo install -m 644 "$unit/github-runner@.service" /etc/systemd/system/github-runner@.service
