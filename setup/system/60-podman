@@ -3,6 +3,6 @@
 # so accounts that must not be root (gh-runner) can have them. It reads the
 # compose files written for docker: `podman compose up`.
 set -euo pipefail
-unit=units/podman
-sudo install -Dm 644 "$unit/registries.conf" /etc/containers/registries.conf.d/10-docker-hub.conf
-sudo install -Dm 644 "$unit/containers.conf" /etc/containers/containers.conf.d/10-compose.conf
+dir=files/containers
+sudo install -Dm 644 "$dir/registries.conf" /etc/containers/registries.conf.d/10-docker-hub.conf
+sudo install -Dm 644 "$dir/containers.conf" /etc/containers/containers.conf.d/10-compose.conf

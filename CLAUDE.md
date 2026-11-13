@@ -63,6 +63,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
     - **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
     - **`nginx/`** - nginx sites, linked into `/etc/nginx/sites-enabled` by `system/60-nginx`
     - **`pacman-hooks/`** - pacman hooks, installed by `system/60-grub`
+    - **`containers/`** - podman settings, installed into `/etc/containers` by `system/60-podman`
 - **`archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user` (from a copy of the repo on the stick, since the chroot cannot see it), which also adds later users and runs `init` for them; in the chroot `systemctl` only enables units and the udev reload is skipped; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
 - **`config/`** - Application configs, symlinked to `~/.config/`
 - **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `user/10-link-claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
@@ -120,12 +121,12 @@ github-runner list
 - A runner serves one repository: `~gh-runner/runners/<owner>-<repo>`, service `github-runner@<owner>-<repo>`, labels `self-hosted`, `linux`, `arch`. Which repositories a machine serves is not in this repo
 - Jobs run directly on the machine as `gh-runner`, at `Nice=10` / `CPUWeight=20`
 - All runners share the node versions that `actions/setup-node` downloads (`AGENT_TOOLSDIRECTORY=~gh-runner/tool-cache`) and pnpm with its versions and store (`PNPM_HOME`; pnpm switches to the project's `packageManager` version itself). Checkouts stay between runs, so `actions/checkout` only fetches
-- Jobs start the services they need with `podman compose -f <file> up -d` (the `podman` unit): the first job starts the containers, later jobs find them running. `gh-runner` lingers and the service sets `XDG_RUNTIME_DIR`, which rootless podman needs. Images' health checks are not applied, so a job waits for a service itself
+- Jobs start the services they need with `podman compose -f <file> up -d` (`system/60-podman`): the first job starts the containers, later jobs find them running. `gh-runner` lingers and the service sets `XDG_RUNTIME_DIR`, which rootless podman needs. Images' health checks are not applied, so a job waits for a service itself
 - Workflows use `runs-on: [self-hosted, arch]`, `actions/setup-node` with `node-version-file: package.json` and no `cache:`, and plain `pnpm install --frozen-lockfile`; `pnpm/action-setup` is not needed
 
 ### Containers
 
-docker (root daemon, `docker` group) is on every machine. The `podman` unit (roles `workstation` and `server`) adds podman beside it: containers run as the user who starts them, without a daemon, each user with their own images and containers. Its `system` step makes image names without a registry resolve to Docker Hub and makes `podman compose` run `podman-compose`, so compose files written for docker work unchanged.
+docker (root daemon, `docker` group) and podman are on every machine. With podman, containers run as the user who starts them, without a daemon, each user with their own images and containers. `setup/system/60-podman` installs `setup/files/containers/`, which makes image names without a registry resolve to Docker Hub and makes `podman compose` run `podman-compose`, so compose files written for docker work unchanged.
 
 ### Zsh Configuration
 

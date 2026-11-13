@@ -63,6 +63,8 @@ pipewire
 pipewire-audio
 pipewire-pulse
 pkg-config
+podman
+podman-compose
 python3
 python-neovim
 reflector
