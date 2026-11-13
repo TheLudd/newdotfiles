@@ -49,3 +49,6 @@ User ludwig
 Host scripts
 HostName 34.251.89.186
 User ludwig
+
+Host home
+HostName 82.183.5.130
