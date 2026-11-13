@@ -1,0 +1,57 @@
+#!/bin/bash
+# Usage: repo-status [fetch]
+# Prints the state of this repo and the per-user forks for dwmblocks (signal 4),
+# one icon per repo that has something to do:
+#   🖊 uncommitted changes   🚀 commits to push   ⬇️ commits to pull
+#   🔀 new commits in base (the repo a user's own fork is based on, user/50-sources)
+#   (branch) when not on master
+# `fetch` fetches every remote of the repos first (fetch-repos.timer); the
+# repos' reference-transaction hook then refreshes the block.
+
+repos=(
+	"🏠 $HOME/newdotfiles"
+	"🪟 $HOME/code/dwm"
+	"🧱 $HOME/code/dwmblocks"
+)
+
+count() { git -C "$1" rev-list --count "$2" 2>/dev/null || echo 0; }
+
+repo_state() {
+	local dir=$1 state="" branch upstream
+	branch=$(git -C "$dir" branch --show-current)
+	[[ $branch != master ]] && state+="($branch)"
+	[[ -n $(git -C "$dir" status --porcelain) ]] && state+="🖊"
+	if upstream=$(git -C "$dir" rev-parse --abbrev-ref '@{u}' 2>/dev/null); then
+		(($(count "$dir" "$upstream..HEAD"))) && state+="🚀"
+		(($(count "$dir" "HEAD..$upstream"))) && state+="⬇️"
+		git -C "$dir" rev-parse -q --verify "base/${upstream#*/}" >/dev/null &&
+			(($(count "$dir" "HEAD..base/${upstream#*/}"))) && state+="🔀"
+	fi
+	echo "$state"
+}
+
+status() {
+	local repo icon dir state out=()
+	for repo in "${repos[@]}"; do
+		read -r icon dir <<<"$repo"
+		[[ -d $dir/.git ]] || continue
+		state=$(repo_state "$dir")
+		[[ -n $state ]] && out+=("$icon$state")
+	done
+	((${#out[@]})) && echo "${out[*]}"
+}
+
+fetch() {
+	local repo icon dir
+	for repo in "${repos[@]}"; do
+		read -r icon dir <<<"$repo"
+		[[ -d $dir/.git ]] && git -C "$dir" fetch --all --quiet
+	done
+}
+
+case ${1:-} in
+fetch) fetch ;;
+'') status ;;
+*) echo "Usage: repo-status [fetch]" >&2; exit 1 ;;
+esac
+exit 0

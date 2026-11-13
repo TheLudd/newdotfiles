@@ -1,9 +1,11 @@
 #!/bin/bash
-# This repo is cloned over https on a fresh machine; push to it over ssh once
-# the key is on GitHub (init user-login).
+# This repo is fetched over https, which needs no key (the daily fetch for the
+# dwmblocks repo status), and pushed to over ssh once the key is on GitHub
+# (init user-login).
 set -euo pipefail
 url=$(git remote get-url origin)
-if [[ $url =~ ^https://github\.com/(.+)$ ]]; then
-	path=${BASH_REMATCH[1]}
-	git remote set-url origin "git@github.com:${path%.git}.git"
+if [[ $url =~ ^(https://github\.com/|git@github\.com:)(.+)$ ]]; then
+	path=${BASH_REMATCH[2]%.git}
+	git remote set-url origin "https://github.com/$path.git"
+	git remote set-url --push origin "git@github.com:$path.git"
 fi

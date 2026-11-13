@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily fetch for the dwmblocks repo status
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target

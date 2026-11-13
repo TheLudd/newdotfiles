@@ -1,12 +1,13 @@
 #!/bin/bash
-# Usage: lib/clone <dir> <url> [origin-url]
-# Clones url into dir unless it is already there, then points origin at
-# origin-url when given: repos are cloned over https before an ssh key
-# exists, and pushed to over ssh.
+# Usage: lib/clone <dir> <url> [push-url]
+# Clones url into dir unless it is already there. origin fetches from url and
+# pushes to push-url when given: repos are cloned and fetched over https, which
+# needs no key, and pushed to over ssh once the key is on GitHub.
 set -euo pipefail
 dir=$1
 url=$2
-origin=${3:-}
+push=${3:-}
 
 [[ -d $dir/.git ]] || git clone "$url" "$dir"
-[[ -z $origin ]] || git -C "$dir" remote set-url origin "$origin"
+git -C "$dir" remote set-url origin "$url"
+[[ -z $push ]] || git -C "$dir" remote set-url --push origin "$push"

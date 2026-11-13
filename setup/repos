@@ -1,12 +1,10 @@
-# name clone-url [origin-url]
+# name clone-url [push-url]
 # Cloned into ~/code/<name> and installed system-wide by system/50-sources.
-# Cloned over https, since no ssh key exists yet on a fresh machine; origin
-# is then set to origin-url (ssh) so the repo can be pushed to once the key
-# is on GitHub (init user-login).
-dwm https://github.com/TheLudd/dwm.git git@github.com:TheLudd/dwm.git
+# Cloned and fetched over https, which needs no key; pushed to over push-url
+# (ssh) once the key is on GitHub (init user-login).
+# dwm and dwmblocks are installed per user: user-repos.
 st https://github.com/TheLudd/st.git git@github.com:TheLudd/st.git
 dmenu https://github.com/TheLudd/dmenu.git git@github.com:TheLudd/dmenu.git
 dvtm https://github.com/TheLudd/dvtm.git git@github.com:TheLudd/dvtm.git
-dwmblocks https://github.com/TheLudd/dwmblocks.git git@github.com:TheLudd/dwmblocks.git
 truetm https://github.com/TheLudd/truetm.git git@github.com:TheLudd/truetm.git
 sx https://github.com/Earnestly/sx.git

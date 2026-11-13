@@ -1,0 +1,7 @@
+[Unit]
+Description=Fetch the remotes of the repos in the dwmblocks repo status
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/nm-online -q -t 600
+ExecStart=%h/bin/repo-status fetch

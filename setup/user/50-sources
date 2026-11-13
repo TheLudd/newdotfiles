@@ -1,0 +1,47 @@
+#!/bin/bash
+# Clone each repo in `user-repos` into ~/code/<name> and install it into
+# ~/.local, so every user builds dwm and dwmblocks with their own config.
+# A line for the same name in ~/.config/newdotfiles/repos (the user's own
+# forks) takes the place of the one in user-repos, which then becomes the
+# remote `base`, so the dwmblocks repo status shows what is new there.
+# The repos use this repo's hooks, which refresh that status.
+set -uo pipefail
+
+overrides="$XDG_CONFIG_HOME/newdotfiles/repos"
+
+repo_lines() { grep -v -e '^#' -e '^$' "$1" 2>/dev/null; }
+
+override_of() { repo_lines "$overrides" | awk -v name="$1" '$1 == name'; }
+
+set_base() {
+	local dir=$1 url=$2
+	if git -C "$dir" remote get-url base >/dev/null 2>&1; then
+		git -C "$dir" remote set-url base "$url"
+	else
+		git -C "$dir" remote add base "$url"
+	fi
+}
+
+install_repo() {
+	local name=$1 url=$2 push=$3 dir="$HOME/code/$1"
+	local own_name own_url own_push
+	read -r own_name own_url own_push < <(override_of "$name")
+	if [[ -n ${own_url:-} ]]; then
+		lib/clone "$dir" "$own_url" ${own_push:+"$own_push"} &&
+			set_base "$dir" "$url"
+	else
+		lib/clone "$dir" "$url" ${push:+"$push"}
+	fi &&
+		git -C "$dir" config core.hooksPath "$DOTFILES/githooks" &&
+		make -C "$dir" install
+}
+
+status=0
+while read -r name url push; do
+	echo "-- $name"
+	install_repo "$name" "$url" "${push:-}" || {
+		echo "$name failed"
+		status=1
+	}
+done < <(repo_lines user-repos)
+exit $status

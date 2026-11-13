@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) and truetm live in their own repos, cloned into `~/code/<name>` and installed system-wide (see `setup/repos`).
+Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) and truetm live in their own repos, cloned into `~/code/<name>`. dwm and dwmblocks are installed per user into `~/.local` (see `setup/user-repos`), the others system-wide (see `setup/repos`).
 
 ## Commands
 
@@ -23,7 +23,7 @@ A machine's roles are the names in `/etc/newdotfiles/roles`, one per line (`work
 
 ### Recompile suckless tools after changes
 ```bash
-cd ~/code/dwm && make && sudo make install
+cd ~/code/dwm && make install         # per user, into ~/.local (also dwmblocks)
 cd ~/code/st && make && sudo make install
 ```
 
@@ -45,7 +45,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 - **`setup/`** - Everything that sets a machine or a user up. The phase names and paths in this file (`system/10-packages`, `lib/clone`, `packages`) are relative to it
   - **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), then that phase of each of the machine's units, or only the named scripts or units. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts run with `setup/` as the working directory and reach the rest of the repo through `$DOTFILES`. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
   - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login), services
-  - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin to ssh, `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, the marker for `user-login`
+  - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin (fetch over https, push over ssh), `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, dwm and dwmblocks (`user-repos`), the marker for `user-login`
   - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
   - **`roles/`** - One file per role, naming the units a machine with that role gets (`workstation`: machines to work at; `server`: machines that host services). A machine can have several roles, and a unit named by several of them is set up once. What every machine gets is in the phase folders and package files
   - **`units/`** - One folder per unit, a self-contained piece of setup. Each part is optional: `packages` and `paru-packages`, and the executables `system`, `user` and `user-login`, run in the phase of that name. `lib/roles` prints the machine's roles, `lib/units` the units they name, `lib/wanted-packages repo|aur` the packages of the base files and those units (plus kernel and hardware packages for `repo`); `system/10-packages`, `system/40-aur-packages` and `pkg-sync` read the last
@@ -53,10 +53,11 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
   - **`packages`**, **`paru-packages`** - Repo and AUR packages, installed by `system/10-packages` and `system/40-aur-packages`
   - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
   - **`pip-packages`** - Packages for the pip venv, installed by `bin/setup-extras`
-  - **`repos`** - Repos cloned into `~/code/<name>` (https, then origin set to ssh) and installed system-wide by `system/50-sources`
+  - **`repos`** - Repos cloned into `~/code/<name>` (fetched over https, pushed over ssh) and installed system-wide by `system/50-sources`, which also removes old system-wide copies of dwm and dwmblocks
+  - **`user-repos`** - dwm and dwmblocks, cloned into each user's `~/code/<name>` and installed into `~/.local` by `user/50-sources` (the forks' default `PREFIX`). A user with their own forks lists them in `~/.config/newdotfiles/repos` (untracked, same format); the repo in `user-repos` then becomes the remote `base`
   - **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from `lib/kernels` through the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `files/pacman-hooks/99-grub.hook` (installed by `system/60-grub`) runs `lib/update-grub` when a kernel is installed or removed, which regenerates grub.cfg with the machine's kernel as the default entry. `switch-kernel` keeps the other kernels as GRUB fallbacks and lists them in `/var/lib/newdotfiles/pending-kernel-cleanup`; the first shell running the chosen kernel offers to remove them (`config/zsh/pending-setup.zsh`)
   - **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids), plus `dkms` and the kernel's headers when a chip needs a DKMS driver (`lib/usb-present`); used by the installer (which passes its kernel choice), `system/10-packages`, `switch-kernel` and `pkg-sync`
-  - **`lib/clone`** - Clone a repo if missing and set its origin
+  - **`lib/clone`** - Clone a repo if missing and set its origin's fetch (https) and push (ssh) urls
   - **`lib/install-pnpm`** - Install a standalone pnpm into `PNPM_HOME`; reads no other file, so it can be piped into another user's bash
   - **`files/`** - What the system phase installs outside the home:
     - **`dkms/`** - Drivers built with DKMS, registered by a `system/` script on machines with the chip; the DKMS pacman hook rebuilds them for each installed kernel
@@ -68,7 +69,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 - **`config/`** - Application configs, symlinked to `~/.config/`
 - **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `user/10-link-claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
 - **`bin/`** - User scripts, symlinked to `~/bin/`
-- **`githooks/`** - This repo's git hooks (`core.hooksPath`, set by `user/30-git-hooks`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the dotfiles block (`bin/check-dotfiles-repo`) updates on commit, push and branch switches
+- **`githooks/`** - Git hooks of this repo and the per-user dwm and dwmblocks clones (`core.hooksPath`, set by `user/30-git-hooks` and `user/50-sources`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the repo status block updates on commit, push, fetch and branch switches
 - **`autorandr/`** - Monitor profiles with postswitch hooks, plus `hotplug.rules` and `autorandr-hotplug.service`: DRM hotplug events run autorandr through a unit that first sleeps 3s so a USB-C monitor's link renegotiation has finished before the mode is set. Resume still runs the package's `autorandr.service` directly.
 
 ### Configuration Management
@@ -93,6 +94,10 @@ Located in `config/nvim/` with Lua configuration:
 ### Bluetooth chip
 
 The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btusb's id table in stock kernels (the id is in bluetooth-next), so btusb binds it as a generic controller, never loads its firmware and the reset times out (`hci0: Opcode 0x0c03 failed: -110`). `setup/system/60-btusb-mt7902` registers `setup/files/dkms/btusb-mt7902` on machines with the chip: its `fetch-source` downloads btusb.c for the kernel being built from the stable tree and adds the id. A kernel that already has the id gets an unchanged btusb, and the DKMS module can then go.
+
+### Repo status block
+
+`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇️ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
 
 ### Screen blanking and lock
 

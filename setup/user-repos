@@ -1,0 +1,7 @@
+# name clone-url [push-url]
+# Cloned into ~/code/<name> and installed into ~/.local by user/50-sources, so
+# every user builds them with their own config.
+# A user with their own forks lists them in ~/.config/newdotfiles/repos, in the
+# same format; the repo given here then becomes the remote `base`.
+dwm https://github.com/TheLudd/dwm.git git@github.com:TheLudd/dwm.git
+dwmblocks https://github.com/TheLudd/dwmblocks.git git@github.com:TheLudd/dwmblocks.git
