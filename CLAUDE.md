@@ -62,7 +62,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
   - **`files/`** - What the system phase installs outside the home:
     - **`dkms/`** - Drivers built with DKMS, registered by a `system/` script on machines with the chip; the DKMS pacman hook rebuilds them for each installed kernel
     - **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
-    - **`nginx/`** - nginx sites and `http.conf` (settings for the whole http block), linked into `/etc/nginx/sites-enabled` by `system/60-nginx`
+    - **`nginx/`** - nginx sites and `http.conf` (settings for the whole http block), copied into `/etc/nginx/sites-enabled` by `system/60-nginx` (rerun after an edit)
     - **`pacman-hooks/`** - pacman hooks, installed by `system/60-grub`
     - **`containers/`** - podman settings, installed into `/etc/containers` by `system/60-podman`
     - **`modprobe/`** - Kernel module settings, installed into `/etc/modprobe.d` by `system/60-modprobe`. `no-watchdog.conf` blacklists the chipset hardware watchdog, which systemd-shutdown otherwise arms and the kernel answers with "watchdog did not stop!" on every shutdown
@@ -113,7 +113,7 @@ Audio runs on PipeWire + WirePlumber. `bin/hp` / `bin/hs` switch the headset bet
 margin lives in its own repo at `~/code/margin`. It serves the markdown files in the folders listed in `~/.config/margin/config.json` (untracked, edited from margin's settings screen) at http://margin.local for reading and inline editing. Here it is wired up by:
 - `setup/apps/margin` (`init apps margin`): clones `~/code/margin` if missing, runs `make install` there, installing to `~/.local/bin/margin`, and restarts the service
 - `config/systemd/user/margin.service`: a user service listening on 127.0.0.1:48217 (`-host margin.local` lets it accept that name), enabled through `default.target.wants` for every user and started only for users who have the binary (`ConditionPathExists`)
-- `setup/files/nginx/margin.conf` + `setup/system/60-nginx`: an nginx site on port 80 proxying `margin.local` to the service, linked into `/etc/nginx/sites-enabled`; local connections only
+- `setup/files/nginx/margin.conf` + `setup/system/60-nginx`: an nginx site on port 80 proxying `margin.local` to the service, copied into `/etc/nginx/sites-enabled`; local connections only
 - `setup/system/60-hosts`: maps `margin.local` (and `dev.local`) to 127.0.0.1
 
 ### GitHub Actions runners
@@ -139,7 +139,7 @@ The `sshd` unit (role `server`) installs `setup/units/sshd/sshd.conf` as `/etc/s
 The `public-sites` unit (role `server`) serves services of a machine at `https://<site>.<name>.duckdns.org` to any device on the internet, with a Let's Encrypt certificate. The name and the DuckDNS token are the machine's, in `/etc/newdotfiles/public-sites` (root only, `DUCKDNS_DOMAIN` and `DUCKDNS_TOKEN`); the unit's `system` step fails with instructions while that file is missing. The router forwards ports 80 and 443 to the machine.
 - `public-sites update-ip` (`public-sites-ip.timer`, every 5 minutes) points `<name>.duckdns.org`, and with it every subdomain, at the machine's public address
 - `public-sites cert` (`public-sites-cert.timer`, daily) gets or renews the certificate for `*.<name>.duckdns.org` with `lego` over the DNS challenge, copies it to `/etc/nginx/certs/public-sites.{crt,key}` and reloads nginx
-- `public-sites.conf` (linked into `/etc/nginx/sites-enabled`) sets that certificate for every ssl server, redirects port 80 for `*.duckdns.org` names to https and closes https connections for names that are no site
+- `public-sites.conf` (copied into `/etc/nginx/sites-enabled`) sets that certificate for every ssl server, redirects port 80 for `*.duckdns.org` names to https and closes https connections for names that are no site
 - Which sites a machine serves is not in this repo. A site is a server block in `/etc/nginx/sites-enabled` with `listen 443 ssl`, its `server_name`, `include /etc/nginx/public-sites/<site>-auth*.conf;` and a `proxy_pass`. It is open to the internet
 - `sudo public-sites password <site> <user>` asks for a password and makes nginx ask for that login on the site (it writes the file the site's `include` matches, and replaces an earlier login); `sudo public-sites no-password <site>` opens the site again
 - Local-only sites (`margin.local`) keep their `allow 127.0.0.1; deny all;` on port 80

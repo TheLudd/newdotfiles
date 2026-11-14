@@ -30,6 +30,6 @@ sudo systemctl daemon-reload
 # nginx cannot load public-sites.conf before the certificate exists
 sudo public-sites update-ip
 sudo public-sites cert
-sudo ln -sf "$(realpath "$unit/public-sites.conf")" /etc/nginx/sites-enabled/public-sites.conf
+sudo install -m 644 "$unit/public-sites.conf" /etc/nginx/sites-enabled/public-sites.conf
 sudo nginx -t && sudo systemctl reload nginx
 sudo systemctl enable --now public-sites-ip.timer public-sites-cert.timer
