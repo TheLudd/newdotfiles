@@ -1,0 +1,35 @@
+#!/bin/bash
+# Public sites (units/public-sites/public-sites): services of this machine at
+# https://<site>.<name>.duckdns.org for any device on the internet. Installs
+# the public-sites command with its timers (DuckDNS address, certificate) and
+# the nginx part all sites share (public-sites.conf). The router forwards
+# ports 80 and 443 to this machine. Which sites a machine serves is not in
+# this repo: each is a server block in /etc/nginx/sites-enabled.
+set -euo pipefail
+unit=units/public-sites
+config=/etc/newdotfiles/public-sites
+
+if ! sudo test -f "$config"; then
+	cat >&2 <<MSG
+$config is missing. Create a name at duckdns.org, then:
+  sudo install -m 600 /dev/null $config
+  sudoedit $config
+    DUCKDNS_DOMAIN=<name>
+    DUCKDNS_TOKEN=<token>
+MSG
+	exit 1
+fi
+[[ -d /etc/nginx/sites-enabled ]] || { echo "No /etc/nginx/sites-enabled: run system/60-nginx first" >&2; exit 1; }
+
+sudo install -m 755 "$unit/public-sites" /usr/local/bin/public-sites
+for file in public-sites-ip.service public-sites-ip.timer public-sites-cert.service public-sites-cert.timer; do
+	sudo install -m 644 "$unit/$file" "/etc/systemd/system/$file"
+done
+sudo systemctl daemon-reload
+
+# nginx cannot load public-sites.conf before the certificate exists
+sudo public-sites update-ip
+sudo public-sites cert
+sudo ln -sf "$(realpath "$unit/public-sites.conf")" /etc/nginx/sites-enabled/public-sites.conf
+sudo nginx -t && sudo systemctl reload nginx
+sudo systemctl enable --now public-sites-ip.timer public-sites-cert.timer

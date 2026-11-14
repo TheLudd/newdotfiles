@@ -1,0 +1,8 @@
+[Unit]
+Description=Get or renew the certificate of the machine's public sites
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/public-sites cert

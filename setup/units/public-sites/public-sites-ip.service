@@ -1,0 +1,8 @@
+[Unit]
+Description=Point the machine's DuckDNS name at its public address
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/public-sites update-ip

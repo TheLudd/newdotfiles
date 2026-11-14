@@ -1,0 +1,54 @@
+#!/bin/bash
+# Usage: public-sites update-ip | cert
+# Keeps this machine reachable from the internet as https://<site>.<name>.duckdns.org:
+#   update-ip  points <name>.duckdns.org, and with it every subdomain, at the
+#              public address this machine's requests come from
+#   cert       gets the Let's Encrypt certificate for *.<name>.duckdns.org, or
+#              renews it when it is due, and hands it to nginx
+# Both run from timers (public-sites-ip.timer, public-sites-cert.timer).
+# The name and the DuckDNS token are this machine's, in /etc/newdotfiles/public-sites:
+#   DUCKDNS_DOMAIN=<name>
+#   DUCKDNS_TOKEN=<token>
+set -euo pipefail
+config=/etc/newdotfiles/public-sites
+state=/var/lib/public-sites
+certs=/etc/nginx/certs
+
+load_config() {
+	[[ -r $config ]] || { echo "Cannot read $config (run as root; see the head of $0)" >&2; exit 1; }
+	set -a
+	source "$config"
+	set +a
+	: "${DUCKDNS_DOMAIN:?missing in $config}" "${DUCKDNS_TOKEN:?missing in $config}"
+}
+
+# Without an ip DuckDNS takes the address the request comes from. The url goes
+# through stdin so the token is not in the process list.
+update_ip() {
+	local answer
+	answer=$(curl -fsS -K - <<< "url = \"https://www.duckdns.org/update?domains=$DUCKDNS_DOMAIN&token=$DUCKDNS_TOKEN&ip=\"")
+	[[ $answer == OK ]] || { echo "DuckDNS refused the update of $DUCKDNS_DOMAIN: $answer" >&2; exit 1; }
+}
+
+# The DNS challenge proves ownership through a TXT record on the name, so it
+# needs no open port and can cover the wildcard. Only the wildcard: DuckDNS
+# holds one TXT value per name, and the bare name would need a second one.
+cert() {
+	lego run --accept-tos --account-id public-sites --path "$state" --cert.name public-sites \
+		--dns duckdns --domains "*.$DUCKDNS_DOMAIN.duckdns.org" \
+		--deploy-hook "$(realpath "$0") deploy"
+}
+
+# lego's deploy hook: runs only when a certificate was issued or renewed
+deploy() {
+	install -D -m 644 "$LEGO_HOOK_CERT_PATH" "$certs/public-sites.crt"
+	install -m 600 "$LEGO_HOOK_CERT_KEY_PATH" "$certs/public-sites.key"
+	if systemctl is-active -q nginx; then systemctl reload nginx; fi
+}
+
+case ${1:-} in
+	update-ip) load_config; update_ip ;;
+	cert) load_config; cert ;;
+	deploy) deploy ;;
+	*) sed -n '2,7s/^# \{0,1\}//p' "$0" >&2; exit 1 ;;
+esac
