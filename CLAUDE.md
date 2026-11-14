@@ -62,7 +62,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
   - **`files/`** - What the system phase installs outside the home:
     - **`dkms/`** - Drivers built with DKMS, registered by a `system/` script on machines with the chip; the DKMS pacman hook rebuilds them for each installed kernel
     - **`systemd/`** - System units, symlinked into `/etc/systemd/system` by `system/70-services`. `download-pacman-upgrades.timer` downloads pending upgrades to the pacman cache every Sunday (`checkupdates -d`, temporary db, no partial upgrade); `pup` installs them
-    - **`nginx/`** - nginx sites, linked into `/etc/nginx/sites-enabled` by `system/60-nginx`
+    - **`nginx/`** - nginx sites and `http.conf` (settings for the whole http block), linked into `/etc/nginx/sites-enabled` by `system/60-nginx`
     - **`pacman-hooks/`** - pacman hooks, installed by `system/60-grub`
     - **`containers/`** - podman settings, installed into `/etc/containers` by `system/60-podman`
     - **`modprobe/`** - Kernel module settings, installed into `/etc/modprobe.d` by `system/60-modprobe`. `no-watchdog.conf` blacklists the chipset hardware watchdog, which systemd-shutdown otherwise arms and the kernel answers with "watchdog did not stop!" on every shutdown
