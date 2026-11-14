@@ -140,7 +140,8 @@ The `public-sites` unit (role `server`) serves services of a machine at `https:/
 - `public-sites update-ip` (`public-sites-ip.timer`, every 5 minutes) points `<name>.duckdns.org`, and with it every subdomain, at the machine's public address
 - `public-sites cert` (`public-sites-cert.timer`, daily) gets or renews the certificate for `*.<name>.duckdns.org` with `lego` over the DNS challenge, copies it to `/etc/nginx/certs/public-sites.{crt,key}` and reloads nginx
 - `public-sites.conf` (linked into `/etc/nginx/sites-enabled`) sets that certificate for every ssl server, redirects port 80 for `*.duckdns.org` names to https and closes https connections for names that are no site
-- Which sites a machine serves is not in this repo. A site is a server block in `/etc/nginx/sites-enabled` with `listen 443 ssl`, its `server_name` and a `proxy_pass`. It is open to the internet, so the service behind it needs its own login
+- Which sites a machine serves is not in this repo. A site is a server block in `/etc/nginx/sites-enabled` with `listen 443 ssl`, its `server_name`, `include /etc/nginx/public-sites/<site>-auth*.conf;` and a `proxy_pass`. It is open to the internet
+- `sudo public-sites password <site> <user>` asks for a password and makes nginx ask for that login on the site (it writes the file the site's `include` matches, and replaces an earlier login); `sudo public-sites no-password <site>` opens the site again
 - Local-only sites (`margin.local`) keep their `allow 127.0.0.1; deny all;` on port 80
 
 ### Containers

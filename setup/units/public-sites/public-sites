@@ -1,11 +1,14 @@
 #!/bin/bash
-# Usage: public-sites update-ip | cert
+# Usage: public-sites update-ip | cert | password <site> <user> | no-password <site>
 # Keeps this machine reachable from the internet as https://<site>.<name>.duckdns.org:
-#   update-ip  points <name>.duckdns.org, and with it every subdomain, at the
-#              public address this machine's requests come from
-#   cert       gets the Let's Encrypt certificate for *.<name>.duckdns.org, or
-#              renews it when it is due, and hands it to nginx
-# Both run from timers (public-sites-ip.timer, public-sites-cert.timer).
+#   update-ip    points <name>.duckdns.org, and with it every subdomain, at the
+#                public address this machine's requests come from
+#   cert         gets the Let's Encrypt certificate for *.<name>.duckdns.org, or
+#                renews it when it is due, and hands it to nginx
+#   password     makes nginx ask for a login on a site: asks for the password
+#                (or reads it from stdin) and replaces the site's earlier login
+#   no-password  opens the site to everyone again
+# The first two run from timers (public-sites-ip.timer, public-sites-cert.timer).
 # The name and the DuckDNS token are this machine's, in /etc/newdotfiles/public-sites:
 #   DUCKDNS_DOMAIN=<name>
 #   DUCKDNS_TOKEN=<token>
@@ -13,6 +16,7 @@ set -euo pipefail
 config=/etc/newdotfiles/public-sites
 state=/var/lib/public-sites
 certs=/etc/nginx/certs
+logins=/etc/nginx/public-sites
 
 load_config() {
 	[[ -r $config ]] || { echo "Cannot read $config (run as root; see the head of $0)" >&2; exit 1; }
@@ -46,9 +50,40 @@ deploy() {
 	if systemctl is-active -q nginx; then systemctl reload nginx; fi
 }
 
+# A site's server block includes $logins/<site>-auth*.conf, which exists only
+# while the site has a login
+check_site() {
+	[[ ${1:-} =~ ^[a-z0-9-]+$ ]] || usage
+	grep -rqF "$logins/$1-auth" /etc/nginx/sites-enabled ||
+		{ echo "No server block in /etc/nginx/sites-enabled includes $logins/$1-auth*.conf;" >&2; exit 1; }
+}
+
+reload_nginx() { nginx -t -q && systemctl reload nginx; }
+
+password() {
+	local site=$1 user=$2 hash
+	if [[ -t 0 ]]; then hash=$(openssl passwd -apr1); else hash=$(openssl passwd -apr1 -stdin); fi
+	mkdir -p "$logins"
+	printf '%s:%s\n' "$user" "$hash" | install -m 640 -g http /dev/stdin "$logins/$site.htpasswd"
+	install -m 644 /dev/stdin "$logins/$site-auth.conf" <<CONF
+auth_basic "$site";
+auth_basic_user_file $logins/$site.htpasswd;
+CONF
+	reload_nginx
+}
+
+no_password() {
+	rm -f "$logins/$1-auth.conf" "$logins/$1.htpasswd"
+	reload_nginx
+}
+
+usage() { sed -n '2,11s/^# \{0,1\}//p' "$0" >&2; exit 1; }
+
 case ${1:-} in
 	update-ip) load_config; update_ip ;;
 	cert) load_config; cert ;;
 	deploy) deploy ;;
-	*) sed -n '2,7s/^# \{0,1\}//p' "$0" >&2; exit 1 ;;
+	password) check_site "${2:-}"; [[ ${3:-} =~ ^[^:[:space:]]+$ ]] || usage; password "$2" "$3" ;;
+	no-password) check_site "${2:-}"; no_password "$2" ;;
+	*) usage ;;
 esac
