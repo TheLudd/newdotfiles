@@ -1,0 +1,5 @@
+#!/bin/bash
+# Kernel module settings: no hardware watchdog (files/modprobe/no-watchdog.conf).
+set -euo pipefail
+sudo install -Dm 644 files/modprobe/no-watchdog.conf /etc/modprobe.d/no-watchdog.conf
+sudo modprobe -r iTCO_wdt iTCO_vendor_support sp5100_tco 2>/dev/null || true
