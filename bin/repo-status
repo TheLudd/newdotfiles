@@ -12,6 +12,7 @@ repos=(
 	"🏠 $HOME/newdotfiles"
 	"🪟 $HOME/code/dwm"
 	"🧱 $HOME/code/dwmblocks"
+	"🌊 $HOME/code/dwl"
 )
 
 count() { git -C "$1" rev-list --count "$2" 2>/dev/null || echo 0; }

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clone each repo in `user-repos` into ~/code/<name> and install it into
-# ~/.local, so every user builds dwm and dwmblocks with their own config.
+# ~/.local, so every user builds dwm, dwmblocks and dwl with their own config.
 # A line for the same name in ~/.config/newdotfiles/repos (the user's own
 # forks) takes the place of the one in user-repos, which then becomes the
 # remote `base`, so the dwmblocks repo status shows what is new there.

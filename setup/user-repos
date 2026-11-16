@@ -5,3 +5,4 @@
 # same format; the repo given here then becomes the remote `base`.
 dwm https://github.com/TheLudd/dwm.git git@github.com:TheLudd/dwm.git
 dwmblocks https://github.com/TheLudd/dwmblocks.git git@github.com:TheLudd/dwmblocks.git
+dwl https://github.com/TheLudd/dwl.git git@github.com:TheLudd/dwl.git
