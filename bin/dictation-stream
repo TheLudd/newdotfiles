@@ -82,6 +82,20 @@ class XdotoolTypist:
             subprocess.run(["xdotool", "type", "--delay", "5", "--", text], check=False)
 
 
+class WtypeTypist:
+    def backspace(self, count):
+        if count > 0:
+            subprocess.run(["wtype"] + ["-k", "BackSpace"] * count, check=False)
+
+    def type(self, text):
+        if text:
+            subprocess.run(["wtype", "-d", "5", "--", text], check=False)
+
+
+def session_typist():
+    return WtypeTypist() if os.environ.get("WAYLAND_DISPLAY") else XdotoolTypist()
+
+
 class PrintTypist:
     def backspace(self, count):
         if count > 0:
@@ -178,7 +192,7 @@ def run_microphone():
     signal.signal(signal.SIGINT, stop)
 
     try:
-        dictation = Dictation(XdotoolTypist())
+        dictation = Dictation(session_typist())
         audio = queue.Queue()
         blocksize = int(SAMPLE_RATE * CHUNK_SECONDS)
         with sd.InputStream(
