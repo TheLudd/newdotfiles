@@ -19,7 +19,9 @@ docker-compose
 dosfstools
 dunst
 fakeroot
+fcft
 feh
+foot
 fwupd
 gcc
 git
@@ -27,6 +29,7 @@ git-delta
 github-cli
 gnome-keyring
 go
+grim
 gst-libav
 gst-plugin-pipewire
 gst-plugins-bad
@@ -38,6 +41,7 @@ htop
 inetutils
 inotify-tools
 jq
+kanshi
 kbd
 less
 libva-utils
@@ -74,10 +78,15 @@ rustup
 rxvt-unicode
 shotgun
 slock
+slurp
 sof-firmware
 speedcrunch
 sudo
+swaybg
+swayidle
+swaylock
 texinfo
+tllist
 tree
 tree-sitter-cli
 ttf-dejavu-nerd
@@ -86,9 +95,17 @@ tzdata
 unzip
 usbutils
 vlc
+wayland-protocols
 webkitgtk-6.0
+wf-recorder
 wget
+wl-clipboard
+wlopm
+wlroots0.20
+wmenu
+wtype
 xclip
+xdg-desktop-portal-wlr
 xdotool
 xf86-input-libinput
 xorg-server
@@ -96,6 +113,7 @@ xorg-server-devel
 xorg-setxkbmap
 xorg-xinit
 xorg-xrandr
+xorg-xwayland
 xsel
 zip
 zsh
