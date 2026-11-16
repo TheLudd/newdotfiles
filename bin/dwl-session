@@ -1,0 +1,11 @@
+#!/bin/sh
+# Starts the Wayland session (tty3-4, config/zsh/tty.zsh): dwl with dwmblocks
+# feeding its bar on stdin, and config/dwl/startup for everything else.
+# bin/wayland comes first in PATH, so scripts and dwl's key bindings run the
+# Wayland versions of commands that exist for both sessions.
+export XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=dwl
+export PATH="$HOME/bin/wayland:$PATH"
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+
+dwmblocks -p 2>/dev/null | dwl -s "${XDG_CONFIG_HOME:-$HOME/.config}/dwl/startup"

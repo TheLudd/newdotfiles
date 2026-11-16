@@ -1,0 +1,25 @@
+#!/bin/sh
+# Run by dwl (bin/dwl-session) once the compositor is up. dwl stops it when it
+# exits, which stops everything started here.
+trap 'systemctl --user unset-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP; pkill -P $$' EXIT
+trap 'exit' INT TERM HUP
+
+# user services and D-Bus activated ones (xdg-desktop-portal) reach this session
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
+swaybg -m fill -i /usr/share/backgrounds/archlinux/simple.png &
+kanshi &
+dunst &
+nm-applet &
+blueman-applet &
+
+# screen blanking follows the power state (never on external power)
+screen-timeout-watch &
+
+# the pacman upgrade count needs the network
+(
+	while [ "$(nmcli networking connectivity)" != full ]; do sleep 2; done
+	pkill -RTMIN+3 -x dwmblocks
+) &
+
+wait
