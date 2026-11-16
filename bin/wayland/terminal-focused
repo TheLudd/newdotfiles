@@ -1,0 +1,12 @@
+#!/bin/sh
+# Exits 0 when the window this runs in has focus. dwl writes the PID of the
+# focused client to $XDG_RUNTIME_DIR/dwl-focused-pid; a process runs in that
+# window when the PID is one of its ancestors.
+focused=$(cat "${XDG_RUNTIME_DIR:-/nonexistent}/dwl-focused-pid" 2>/dev/null) || exit 1
+[ "${focused:-0}" -gt 1 ] || exit 1
+pid=$$
+while [ "${pid:-1}" -gt 1 ]; do
+	[ "$pid" = "$focused" ] && exit 0
+	pid=$(awk '/^PPid:/ { print $2 }' "/proc/$pid/status" 2>/dev/null)
+done
+exit 1

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Exits 0 when the terminal this runs in is the focused X window.
+[ -n "${WINDOWID:-}" ] && [ -n "${DISPLAY:-}" ] || exit 1
+[ "$(xdotool getactivewindow 2>/dev/null)" = "$WINDOWID" ]

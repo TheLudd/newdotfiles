@@ -2,7 +2,7 @@
 # Claude Code hook: play a sound and send a desktop notification when Claude
 # finishes a turn, needs input, or fails. Reads the hook JSON on stdin.
 #
-# Skips when the Claude terminal is the focused X window, and skips "done"
+# Skips when the Claude terminal is the focused window, and skips "done"
 # for turns shorter than CLAUDE_NOTIFY_MIN_SECONDS (default 10).
 set -euo pipefail
 
@@ -16,11 +16,6 @@ field() { jq -r "$1 // empty" <<<"$input"; }
 event=$(field .hook_event_name)
 session=$(field .session_id)
 project=$(basename "$(field .cwd)")
-
-terminal_focused() {
-	[[ -n "${WINDOWID:-}" && -n "${DISPLAY:-}" ]] || return 1
-	[[ "$(xdotool getactivewindow 2>/dev/null)" == "$WINDOWID" ]]
-}
 
 record_turn_start() {
 	mkdir -p "$state_dir"
@@ -48,18 +43,18 @@ UserPromptSubmit)
 	record_turn_start
 	;;
 Stop)
-	terminal_focused && exit 0
+	terminal-focused && exit 0
 	(($(turn_seconds) >= min_seconds)) || exit 0
 	notify complete normal "Claude done · $project" \
 		"$(field .last_assistant_message | first_line)"
 	;;
 StopFailure)
-	terminal_focused && exit 0
+	terminal-focused && exit 0
 	notify dialog-error critical "Claude failed · $project" \
 		"$(field .error_type): $(field .error_message | first_line)"
 	;;
 Notification)
-	terminal_focused && exit 0
+	terminal-focused && exit 0
 	case $(field .notification_type) in
 	permission_prompt | elicitation_dialog)
 		notify dialog-warning normal "Claude needs input · $project" \
