@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Arch Linux dotfiles repository using dwm window manager. Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks) and truetm live in their own repos, cloned into `~/code/<name>`. dwm and dwmblocks are installed per user into `~/.local` (see `setup/user-repos`), the others system-wide (see `setup/repos`).
+Arch Linux dotfiles repository using the dwm window manager on X, with dwl on Wayland next to it (see Wayland session). Custom forks of suckless tools (dwm, st, dvtm, dmenu, dwmblocks), dwl and truetm live in their own repos, cloned into `~/code/<name>`. dwm, dwmblocks and dwl are installed per user into `~/.local` (see `setup/user-repos`), the others system-wide (see `setup/repos`).
 
 ## Commands
 
@@ -23,7 +23,7 @@ A machine's roles are the names in `/etc/newdotfiles/roles`, one per line (`work
 
 ### Recompile suckless tools after changes
 ```bash
-cd ~/code/dwm && make install         # per user, into ~/.local (also dwmblocks)
+cd ~/code/dwm && make install         # per user, into ~/.local (also dwmblocks, dwl)
 cd ~/code/st && make && sudo make install
 ```
 
@@ -45,7 +45,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 - **`setup/`** - Everything that sets a machine or a user up. The phase names and paths in this file (`system/10-packages`, `lib/clone`, `packages`) are relative to it
   - **`run-all`** - Runs the scripts in a phase folder in name order (numbered prefixes set the order), then that phase of each of the machine's units, or only the named scripts or units. Exports `lib/zshenv` and `config/zsh/exports.zsh` first, so XDG paths and tool homes (`CARGO_HOME`, `RUSTUP_HOME`, `GOPATH`...) match the login shell before the first relogin. Scripts run with `setup/` as the working directory and reach the rest of the repo through `$DOTFILES`. Scripts that depend on an earlier one check for what they need and fail with a pointer to it
   - **`system/`** - Once per machine: packages, rustup, paru and AUR packages, sources, `/etc` files (zshenv, locale, hosts, nginx, gnome-keyring PAM unlock on tty login, module blacklist), services
-  - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin (fetch over https, push over ssh), `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, dwm and dwmblocks (`user-repos`), the marker for `user-login`
+  - **`user/`** - Once per user before the relogin: links (config, claude, bin, autorandr hooks, ssh config), docker group and zsh shell, this repo's origin (fetch over https, push over ssh), `setup-extras`, pnpm + n + node LTS in the home (`PNPM_HOME`, `N_PREFIX`, no sudo), ed25519 key, dwm, dwmblocks and dwl (`user-repos`), the marker for `user-login`
   - **`user-login/`** - Once per user after the relogin: `gh auth login` with `admin:public_key` and key upload (one login; the token goes into gnome-keyring)
   - **`roles/`** - One file per role, naming the units a machine with that role gets (`workstation`: machines to work at; `server`: machines that host services). A machine can have several roles, and a unit named by several of them is set up once. What every machine gets is in the phase folders and package files
   - **`units/`** - One folder per unit, a self-contained piece of setup. Each part is optional: `packages` and `paru-packages`, and the executables `system`, `user` and `user-login`, run in the phase of that name. `lib/roles` prints the machine's roles, `lib/units` the units they name, `lib/wanted-packages repo|aur` the packages of the base files and those units (plus kernel and hardware packages for `repo`); `system/10-packages`, `system/40-aur-packages` and `pkg-sync` read the last
@@ -54,7 +54,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
   - **`kept-packages`** - Packages installed by other means that stay (pacstrap base, paru, Kolide); `pkg-sync` skips them
   - **`pip-packages`** - Packages for the pip venv, installed by `bin/setup-extras`
   - **`repos`** - Repos cloned into `~/code/<name>` (fetched over https, pushed over ssh) and installed system-wide by `system/50-sources`, which also removes old system-wide copies of dwm and dwmblocks
-  - **`user-repos`** - dwm and dwmblocks, cloned into each user's `~/code/<name>` and installed into `~/.local` by `user/50-sources` (the forks' default `PREFIX`). A user with their own forks lists them in `~/.config/newdotfiles/repos` (untracked, same format); the repo in `user-repos` then becomes the remote `base`
+  - **`user-repos`** - dwm, dwmblocks and dwl, cloned into each user's `~/code/<name>` and installed into `~/.local` by `user/50-sources` (the forks' default `PREFIX`). A user with their own forks lists them in `~/.config/newdotfiles/repos` (untracked, same format); the repo in `user-repos` then becomes the remote `base`
   - **`lib/kernel-package`** - Prints the machine's kernel: `/etc/newdotfiles/kernel` (chosen in the installer, changed with `switch-kernel`; both pick from `lib/kernels` through the menu in `lib/choose-kernel`), or `linux-lts`; used by `system/10-packages` and `pkg-sync`. `files/pacman-hooks/99-grub.hook` (installed by `system/60-grub`) runs `lib/update-grub` when a kernel is installed or removed, which regenerates grub.cfg with the machine's kernel as the default entry. `switch-kernel` keeps the other kernels as GRUB fallbacks and lists them in `/var/lib/newdotfiles/pending-kernel-cleanup`; the first shell running the chosen kernel offers to remove them (`config/zsh/pending-setup.zsh`)
   - **`lib/hardware-packages`** - Prints the CPU microcode and GPU driver packages for the machine it runs on (sysfs PCI vendor ids), plus `dkms` and the kernel's headers when a chip needs a DKMS driver (`lib/usb-present`); used by the installer (which passes its kernel choice), `system/10-packages`, `switch-kernel` and `pkg-sync`
   - **`lib/clone`** - Clone a repo if missing and set its origin's fetch (https) and push (ssh) urls
@@ -70,7 +70,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 - **`config/`** - Application configs, symlinked to `~/.config/`
 - **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `user/10-link-claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
 - **`bin/`** - User scripts, symlinked to `~/bin/`
-- **`githooks/`** - Git hooks of this repo and the per-user dwm and dwmblocks clones (`core.hooksPath`, set by `user/30-git-hooks` and `user/50-sources`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the repo status block updates on commit, push, fetch and branch switches
+- **`githooks/`** - Git hooks of this repo and the per-user dwm, dwmblocks and dwl clones (`core.hooksPath`, set by `user/30-git-hooks` and `user/50-sources`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the repo status block updates on commit, push, fetch and branch switches
 - **`autorandr/`** - Monitor profiles with postswitch hooks, plus `hotplug.rules` and `autorandr-hotplug.service`: DRM hotplug events run autorandr through a unit that first sleeps 3s so a USB-C monitor's link renegotiation has finished before the mode is set. Resume still runs the package's `autorandr.service` directly.
 
 ### Configuration Management
@@ -86,11 +86,11 @@ Located in `config/nvim/` with Lua configuration:
 
 ### Claude Code Hooks
 
-`claude/settings.json` registers `bin/claude-notify` for the `UserPromptSubmit`, `Stop`, `StopFailure` and `Notification` events. It plays a freedesktop sound and sends a dunst notification when Claude finishes a turn longer than 10s, needs input, or fails. It is silent when the Claude terminal is the focused window.
+`claude/settings.json` registers `bin/claude-notify` for the `UserPromptSubmit`, `Stop`, `StopFailure` and `Notification` events. It plays a freedesktop sound and sends a dunst notification when Claude finishes a turn longer than 10s, needs input, or fails. It is silent when the Claude terminal is the focused window, which `bin/terminal-focused` tells (X: `$WINDOWID` against the active window; Wayland: `bin/wayland/terminal-focused`, see Wayland session).
 
 ### Dictation
 
-`bin/dictation-stream` is a streaming speech-to-text daemon: NVIDIA Nemotron 3.5 streaming ASR run on the CPU through sherpa-onnx (installed in the pip venv at `~/.local/share/pip-venv`, see `setup/pip-packages`), typing word by word into the focused window with xdotool. `bin/dictation-toggle` (dwm `Mod+V`) starts/stops it and `bin/dictation-status` feeds the dwmblocks indicator. The model lives in `~/.local/share/dictation/models` and is fetched by `dictation-stream install-model` from `bin/setup-extras`. `config/dictation/replacements.txt` holds "heard => wanted" fixes for words the model mishears; sherpa-onnx only offers greedy decoding for NeMo streaming models, so hotword boosting is not available.
+`bin/dictation-stream` is a streaming speech-to-text daemon: NVIDIA Nemotron 3.5 streaming ASR run on the CPU through sherpa-onnx (installed in the pip venv at `~/.local/share/pip-venv`, see `setup/pip-packages`), typing word by word into the focused window with xdotool, or wtype in the Wayland session. `bin/dictation-toggle` (dwm `Mod+V`) starts/stops it and `bin/dictation-status` feeds the dwmblocks indicator. The model lives in `~/.local/share/dictation/models` and is fetched by `dictation-stream install-model` from `bin/setup-extras`. `config/dictation/replacements.txt` holds "heard => wanted" fixes for words the model mishears; sherpa-onnx only offers greedy decoding for NeMo streaming models, so hotword boosting is not available.
 
 ### Bluetooth chip
 
@@ -98,11 +98,20 @@ The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btu
 
 ### Repo status block
 
-`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇️ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
+`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, 🌊 dwl, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇️ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
 
 ### Screen blanking and lock
 
-DPMS stays off so USB-C monitor hubs stay awake; the screen is only blanked by the X screensaver. `bin/screen-timeout` sets it from the power state: never on external power (or without a battery), after 10 minutes on battery. `bin/screen-timeout-watch`, started from `config/sx/sxrc`, reruns it on every `power_supply` udev event. `bin/lock` (dwm `Mod+Q`) blanks after 1 minute while slock is up and restores the power policy on unlock.
+DPMS stays off so USB-C monitor hubs stay awake; the screen is only blanked by the X screensaver. `bin/screen-timeout` sets it from the power state: never on external power (or without a battery), after 10 minutes on battery. `bin/screen-timeout-watch`, started from `config/sx/sxrc`, reruns it on every `power_supply` udev event. `bin/lock` (dwm `Mod+Q`) blanks after 1 minute while slock is up and restores the power policy on unlock. `bin/on-external-power` tells the power state. The Wayland session powers the monitors off instead (see Wayland session).
+
+### Wayland session
+
+X with dwm runs on tty1-2, Wayland with dwl on tty3-4 (`config/zsh/tty.zsh`); the X session is unchanged. A user runs one graphical session at a time, since both would share the user's systemd manager and D-Bus session bus; `tty.zsh` refuses a second one. Several users run theirs side by side on separate ttys.
+- `bin/dwl-session` exports `XDG_SESSION_TYPE`, `XDG_CURRENT_DESKTOP=dwl`, `ELECTRON_OZONE_PLATFORM_HINT=auto` and puts `bin/wayland` first in `PATH`, then runs `dwmblocks -p | dwl -s ~/.config/dwl/startup`. `config/zsh/path.zsh` puts `bin/wayland` first again in every shell with `WAYLAND_DISPLAY`
+- `config/dwl/startup` starts what `sxrc` starts for X: swaybg, kanshi, dunst, nm-applet, blueman-applet, `screen-timeout-watch`; it hands `WAYLAND_DISPLAY` to systemd and D-Bus activation (xdg-desktop-portal) and stops everything when dwl exits
+- `bin/wayland/` holds the Wayland versions of commands with the same name: `lock` (swaylock), `screen-timeout` (swayidle + `wlopm --off`, monitors powered off after 10 minutes on battery), `screenshot` (grim + slurp + wl-copy), `screen-record` (wf-recorder piped into ffmpeg, which mixes in system audio and the mic), `webcam` (mpv with app id `webcam`), `dmenu` (runs wmenu, so scripts calling dmenu work) and `terminal-focused`
+- The dwl fork (`~/code/dwl`, upstream Codeberg as remote `upstream`) carries the bar, systray (ported from the 0.7 patch; icons by name show as initials) and foreign-toplevel patches, what the dwm fork has (gaps, grid layout, viewontag, vacant tags hidden in the bar, per-user selection colors from `/etc/dwm/user-colors.h`, user@host before the title, status text before a 0x1f byte in the middle of the bar, the Ctrl+m prefix chord), rules with a floating geometry (negative x/y from the right/bottom), `animfullscreen` (Mod+Shift+W eases the webcam to fullscreen and back) and writes the focused client's PID to `$XDG_RUNTIME_DIR/dwl-focused-pid`, which `bin/wayland/terminal-focused` compares with its ancestors. `config.h` is tracked and ported from the dwm fork's keys and rules (`se` layout, `caps:escape`)
+- `config/foot/foot.ini` sets foot up like st. Monitor profiles live in `~/.config/kanshi/config` (untracked, like `~/.config/autorandr`)
 
 ### Bluetooth headset audio
 
