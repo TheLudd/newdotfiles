@@ -1,0 +1,29 @@
+#!/bin/bash
+# Toggle a small borderless webcam preview. dwl's rule for the app id "webcam"
+# floats it on all tags in the bottom-right corner of the monitor under the
+# mouse, so screen-record picks it up; Mod+Shift+W animates it to fullscreen
+# and back (animfullscreen in dwl). Move it with Mod+drag.
+
+PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/webcam.pid"
+# Prefer the external Brio, fall back to the laptop camera
+DEVICE="$(ls /dev/v4l/by-id/*Brio*-video-index0 /dev/v4l/by-id/*Integrated_RGB_Camera*-video-index0 2>/dev/null | head -n1)"
+
+if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")"
+    rm -f "$PIDFILE"
+    exit 0
+fi
+
+if [[ -z "$DEVICE" ]]; then
+    notify-send "Webcam" "No camera found"
+    exit 1
+fi
+
+mpv "av://v4l2:$DEVICE" \
+    --wayland-app-id=webcam --title=webcam \
+    --demuxer-lavf-o=input_format=mjpeg,video_size=1280x720 \
+    --profile=low-latency --untimed --no-cache \
+    --no-border --no-osc --no-audio \
+    >/dev/null 2>&1 &
+
+echo $! > "$PIDFILE"

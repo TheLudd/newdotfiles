@@ -1,0 +1,4 @@
+#!/bin/sh
+# dmenu for scripts in the Wayland session: wmenu reads the menu from stdin and
+# takes dmenu's -i, -l and -p.
+exec wmenu "$@"

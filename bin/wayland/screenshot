@@ -1,0 +1,4 @@
+#!/bin/sh
+# Copies a screenshot of a selected area to the clipboard.
+area=$(slurp) || exit 0
+grim -g "$area" - | wl-copy -t image/png

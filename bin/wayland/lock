@@ -1,0 +1,10 @@
+#!/bin/sh
+# Locks the screen with swaylock and powers the monitors off after 1 minute
+# idle while locked, then restores the normal blanking from screen-timeout.
+pkill -u "$USER" -x swayidle
+swayidle timeout 60 "wlopm --off '*'" resume "wlopm --on '*'" &
+idle=$!
+swaylock -c 000000
+kill "$idle"
+wlopm --on '*'
+screen-timeout

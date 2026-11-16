@@ -1,0 +1,53 @@
+#!/bin/bash
+# Screen recording of a selected area with wf-recorder, system audio and mic
+# mixed in by ffmpeg. Toggle: first run selects the area and starts, second
+# run stops and offers a rename.
+
+PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/screenrec.pid"          # ffmpeg
+RECORDERFILE="${XDG_RUNTIME_DIR:-/tmp}/screenrec.recorder" # wf-recorder
+NAMEFILE="${XDG_RUNTIME_DIR:-/tmp}/screenrec.name"
+OUTDIR="$HOME/Videos"
+
+if [[ -f "$PIDFILE" ]]; then
+    # wf-recorder ends the video on SIGINT; ffmpeg then stops at its end (-shortest)
+    muxer="$(cat "$PIDFILE")"
+    original="$(cat "$NAMEFILE")"
+
+    kill -INT "$(cat "$RECORDERFILE")"
+    while kill -0 "$muxer" 2>/dev/null; do sleep 0.1; done
+
+    rm -f "$PIDFILE" "$RECORDERFILE" "$NAMEFILE"
+
+    newname=$(echo "" | dmenu -p "Save as (blank to keep):")
+    if [[ -n "$newname" ]]; then
+        mv "$original" "$OUTDIR/${newname}.mp4"
+        notify-send "Recording saved" "${newname}.mp4"
+    else
+        notify-send "Recording saved" "$(basename "$original")"
+    fi
+else
+    area=$(slurp) || exit 0
+    mkdir -p "$OUTDIR"
+    outfile="$OUTDIR/$(date +%Y%m%d-%H%M%S).mp4"
+
+    # Capture system audio (monitor of the default sink) and the default mic,
+    # mixed into one track
+    monitor="$(pactl get-default-sink).monitor"
+    mic="$(pactl get-default-source)"
+
+    {
+        wf-recorder -g "$area" -r 30 -c libx264 -p preset=ultrafast \
+            -m nut -f /dev/stdout 2>/dev/null &
+        echo $! > "$RECORDERFILE"
+        wait
+    } | ffmpeg -loglevel error -i - \
+        -thread_queue_size 1024 -f pulse -i "$monitor" \
+        -thread_queue_size 1024 -f pulse -i "$mic" \
+        -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[a]" \
+        -map 0:v -map "[a]" -c:v copy -c:a aac -shortest \
+        "$outfile" &
+
+    echo $! > "$PIDFILE"
+    echo "$outfile" > "$NAMEFILE"
+    notify-send "Recording started"
+fi

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Powers the monitors off after 10 minutes idle on battery, never on external
+# power (or without a battery). swayidle ends with the session.
+battery_timeout=600
+
+pkill -u "$USER" -x swayidle
+on-external-power && exit 0
+setsid -f swayidle timeout "$battery_timeout" "wlopm --off '*'" resume "wlopm --on '*'"
