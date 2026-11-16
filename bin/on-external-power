@@ -1,0 +1,10 @@
+#!/bin/sh
+# Exits 0 on external power, and on a machine without a battery.
+ls /sys/class/power_supply/*/type >/dev/null 2>&1 || exit 0
+grep -qx Battery /sys/class/power_supply/*/type || exit 0
+for supply in /sys/class/power_supply/*; do
+  case $(cat "$supply/type") in
+    Mains|USB) [ "$(cat "$supply/online" 2>/dev/null)" = 1 ] && exit 0 ;;
+  esac
+done
+exit 1
