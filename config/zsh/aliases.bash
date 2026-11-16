@@ -49,6 +49,7 @@ alias dov="docker compose down -v"
 alias aff="run nx affected -t "
 alias c="ensure-not-git-subfolder && claude"
 alias mp="nvim +MarkdownPreview "
+alias last="ls -t | head -n 1"
 
 # merge-branch prints a directory when it removed the worktree we are in
 merge() {
