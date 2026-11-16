@@ -132,7 +132,7 @@ github-runner list
 
 ### sshd
 
-The `sshd` unit (role `server`) installs `setup/units/sshd/sshd.conf` as `/etc/ssh/sshd_config.d/10-newdotfiles.conf` and enables `sshd.service`. Logins take a public key only: password and keyboard-interactive authentication and root login are off. A user who logs in over ssh needs their key in `~/.ssh/authorized_keys`.
+The `sshd` unit (role `server`) installs `setup/units/sshd/sshd.conf` as `/etc/ssh/sshd_config.d/10-newdotfiles.conf` and enables `sshd.service`. Logins take a public key only: password and keyboard-interactive authentication and root login are off. Its `user-login` step adds every key on the user's GitHub account (`gh api user/keys`) that is missing from `~/.ssh/authorized_keys`; keys already there stay, also those removed from GitHub. `./init user-login sshd` reruns it after a key was added on GitHub.
 
 ### Public sites
 

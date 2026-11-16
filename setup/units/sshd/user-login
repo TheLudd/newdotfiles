@@ -1,0 +1,16 @@
+#!/bin/bash
+# Lets every key on the user's GitHub account log in here: adds the ones
+# missing from ~/.ssh/authorized_keys. Keys already there stay, also those
+# removed from GitHub. Needs gh logged in (user-login/10-github).
+set -euo pipefail
+gh auth status -h github.com >/dev/null 2>&1 || { echo "gh is not logged in (user-login/10-github)"; exit 1; }
+
+keys=$(gh api user/keys --jq '.[].key')
+authorized="$HOME/.ssh/authorized_keys"
+install -Dm 600 /dev/null "$authorized.new"
+[[ -f $authorized ]] && cat "$authorized" > "$authorized.new"
+while read -r key; do
+	[[ -n $key ]] && ! grep -qF "$key" "$authorized.new" && echo "$key" >> "$authorized.new"
+done <<< "$keys"
+mv "$authorized.new" "$authorized"
+echo "$(grep -c . "$authorized") keys in $authorized"
