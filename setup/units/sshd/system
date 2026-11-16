@@ -1,0 +1,8 @@
+#!/bin/bash
+# sshd: logins over ssh with a public key only (units/sshd/sshd.conf). A user
+# who logs in needs their key in ~/.ssh/authorized_keys.
+set -euo pipefail
+sudo install -Dm 644 units/sshd/sshd.conf /etc/ssh/sshd_config.d/10-newdotfiles.conf
+# sshd -t needs host keys, which sshdgenkeys.service only makes at its first start
+sudo ssh-keygen -A
+sudo sshd -t && sudo systemctl enable --now sshd.service && sudo systemctl reload sshd.service

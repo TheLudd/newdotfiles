@@ -130,6 +130,10 @@ github-runner list
 - Jobs start the services they need with `podman compose -f <file> up -d` (`system/60-podman`): the first job starts the containers, later jobs find them running. `gh-runner` lingers and the service sets `XDG_RUNTIME_DIR`, which rootless podman needs. Images' health checks are not applied, so a job waits for a service itself
 - Workflows use `runs-on: [self-hosted, arch]`, `actions/setup-node` with `node-version-file: package.json` and no `cache:`, and plain `pnpm install --frozen-lockfile`; `pnpm/action-setup` is not needed
 
+### sshd
+
+The `sshd` unit (role `server`) installs `setup/units/sshd/sshd.conf` as `/etc/ssh/sshd_config.d/10-newdotfiles.conf` and enables `sshd.service`. Logins take a public key only: password and keyboard-interactive authentication and root login are off. A user who logs in over ssh needs their key in `~/.ssh/authorized_keys`.
+
 ### Containers
 
 docker (root daemon, `docker` group) and podman are on every machine. With podman, containers run as the user who starts them, without a daemon, each user with their own images and containers. `setup/system/60-podman` installs `setup/files/containers/`, which makes image names without a registry resolve to Docker Hub and makes `podman compose` run `podman-compose`, so compose files written for docker work unchanged.
