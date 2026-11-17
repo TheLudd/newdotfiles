@@ -1,5 +1,6 @@
 #!/bin/sh
 # Output Claude plan usage for dwmblocks: session, weekly and model-scoped weekly limits.
+# `claude-usage raw` prints the usage endpoint's JSON instead.
 # Reads the OAuth token Claude Code stores and asks the usage endpoint; no model call, no tokens.
 # Stdout stays empty when there is no usable login or the request fails; the reason goes to stderr.
 
@@ -21,6 +22,11 @@ token=$(echo "$oauth" | jq -r --argjson now "$now_ms" 'select(.expiresAt > $now)
 response=$(curl -sS --fail --max-time 5 https://api.anthropic.com/api/oauth/usage \
     -H "Authorization: Bearer $token" \
     -H "anthropic-beta: oauth-2025-04-20") || fail "usage request failed"
+
+if [ "$1" = raw ]; then
+    echo "$response"
+    exit 0
+fi
 
 usage=$(echo "$response" | jq -r '
     def short:

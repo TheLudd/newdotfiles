@@ -1,0 +1,27 @@
+#!/bin/sh
+# Print how much of the 5-hour session limit is used and when the session resets.
+# The endpoint rounds usage to whole percent, so a little usage reads as 0%. A session
+# window only exists after the first request in it, so a reset time means some usage.
+
+response=$(claude-usage raw) || exit 1
+
+resets_at=$(echo "$response" | jq -r '.five_hour.resets_at // empty')
+percent=$(echo "$response" | jq -r '.five_hour.utilization // 0 | floor')
+
+now=$(date +%s)
+reset=$([ -n "$resets_at" ] && date -d "$resets_at" +%s || echo 0)
+
+if [ "$reset" -le "$now" ]; then
+    echo "Session: no usage, no 5-hour window running"
+    exit 0
+fi
+
+left=$((reset - now))
+in=$(printf '%dh %02dm' $((left / 3600)) $((left % 3600 / 60)))
+at=$(date -d "@$reset" +%H:%M)
+
+if [ "$percent" -eq 0 ]; then
+    echo "Session: under 1% used (shown as 0%), resets in $in ($at)"
+else
+    echo "Session: $percent% used, resets in $in ($at)"
+fi
