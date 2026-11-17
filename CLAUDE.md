@@ -160,3 +160,7 @@ Custom patches live in the forks in `~/code/<name>`. After modifying source:
 1. Edit the C source or config.h
 2. Run `make && sudo make install` in the source directory
 3. Restart the application (for dwm: `Mod+Shift+Q` or use autorandr postswitch hook)
+
+### Claude session keeper
+
+`bin/claude-session` prints how much of the 5-hour session limit is used and when it resets (`claude-usage raw` reads the usage endpoint). The endpoint rounds to whole percent; a running window (a reset time) means some usage even at 0%. `bin/claude-session-keeper` (user service `claude-session-keeper.service`, started for users who have `~/.local/bin/claude`) sends Claude "Let's start another 5 hour session" through haiku when no window runs or the token has expired, then sleeps until a minute after the reset. `journalctl --user -u claude-session-keeper` shows what it did.

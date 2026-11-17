@@ -3,10 +3,11 @@
 # `claude-usage raw` prints the usage endpoint's JSON instead.
 # Reads the OAuth token Claude Code stores and asks the usage endpoint; no model call, no tokens.
 # Stdout stays empty when there is no usable login or the request fails; the reason goes to stderr.
+# Exits 2 when the token has expired (Claude Code refreshes it on its next request), else 1.
 
 fail() {
     echo "claude-usage: $*" >&2
-    exit 1
+    exit "${status:-1}"
 }
 
 credentials="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json"
@@ -17,7 +18,7 @@ oauth=$(jq -c '.claudeAiOauth // empty' "$credentials") || fail "cannot parse $c
 
 now_ms=$(($(date +%s) * 1000))
 token=$(echo "$oauth" | jq -r --argjson now "$now_ms" 'select(.expiresAt > $now) | .accessToken // empty')
-[ -n "$token" ] || fail "token expired, start Claude Code to refresh it"
+[ -n "$token" ] || status=2 fail "token expired, start Claude Code to refresh it"
 
 response=$(curl -sS --fail --max-time 5 https://api.anthropic.com/api/oauth/usage \
     -H "Authorization: Bearer $token" \

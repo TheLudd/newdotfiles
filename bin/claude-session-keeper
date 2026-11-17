@@ -1,0 +1,50 @@
+#!/bin/sh
+# Keep a 5-hour Claude session window running: when none runs, send Claude a message to
+# start one, then sleep until the window resets. Run by claude-session-keeper.service.
+# An expired token also gets a message, since Claude Code refreshes the token on its next request.
+
+retry=300 # seconds before checking again after a failure or a started session
+margin=60 # seconds after the reset before checking, so the old window is gone
+
+log() {
+    echo "$*"
+}
+
+# Sleep in steps, since sleep does not count time spent in suspend.
+sleep_until() {
+    while [ "$(date +%s)" -lt "$1" ]; do
+        left=$(($1 - $(date +%s)))
+        sleep $((left < retry ? left : retry))
+    done
+}
+
+start_session() {
+    log "starting a session"
+    claude -p --model haiku --no-session-persistence "Let's start another 5 hour session" >/dev/null ||
+        log "claude failed"
+}
+
+while :; do
+    reset=$(claude-session reset)
+    case $? in
+    0) ;;
+    2)
+        start_session
+        sleep "$retry"
+        continue
+        ;;
+    *)
+        sleep "$retry"
+        continue
+        ;;
+    esac
+
+    if [ -z "$reset" ]; then
+        start_session
+        sleep "$retry"
+        continue
+    fi
+
+    log "session resets at $(date -d "@$reset" +%H:%M)"
+    sleep_until $((reset + margin))
+done
