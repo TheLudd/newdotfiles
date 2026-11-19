@@ -1,5 +1,5 @@
 #!/bin/bash
-# Updates google-chrome, then restarts kolide (when installed) and chrome with its tabs restored.
+# Updates google-chrome, then restarts chrome with its tabs restored and, once it runs, kolide (when installed).
 # Runs without a terminal: sudo must work without a password, otherwise it notifies and stops.
 
 stop () {
@@ -21,11 +21,20 @@ paru -S --needed --skipreview --noconfirm --sudoflags -n google-chrome || fail "
 pkill -TERM -x chrome
 while pgrep -x chrome >/dev/null; do sleep 0.2; done
 
+setsid -f google-chrome-stable --restore-last-session >/dev/null 2>&1
+
+# kolide checks the running chrome, so it restarts once chrome runs the new version
+version=$(pacman -Q google-chrome | cut -d' ' -f2 | cut -d- -f1)
+lastVersion="$HOME/.config/google-chrome/Last Version"
+for _ in $(seq 50); do
+	[ "$(cat "$lastVersion" 2>/dev/null)" = "$version" ] && pgrep -x chrome >/dev/null && break
+	sleep 0.2
+done
+sleep 5
+
 if systemctl cat launcher.kolide-k2.service >/dev/null 2>&1; then
 	sudo -n systemctl restart launcher.kolide-k2.service || restartFailed=1
 fi
-
-setsid -f google-chrome-stable --restore-last-session >/dev/null 2>&1
 
 [ -n "$restartFailed" ] && fail "could not restart launcher.kolide-k2.service"
 exit 0
