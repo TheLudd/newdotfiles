@@ -1,0 +1,8 @@
+[Unit]
+Description=Start the Claude session keeper at 5 in the morning
+
+[Timer]
+OnCalendar=*-*-* 05:00:00
+
+[Install]
+WantedBy=timers.target
