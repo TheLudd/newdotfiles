@@ -73,8 +73,9 @@ short_subpath() {
   (( $#parts > 2 )) && echo "…/${(j:/:)parts[-2,-1]}" || echo ${(j:/:)parts}
 }
 
-# project[:worktree][ › submodule][/sub/path] of the repo at $1; fails outside git.
-# The worktree is left out when it is named like the project or its branch
+# Sets reply=(label subpath) for the repo at $1; fails outside git.
+# label: project[:worktree][ › submodule], the worktree left out when it is
+# named like the project or its branch. subpath: where $1 is inside the repo
 git_repo_label() {
   local -a info
   info=("${(@f)$(git -C "$1" rev-parse --path-format=absolute --show-toplevel \
@@ -84,20 +85,21 @@ git_repo_label() {
 
   local label
   if [[ -n $super ]]; then
-    label="$(git_repo_label $super) › ${top#$super/}"
+    git_repo_label $super
+    label="$reply[1] › ${top#$super/}"
   else
     local project=$(git_project_name $common) worktree=${top:t}
     label=$project
     [[ $worktree != $project && $worktree != $(git_branch $top) ]] \
       && label+=":$worktree"
   fi
-  [[ -n $prefix ]] && label+="/$(short_subpath $prefix)"
-  echo $label
+  reply=($label "${prefix:+$(short_subpath $prefix)}")
 }
 
-# Path display: git-aware or standard with ~ substitution
-git_aware_path() {
-  git_repo_label . || echo "${PWD/#$HOME/~}"
+# Names this pane's tag in truetm after the repo; empty outside git, so truetm
+# shows the folder name
+send_tag_label() {
+  [[ -n $TRUETM ]] && printf '\e]7770;%s\a' "$1"
 }
 
 HOST_NAME="%{$fg_bold[cyan]%}%m%{$reset_color%}"
@@ -107,7 +109,15 @@ autoload -Uz add-zsh-hook
 
 update_prompt() {
   local last_exit=$?  # Capture exit status immediately
-  local folder="%{$fg_bold[cyan]%}$(git_aware_path)%{$reset_color%}"
+  local label where
+  if git_repo_label .; then
+    label=$reply[1]
+    where=$label${reply[2]:+/$reply[2]}
+  else
+    where="${PWD/#$HOME/~}"
+  fi
+  send_tag_label $label
+  local folder="%{$fg_bold[cyan]%}${where}%{$reset_color%}"
   PROMPT="${HOST_NAME} $(prompt_arrow $last_exit) ${folder}$(git_prompt_info) "
 }
 
