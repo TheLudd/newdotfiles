@@ -98,7 +98,7 @@ else
 	cat $bodyFile
 
 	gh pr create -B $base $reviewerArgs -t "$title" --body-file $bodyFile
-	gh pr merge --auto -r -d
+	gh pr merge --auto -r
 
 	rm $tmpFile $bodyFile
 fi
