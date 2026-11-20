@@ -70,7 +70,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
 - **`config/`** - Application configs, symlinked to `~/.config/`
 - **`claude/`** - Claude Code config (settings.json, global CLAUDE.md, commands, skills). `user/10-link-claude` symlinks each entry individually into `~/.config/claude/`, which also holds untracked state
 - **`bin/`** - User scripts, symlinked to `~/bin/`
-- **`githooks/`** - Git hooks of this repo and the per-user dwm and dwmblocks clones (`core.hooksPath`, set by `user/30-git-hooks` and `user/50-sources`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the repo status block updates on commit, push, fetch and branch switches
+- **`githooks/`** - Git hooks of this repo and the clones in `~/code` (`core.hooksPath`, set by `user/30-git-hooks`, `user/50-sources` and `system/50-sources`). `reference-transaction` signals dwmblocks (signal 4) on any branch, HEAD or remote-tracking ref change, so the repo status block updates on commit, push, fetch and branch switches
 - **`autorandr/`** - Monitor profiles with postswitch hooks, plus `hotplug.rules` and `autorandr-hotplug.service`: DRM hotplug events run autorandr through a unit that first sleeps 3s so a USB-C monitor's link renegotiation has finished before the mode is set. Resume still runs the package's `autorandr.service` directly.
 
 ### Configuration Management
@@ -98,7 +98,7 @@ The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btu
 
 ### Repo status block
 
-`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇️ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
+`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, 🖥 truetm, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇️ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
 
 ### Screen blanking and lock
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 # Clone each repo in `repos` into ~/code/<name> and install it system-wide.
+# The clones use this repo's git hooks, so the repo status block (dwmblocks
+# signal 4) refreshes on their ref changes.
 # Builds as the user and installs as root, so install targets must not
 # rebuild. Makefiles without an `all` target (sx) only install.
 set -uo pipefail
@@ -9,6 +11,7 @@ has_all_target() { make -C "$1" -n all >/dev/null 2>&1; }
 install_repo() {
 	local dir=$1
 	lib/clone "$@" &&
+		git -C "$dir" config core.hooksPath "$DOTFILES/githooks" &&
 		{ ! has_all_target "$dir" || make -C "$dir" all; } &&
 		sudo make -C "$dir" install
 }

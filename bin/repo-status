@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: repo-status [fetch]
-# Prints the state of this repo and the per-user forks for dwmblocks (signal 4),
+# Prints the state of this repo, the per-user forks and truetm for dwmblocks (signal 4),
 # one icon per repo that has something to do:
 #   🖊 uncommitted changes   🚀 commits to push   ⬇️ commits to pull
 #   🔀 new commits in base (the repo a user's own fork is based on, user/50-sources)
@@ -12,6 +12,7 @@ repos=(
 	"🏠 $HOME/newdotfiles"
 	"🪟 $HOME/code/dwm"
 	"🧱 $HOME/code/dwmblocks"
+	"🖥 $HOME/code/truetm"
 )
 
 count() { git -C "$1" rev-list --count "$2" 2>/dev/null || echo 0; }
