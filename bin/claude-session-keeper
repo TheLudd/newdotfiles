@@ -2,9 +2,11 @@
 # Keep a 5-hour Claude session window running: when none runs, send Claude a message to
 # start one, then sleep until the window resets. Run by claude-session-keeper.service.
 # An expired token also gets a message, since Claude Code refreshes the token on its next request.
+# From stop_hour on it starts no window and exits; claude-session-keeper.timer starts it in the morning.
 
 retry=300 # seconds before checking again after a failure or a started session
 margin=60 # seconds after the reset before checking, so the old window is gone
+stop_hour=20
 
 log() {
     echo "$*"
@@ -19,6 +21,10 @@ sleep_until() {
 }
 
 start_session() {
+    if [ "$(date +%H)" -ge "$stop_hour" ]; then
+        log "past $stop_hour:00, starting no more sessions today"
+        exit 0
+    fi
     log "starting a session"
     claude -p --model haiku --no-session-persistence "Let's start another 5 hour session" >/dev/null ||
         log "claude failed"
