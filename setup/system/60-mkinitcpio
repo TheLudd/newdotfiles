@@ -1,0 +1,8 @@
+#!/bin/bash
+# initramfs hooks (files/mkinitcpio/hooks.conf); rebuilds the images when they change.
+set -euo pipefail
+target=/etc/mkinitcpio.conf.d/10-newdotfiles-hooks.conf
+if ! cmp -s files/mkinitcpio/hooks.conf "$target"; then
+	sudo install -Dm 644 files/mkinitcpio/hooks.conf "$target"
+	sudo mkinitcpio -P
+fi

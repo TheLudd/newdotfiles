@@ -17,7 +17,7 @@ MIN_HOME_GIB=32
 MAX_DEFAULT_ROOT_GIB=512
 SWAP_SIZE=8G
 KEYMAP=sv-latin1
-HOOKS='HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)'
+HOOKS='HOOKS=(base systemd keyboard autodetect microcode modconf kms sd-vconsole block sd-encrypt filesystems fsck)'
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 PACKAGES="$(cat "$SCRIPT_DIR/../setup/packages")"
 

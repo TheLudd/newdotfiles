@@ -65,6 +65,7 @@ switch-kernel            # pick a kernel; installs it, sets GRUB's default and o
     - **`nginx/`** - nginx sites and `http.conf` (settings for the whole http block), copied into `/etc/nginx/sites-enabled` by `system/60-nginx` (rerun after an edit)
     - **`pacman-hooks/`** - pacman hooks, installed by `system/60-grub`
     - **`containers/`** - podman settings, installed into `/etc/containers` by `system/60-podman`
+    - **`mkinitcpio/`** - initramfs hooks, installed into `/etc/mkinitcpio.conf.d` by `system/60-mkinitcpio`, which rebuilds the images when they change. `keyboard` comes before `autodetect`, so every keyboard driver is in the image and the LUKS prompt has a working keyboard whatever was loaded at build time (the Varmilo poses as an Apple keyboard and needs `hid_apple`)
     - **`modprobe/`** - Kernel module settings, installed into `/etc/modprobe.d` by `system/60-modprobe`. `no-watchdog.conf` blacklists the chipset hardware watchdog, which systemd-shutdown otherwise arms and the kernel answers with "watchdog did not stop!" on every shutdown
 - **`archinstall/`** - Fresh Arch Linux installation from the live USB. `install-encrypted` creates the first user through `add-user` (from a copy of the repo on the stick, since the chroot cannot see it), which also adds later users and runs `init` for them; in the chroot `systemctl` only enables units and the udev reload is skipped; every `wheel` member has passwordless sudo (`/etc/sudoers.d/wheel`)
 - **`config/`** - Application configs, symlinked to `~/.config/`
