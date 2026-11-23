@@ -13,3 +13,5 @@ When I ask you to explan stuff, I prefer step by step explanations or code/confi
 The verb says whether a thing exists: present tense only for what is in the code, "will" for what is decided but not built, "would" for suggestions. Code carries no tense; the sentence introducing it does ("we would add this function:"). No status labels such as Today/Proposed or Current/Needed.
 
 If you are done with a task, commit it. If you did a fix for a previous commit, do a fixup.
+
+For new nodejs project, always use pnpm. Never npm.
