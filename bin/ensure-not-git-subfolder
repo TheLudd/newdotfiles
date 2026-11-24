@@ -1,4 +1,11 @@
 #!/bin/sh
+if [ "$(git rev-parse --is-bare-repository 2>/dev/null)" = "true" ]; then
+  # Case 4: inside a bare repo or a bare workspace (.bare + worktrees) — user error
+  echo "⚠️  WARNING: in a bare repo, not a worktree. Start Claude in one of these worktrees:" >&2
+  git worktree list | grep -v ' (bare)$' >&2
+  exit 2
+fi
+
 toplevel=$(git rev-parse --show-toplevel 2>/dev/null)
 
 if [ -z "$toplevel" ]; then
