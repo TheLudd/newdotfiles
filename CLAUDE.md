@@ -99,7 +99,7 @@ The Foxconn MediaTek MT7902 Bluetooth chip (USB `0489:e156`) is missing from btu
 
 ### Repo status block
 
-`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, 🖥 truetm, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇️ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
+`bin/repo-status` feeds a dwmblocks block (signal 4) with one icon per repo that has something to do: 🏠 newdotfiles, 🪟 dwm, 🧱 dwmblocks, 🖥 truetm, followed by 🖊 uncommitted changes, 🚀 commits to push, ⬇ commits to pull, 🔀 new commits in `base` and `(branch)` when not on master. `fetch-repos.timer` (user, daily) runs `repo-status fetch`, which fetches every remote of the repos; the `reference-transaction` hook then refreshes the block.
 
 ### Screen blanking and lock
 
